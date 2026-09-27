@@ -1,0 +1,1 @@
+console.log('Sistema de Equivalencias cargado correctamente.');
