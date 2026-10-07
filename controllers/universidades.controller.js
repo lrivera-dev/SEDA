@@ -1,5 +1,4 @@
 const supabase = require('../supabaseClient');
-const supbase = require('../supabaseClient');
 
 const CAMPOS_OBLIGATORIOS = ['nombre', 'ubicacion', 'correo_contacto', 'telefono_contacto', 'correo', 'contrasena'];
 
@@ -11,14 +10,13 @@ async function registrarUniversidad(req, res) {
 
     if (faltantes.length > 0) {
         return res.status(400).json({
-
             error: 'Campos obligatorios faltantes o inválidos',
             campos: faltantes
         });
     }
 
     // Verificar si la universidad ya fue registrada
-    const { data: existente, error: errorBusqueda } = await supbase
+    const { data: existente, error: errorBusqueda } = await supabase
         .from('universidad')
         .select('id_universidad')
         .eq('nombre', datos.nombre)
