@@ -1,24 +1,192 @@
-*{
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+/* =========================================================
+   REGISTRO DE UNIVERSIDAD
+   ========================================================= */
+:root {
+  --color-primario: #37435f;
+  --color-primario-hover: #1f2a44;
+  --color-primario-suave: #c9d3e6;
+
+  --color-fondo: #e9edf4;
+  --color-titulo-pagina: #1f2a44;
+  --color-texto-pagina: #4a5568;
+
+  --color-superficie: #ffffff;
+  --color-superficie-suave: #f6f8fb;
+
+  --color-texto: #1b2233;
+  --color-texto-suave: #5b6870;
+  --color-texto-sobre-primario: #ffffff;
+
+  --color-borde: #8794a8;
+  --color-borde-foco: #37435f;
+  --color-sombra: rgba(31, 42, 68, 0.12);
+  --color-anillo-foco: rgba(55, 67, 95, 0.35);
+
+  --color-error: #9b2335;
+  --color-error-fondo: #f6dcd6;
+  --color-error-borde: #d9a196;
+  --color-anillo-error: rgba(155, 35, 53, 0.25);
+
+  --color-exito: #3f6b4a;
+  --color-exito-fondo: #e3ebd8;
+
+  --color-deshabilitado: #74838a;
+
+  --fuente: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --radio: 10px;
 }
 
-body{
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #f4f4f4;
-    color: #222;
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: var(--fuente);
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  line-height: 1.5;
 }
 
-main{
-    text-align: center;
+.contenedor { max-width: 720px; margin: 0 auto; padding: 32px 16px 56px; }
+
+.encabezado h1 { margin: 0 0 6px; font-size: 1.75rem; color: var(--color-titulo-pagina); }
+.encabezado p { margin: 0 0 24px; color: var(--color-texto-pagina); }
+.encabezado .obligatorio { color: var(--color-error); }
+
+.tarjeta {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  box-shadow: 0 4px 14px var(--color-sombra);
+  padding: 28px;
 }
 
-h1{
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+.seccion {
+  margin: 0 0 18px;
+  padding-bottom: 8px;
+  font-size: 1.05rem;
+  color: var(--color-primario);
+  border-bottom: 2px solid var(--color-primario-suave);
+}
+.seccion:not(:first-child) { margin-top: 32px; }
+
+/* ---------- Campos ---------- */
+.campo { margin-bottom: 20px; }
+.campo > label { display: block; margin-bottom: 6px; font-weight: 600; }
+.obligatorio { color: var(--color-error); }
+
+.fila-doble { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+
+.campo input[type="text"],
+.campo input[type="email"],
+.campo input[type="tel"],
+.campo input[type="password"],
+.campo select {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--color-texto);
+  background: var(--color-superficie-suave);
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.campo input::placeholder { color: var(--color-texto-suave); }
+
+.campo input:focus,
+.campo select:focus {
+  outline: none;
+  border-color: var(--color-borde-foco);
+  box-shadow: 0 0 0 3px var(--color-anillo-foco);
+}
+
+.campo input:disabled { background: #e3e8f0; color: var(--color-texto-suave); cursor: not-allowed; }
+
+.campo__ayuda { margin: 6px 0 0; font-size: .85rem; color: var(--color-texto-suave); }
+
+.check { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 400; }
+.check input { width: 18px; height: 18px; accent-color: var(--color-primario); cursor: pointer; }
+.check--mini { margin-top: 8px; font-size: .9rem; }
+
+/* ---------- Validación visual por campo ----------*/
+.campo__error {
+  display: none;
+  margin: 6px 0 0;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--color-error);
+}
+.campo:has(:user-invalid) .campo__error,
+.campo.campo--invalido .campo__error { display: block; }
+
+.campo:has(:user-invalid) .campo__ayuda,
+.campo.campo--invalido .campo__ayuda { display: none; }
+
+.campo input:user-invalid,
+.campo select:user-invalid,
+.campo.campo--invalido input,
+.campo.campo--invalido select {
+  border-color: var(--color-error);
+  background: var(--color-error-fondo);
+}
+.campo input:user-invalid:focus,
+.campo select:user-invalid:focus,
+.campo.campo--invalido input:focus,
+.campo.campo--invalido select:focus { box-shadow: 0 0 0 3px var(--color-anillo-error); }
+
+.campo input:user-valid,
+.campo select:user-valid { border-color: var(--color-exito); }
+
+/* ---------- Botones ---------- */
+.acciones { margin-top: 28px; }
+
+.btn {
+  display: inline-block;
+  padding: 12px 28px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-texto-sobre-primario);
+  background: var(--color-primario);
+  border: 1px solid var(--color-primario);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn:hover { background: var(--color-primario-hover); border-color: var(--color-primario-hover); }
+.btn:focus-visible { outline: 3px solid var(--color-anillo-foco); outline-offset: 2px; }
+.btn:disabled {
+  background: var(--color-deshabilitado);
+  border-color: var(--color-deshabilitado);
+  cursor: not-allowed;
+}
+
+/* ---------- Mensajes globales ---------- */
+.mensaje { margin-bottom: 20px; padding: 14px 18px; border: 1px solid; border-radius: var(--radio); }
+.mensaje p, .mensaje ul { margin: 6px 0 0; }
+.mensaje ul { padding-left: 20px; }
+.mensaje--error { color: var(--color-error); background: var(--color-error-fondo); border-color: var(--color-error-borde); }
+
+/* ---------- Confirmación ---------- */
+.confirmacion { text-align: center; }
+.confirmacion h2 { margin: 12px 0 6px; color: var(--color-exito); }
+.confirmacion p { margin: 0 0 22px; color: var(--color-texto-suave); }
+.confirmacion__icono {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-exito);
+  background: var(--color-exito-fondo);
+  border-radius: 50%;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 560px) {
+  .tarjeta { padding: 20px 16px; }
+  .fila-doble { grid-template-columns: 1fr; }
+  .acciones .btn { width: 100%; }
 }
