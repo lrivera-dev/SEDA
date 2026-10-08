@@ -2,7 +2,7 @@ const supabase = require('../supabaseClient');
 
 async function subirArchivo(req, res) {
     if (!req.file) {
-        return res.status(400).json({ error: "No se recibió ningún archivo, o el fomarto no es válido (solo PDF o Word)." });
+        return res.status(400).json({ error: "No se recibió ningún archivo, o el formato no es válido (solo PDF o Word)." });
     }
 
     const { tipo, id_carrera, id_materia } = req.body;
@@ -47,10 +47,16 @@ async function subirArchivo(req, res) {
         return res.status(500).json({ error: errorUpdate.message });
     }
 
-    return res.status(201).json({
+    const respuesta = {
         mensaje: 'Archivo cargado exitosamente',
         path
-    })
+    };
+
+    if (req.advertenciaArchivo) {
+        respuesta.advertencia = req.advertenciaArchivo;
+    }
+
+    return res.status(201).json(respuesta);
 }
 
 module.exports = { subirArchivo };
