@@ -1,9 +1,14 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 
 app.use(express.static('public'));
 
 app.use(express.json());
+
+app.get('/subir-archivos', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'subir-archivos.html'));
+});
 
 const supabase = require('./supabaseClient');
 
@@ -25,6 +30,8 @@ app.use((err, req, res, next) => {
 
 const equivalenciasRoutes = require('./routes/equivalencias.routes');
 app.use('/equivalencias', equivalenciasRoutes);
+const panelRoutes = require('./routes/panel.routes');
+app.use('/panel', panelRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

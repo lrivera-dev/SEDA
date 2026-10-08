@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEDA | Subir documentos</title>
+    <link rel="stylesheet" href="css/subir-archivos.css">
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Subir documentos</h1>
+        <p class="lead">Sube el pensum de una carrera o el programa de una materia. Los campos con <span class="req">*</span> son obligatorios.</p>
+
+        <form id="form-archivo" class="card" novalidate>
+            <h2>Datos del documento</h2>
+            <div class="grid">
+                <div class="field">
+                    <label for="tipo">Tipo de documento <span class="req">*</span></label>
+                    <select id="tipo" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="pensum">Pensum de carrera</option>
+                        <option value="programa">Programa de materia</option>
+                    </select>
+                </div>
+
+                <div class="field" id="campo-carrera" hidden>
+                    <label for="id_carrera">ID de la carrera <span class="req">*</span></label>
+                    <input type="text" id="id_carrera">
+                </div>
+
+                <div class="field" id="campo-materia" hidden>
+                    <label for="id_materia">ID de la materia <span class="req">*</span></label>
+                    <input type="text" id="id_materia">
+                </div>
+            </div>
+
+            <h2>Archivo</h2>
+            <div class="field">
+                <label for="archivo">Documento <span class="req">*</span></label>
+                <input type="file" id="archivo" accept=".pdf,.docx" required>
+                <small id="info-archivo">Ningún archivo seleccionado. Formatos: PDF o DOCX, hasta 20 MB.</small>
+            </div>
+
+            <p class="error" id="error-form" role="alert"></p>
+            <button type="submit" class="btn" id="btn-enviar">Subir archivo</button>
+
+            <div class="status" id="status" role="status" aria-live="polite"></div>
+        </form>
+    </div>
+
+    <script src="js/subir-archivos.js"></script>
+</body>
+</html>
