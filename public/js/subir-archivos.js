@@ -48,7 +48,7 @@ form.addEventListener('submit', async (e) => {
 
     const ext = archivo.name.split('.').pop().toLowerCase();
     if (!EXT_OK.includes(ext)) {
-        return mostrar('err', 'Archivo rechazado', 'Formato no compatible. Solo se aceptan archivos PDF o DOCX.');
+        return mostrar('err', 'Archivo rechazado', 'El archivo no es compatible, formatos aceptados: PDF o Word');
     }
     if (archivo.size > MAX_MB * 1048576) {
         return mostrar('err', 'Archivo rechazado', `El archivo supera el tamaño máximo permitido (${MAX_MB} MB).`);
