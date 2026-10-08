@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MINED - Equivalencias</title>
+
+    <link rel="stylesheet" href="css/mined.css">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="logo">
+
+                <div class="logo-icon">
+                    ↗
+                </div>
+
+                <div>
+                    <strong>SEDA</strong>
+                    <small>Sistema de Equivalencias y Documentación Académica</small>
+                </div>
+
+            </div>
+
+
+            <nav>
+
+                <a href="#" class="active">
+                    Dashboard
+                </a>
+
+                <a href="#">
+                    Equivalencias
+                </a>
+
+                <a href="#">
+                    Universidades
+                </a>
+
+                <a href="#">
+                    Carreras
+                </a>
+
+            </nav>
+
+
+            <div class="user">
+
+                <div class="user-icon">
+                    M
+                </div>
+
+                <div>
+                    <strong>MINED</strong>
+                    <small>Administrador</small>
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- CONTENIDO -->
+        <main class="content">
+
+            <header>
+
+                <div>
+
+                    <p>Panel de administración</p>
+
+                    <h1>
+                        Equivalencias académicas
+                    </h1>
+
+                </div>
+
+                <button class="logout">
+                    Cerrar sesión
+                </button>
+
+            </header>
+
+
+            <!-- RESUMEN -->
+            <section class="summary">
+
+                <div class="summary-card">
+
+                    <div>
+                        <p>Total de casos</p>
+                        <h2 id="totalCasos">0</h2>
+                    </div>
+
+                    <div class="summary-icon">
+                        #
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div>
+                        <p>Pendientes</p>
+                        <h2 id="casosPendientes">0</h2>
+                    </div>
+
+                    <div class="summary-icon">
+                        !
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div>
+                        <p>Aprobados</p>
+                        <h2 id="casosAprobados">0</h2>
+                    </div>
+
+                    <div class="summary-icon">
+                        ✓
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- EQUIVALENCIAS -->
+            <section class="equivalencias">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>Casos de equivalencia</h2>
+
+                        <p>
+                            Casos registrados por las universidades
+                        </p>
+                    </div>
+
+                    <button class="filter">
+                        Todos
+                    </button>
+
+                </div>
+
+
+                <div id="casosContainer" class="casos-container">
+
+                    <!-- Los casos se cargarán aquí -->
+
+                    <div class="loading">
+                        Cargando equivalencias...
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script>
+
+        async function cargarCasos() {
+
+            const container = document.getElementById('casosContainer');
+
+            try {
+
+                const response = await fetch('/panel');
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error al obtener los casos');
+                }
+
+
+                const casos = data.casos || [];
+
+
+                document.getElementById('totalCasos').textContent = casos.length;
+
+
+                const pendientes = casos.filter(
+                    caso => caso.estado === 'pendiente'
+                ).length;
+
+                document.getElementById('casosPendientes').textContent = pendientes;
+
+
+                const aprobados = casos.filter(
+                    caso => caso.estado === 'aprobado'
+                ).length;
+
+                document.getElementById('casosAprobados').textContent = aprobados;
+
+
+                if (casos.length === 0) {
+
+                    container.innerHTML = `
+            <div class="empty">
+              <h3>No hay casos disponibles</h3>
+              <p>
+                Actualmente no existen equivalencias registradas.
+              </p>
+            </div>
+          `;
+
+                    return;
+                }
+
+
+                container.innerHTML = casos.map(caso => {
+
+                    const materiaOrigen = caso.materia_origen;
+                    const materiaDestino = caso.materia_destino;
+
+                    return `
+
+            <article class="caso">
+
+              <div class="caso-header">
+
+                <div>
+
+                  <span class="caso-id">
+                    Caso #${caso.id_caso}
+                  </span>
+
+                  <span class="estado ${caso.estado}">
+                    ${caso.estado}
+                  </span>
+
+                </div>
+
+                <span class="fecha">
+                  ${new Date(caso.fecha_registro).toLocaleDateString()}
+                </span>
+
+              </div>
+
+
+              <div class="materias">
+
+                <!-- Materia origen -->
+                <div class="materia">
+
+                  <span class="materia-label">
+                    MATERIA ORIGEN
+                  </span>
+
+                  <h3>
+                    ${materiaOrigen?.nombre || 'Sin información'}
+                  </h3>
+
+                  <p>
+                    ${materiaOrigen?.carrera?.nombre || 'Sin carrera'}
+                  </p>
+
+                  <small>
+                    ${materiaOrigen?.carrera?.universidad?.nombre || 'Sin universidad'}
+                  </small>
+
+                </div>
+
+
+                <div class="flecha">
+                  →
+                </div>
+
+
+                <!-- Materia destino -->
+                <div class="materia">
+
+                  <span class="materia-label">
+                    MATERIA DESTINO
+                  </span>
+
+                  <h3>
+                    ${materiaDestino?.nombre || 'Sin información'}
+                  </h3>
+
+                  <p>
+                    ${materiaDestino?.carrera?.nombre || 'Sin carrera'}
+                  </p>
+
+                  <small>
+                    ${materiaDestino?.carrera?.universidad?.nombre || 'Sin universidad'}
+                  </small>
+
+                </div>
+
+              </div>
+
+
+              <div class="caso-footer">
+
+                <div>
+
+                  <span>
+                    Coincidencia
+                  </span>
+
+                  <strong>
+                    ${caso.porcentaje_coincidencia ?? 0}%
+                  </strong>
+
+                </div>
+
+                <div class="progress">
+
+                  <div
+                    class="progress-bar"
+                    style="width: ${caso.porcentaje_coincidencia ?? 0}%"
+                  ></div>
+
+                </div>
+
+
+                <button class="ver-caso">
+                  Ver caso →
+                </button>
+
+              </div>
+
+            </article>
+
+          `;
+
+                }).join('');
+
+
+            } catch (error) {
+
+                container.innerHTML = `
+          <div class="error">
+            <h3>No se pudieron cargar las equivalencias</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+
+            }
+
+        }
+
+
+        cargarCasos();
+
+    </script>
+
+</body>
+
+</html>
