@@ -1,20 +1,169 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SEDA | Registro de universidad</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main class="contenedor">
+      <header class="encabezado">
+        <h1>Registro de universidad</h1>
+        <p>
+          Ingresa los datos para registrar tu universidad en la plataforma. Los
+          campos con <span class="obligatorio">*</span> son obligatorios.
+        </p>
+      </header>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEDA</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
+      <!-- Error general (400 con campos faltantes, 500, sin conexión, etc.) -->
+      <div id="error-general" class="mensaje mensaje--error" role="alert" hidden>
+        <strong id="error-general-titulo"></strong>
+        <ul id="error-general-lista"></ul>
+      </div>
 
-<body>
-    <main>
-        <h1>Sistema de Equivalencias y Documentación Académica</h1>
-        <p>Proyecto en construcción...</p>
+      <!-- Error de duplicado (409) -->
+      <div id="error-duplicado" class="mensaje mensaje--error" role="alert" hidden>
+        <strong>Este registro ya existe, verifica la información.</strong>
+        <p>Campo en conflicto: <span id="campo-conflicto">Nombre de la universidad</span></p>
+      </div>
+
+      <section id="tarjeta-formulario" class="tarjeta">
+        <form id="form-registro" novalidate>
+          <!-- Datos de la institución -->
+          <h2 class="seccion">Datos de la institución</h2>
+
+          <div class="campo">
+            <label for="nombre">Nombre de la universidad <span class="obligatorio" aria-hidden="true">*</span></label>
+            <input
+              type="text" id="nombre" name="nombre"
+              required minlength="3" maxlength="150"
+              autocomplete="organization"
+              placeholder="Ej. Universidad Centroamericana José Simeón Cañas"
+            />
+            <p class="campo__error">Ingresa el nombre de la universidad (mínimo 3 caracteres).</p>
+          </div>
+
+          <div class="fila-doble">
+            <div class="campo">
+              <label for="departamento">Departamento <span class="obligatorio" aria-hidden="true">*</span></label>
+              <select id="departamento" name="departamento" required>
+                <option value="" selected>Selecciona un departamento</option>
+                <option>Ahuachapán</option>
+                <option>Cabañas</option>
+                <option>Chalatenango</option>
+                <option>Cuscatlán</option>
+                <option>La Libertad</option>
+                <option>La Paz</option>
+                <option>La Unión</option>
+                <option>Morazán</option>
+                <option>San Miguel</option>
+                <option>San Salvador</option>
+                <option>San Vicente</option>
+                <option>Santa Ana</option>
+                <option>Sonsonate</option>
+                <option>Usulután</option>
+              </select>
+              <p class="campo__error">Selecciona el departamento.</p>
+            </div>
+
+            <div class="campo">
+              <label for="direccion">Dirección <span class="obligatorio" aria-hidden="true">*</span></label>
+              <input
+                type="text" id="direccion" name="direccion"
+                required minlength="5" maxlength="200"
+                autocomplete="street-address"
+                placeholder="Municipio, colonia, calle"
+              />
+              <p class="campo__error">Ingresa la dirección (mínimo 5 caracteres).</p>
+            </div>
+          </div>
+
+          <!--Contacto-->
+          <h2 class="seccion">Contacto</h2>
+
+          <div class="fila-doble">
+            <div class="campo">
+              <label for="correo_contacto">Correo de contacto <span class="obligatorio" aria-hidden="true">*</span></label>
+              <input
+                type="email" id="correo_contacto" name="correo_contacto"
+                required maxlength="100"
+                autocomplete="email"
+                placeholder="contacto@universidad.edu.sv"
+              />
+              <p class="campo__error">Ingresa un correo válido, por ejemplo: contacto@universidad.edu.sv</p>
+            </div>
+
+            <div class="campo">
+              <label for="telefono_contacto">Teléfono de contacto <span class="obligatorio" aria-hidden="true">*</span></label>
+              <input
+                type="tel" id="telefono_contacto" name="telefono_contacto"
+                required maxlength="20"
+                pattern="(\+?503[ \-]?)?[267][0-9]{3}[ \-]?[0-9]{4}"
+                autocomplete="tel"
+                placeholder="2222-2222"
+              />
+              <p class="campo__ayuda">8 dígitos, con o sin +503.</p>
+              <p class="campo__error">Ingresa un teléfono válido de 8 dígitos (inicia en 2, 6 o 7).</p>
+            </div>
+          </div>
+
+          <!--Acceso-->
+          <h2 class="seccion">Acceso a la plataforma</h2>
+
+          <div class="campo">
+            <label for="correo">Correo de acceso <span class="obligatorio" aria-hidden="true">*</span></label>
+            <input
+              type="email" id="correo" name="correo"
+              required maxlength="100"
+              autocomplete="username"
+              placeholder="usuario@universidad.edu.sv"
+            />
+            <label class="check check--mini">
+              <input type="checkbox" id="mismo-correo" />
+              Usar el mismo correo de contacto
+            </label>
+            <p class="campo__ayuda">Con este correo iniciarás sesión.</p>
+            <p class="campo__error">Ingresa un correo de acceso válido.</p>
+          </div>
+
+          <div class="fila-doble">
+            <div class="campo">
+              <label for="contrasena">Contraseña <span class="obligatorio" aria-hidden="true">*</span></label>
+              <input
+                type="password" id="contrasena" name="contrasena"
+                required minlength="8" maxlength="72"
+                autocomplete="new-password"
+              />
+              <p class="campo__ayuda">Mínimo 8 caracteres.</p>
+              <p class="campo__error">La contraseña debe tener al menos 8 caracteres.</p>
+            </div>
+
+            <div class="campo">
+              <label for="contrasena2">Confirmar contraseña <span class="obligatorio" aria-hidden="true">*</span></label>
+              <input
+                type="password" id="contrasena2"
+                required autocomplete="new-password"
+              />
+              <p class="campo__error">Las contraseñas no coinciden.</p>
+            </div>
+          </div>
+
+          <div class="acciones">
+            <button type="submit" id="btn-registrar" class="btn">Registrar</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Pantalla de confirmación (201) -->
+      <section id="confirmacion" class="tarjeta confirmacion" role="status" hidden>
+        <div class="confirmacion__icono" aria-hidden="true">✓</div>
+        <h2>¡Registro exitoso!</h2>
+        <p id="confirmacion-texto">La universidad fue registrada correctamente.</p>
+        <a class="btn" href="index.html">Registrar otra universidad</a>
+      </section>
     </main>
 
     <script src="js/app.js"></script>
-</body>
-
+  </body>
 </html>
