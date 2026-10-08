@@ -7,7 +7,11 @@ app.use(express.static('public'));
 app.use(express.json());
 
 app.get('/subir-archivos', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'subir-archivos.html', 'subir-equivalencia.html'));
+    res.sendFile(path.join(__dirname, 'public', 'subir-archivos.html'));
+});
+
+app.get('/subir-equivalencia', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'subir-equivalencia.html'));
 });
 
 const supabase = require('./supabaseClient');
