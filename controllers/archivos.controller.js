@@ -47,10 +47,16 @@ async function subirArchivo(req, res) {
         return res.status(500).json({ error: errorUpdate.message });
     }
 
-    return res.status(201).json({
+    const respuesta = {
         mensaje: 'Archivo cargado exitosamente',
         path
-    })
+    };
+
+    if (req.advertenciaArchivo) {
+        respuesta.advertencia = req.advertenciaArchivo;
+    }
+
+    return res.status(201).json(respuesta);
 }
 
 module.exports = { subirArchivo };
