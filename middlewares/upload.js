@@ -9,7 +9,7 @@ const storage = multer.memoryStorage();
 
 const upload = multer({
     storage,
-    limit: { fileSize: 20 * 1024 * 1024 },
+    limits: { fileSize: 20 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         if (TIPOS_PERMITIDOS.includes(file.mimetype)) {
             cb(null, true);

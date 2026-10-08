@@ -1,0 +1,216 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f5f7ff;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  width: 530px;
+  background: white;
+  padding: 55px 44px 35px;
+  border-radius: 12px;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.logo-icon {
+  width: 30px;
+  height: 30px;
+  background: #2867df;
+  color: white;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo strong {
+  display: block;
+  font-size: 13px;
+}
+
+.logo small {
+  display: block;
+  font-size: 8px;
+  color: #777;
+}
+
+h1 {
+  text-align: center;
+  font-size: 16px;
+  font-weight: normal;
+  color: #333;
+  margin: 0 0 32px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #4d5360;
+  margin-bottom: 8px;
+}
+
+.profiles {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+/* Tarjetas */
+
+.profile {
+  position: relative;
+  width: 50%;
+  min-height: 120px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.profile input {
+  display: none;
+}
+
+.profile:has(input:checked) {
+  border: 2px solid #2867df;
+  background: #f0f4ff;
+}
+
+.profile-icon {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: #4d5360;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.profile:has(input:checked) .profile-icon {
+  stroke: #0759ce;
+}
+
+.check {
+  position: absolute;
+  right: 14px;
+  top: 15px;
+
+  width: 18px;
+  height: 18px;
+
+  background: #0759ce;
+  color: white;
+
+  border-radius: 50%;
+
+  text-align: center;
+  font-size: 12px;
+  line-height: 18px;
+
+  opacity: 0;
+}
+
+.profile:has(input:checked) .check {
+  opacity: 1;
+}
+
+.profile h2 {
+  font-size: 15px;
+  margin: 9px 0 6px;
+  color: #17233b;
+}
+
+.profile p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 20px;
+  color: #646b78;
+}
+
+/* Inputs */
+
+form label {
+  display: block;
+  font-size: 12px;
+  margin: 14px 0 5px;
+  color: #202a3b;
+}
+
+.input {
+  height: 39px;
+  background: #eef3ff;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 9px;
+  color: #7d8492;
+}
+
+.input input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 12px;
+}
+
+/* Botón */
+
+button {
+  width: 100%;
+  height: 41px;
+  margin-top: 25px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #225a96;
+  color: white;
+
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1b4d83;
+}
+
+/* Registro */
+
+.register {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 11px;
+  color: #777;
+}
+
+.register a {
+  display: block;
+  margin-top: 5px;
+
+  color: #2867df;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.register a:hover {
+  text-decoration: underline;
+}
