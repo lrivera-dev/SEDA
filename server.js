@@ -28,6 +28,8 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Error inesperado al procesar el archivo.' });
 });
 
+const equivalenciasRoutes = require('./routes/equivalencias.routes');
+app.use('/equivalencias', equivalenciasRoutes);
 const panelRoutes = require('./routes/panel.routes');
 app.use('/panel', panelRoutes);
 

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEDA | Registro de equivalencia</title>
+    <link rel="stylesheet" href="css/subir-archivos.css">
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Registro de equivalencia</h1>
+        <p class="lead">Registra las materias que se reconocen como equivalentes. Los campos con <span class="req">*</span> son obligatorios.</p>
+
+        <!--Inicio de equivalencia manual-->
+        <form id="form-equivalencia" class="card" novalidate>
+            <h2>Equivalencia por materia</h2>
+            <div id="eq-filas" class="filas"></div>
+            <button type="button" class="btn-sec" id="btn-agregar-fila">+ Agregar materia</button>
+
+
+            <p class="error" id="error-equivalencia" role="alert"></p>
+            <button type="submit" class="btn" id="btn-guardar-eq">Guardar</button>
+            <div class="status" id="status-equivalencia" role="status" aria-live="polite"></div>
+        </form>
+
+        <template id="tpl-fila">
+            <div class="fila">
+                <div class="field">
+                    <label>ID de la materia cursada <span class="req">*</span></label>
+                    <input type="text" class="f-origen">
+                </div>
+                <div class="field">
+                    <label>ID de la materia equivalente <span class="req">*</span></label>
+                    <input type="text" class="f-destino">
+                </div>
+                <button type="button" class="btn-quitar">Quitar</button>
+                <div class="field f-desc">
+                    <label>Descripción de la equivalencia <span class="req">*</span></label>
+                    <textarea class="f-descripcion" rows="2" maxlength="500"></textarea>
+                </div>
+                <small class="error fila-error"></small>
+            </div>
+        </template>
+        <!--Fin equivalencia manual-->
+    </div>
+
+    <script src="js/subir-archivos.js"></script>
+</body>
+</html>
