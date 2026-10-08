@@ -30,8 +30,15 @@ app.use((err, req, res, next) => {
 
 const equivalenciasRoutes = require('./routes/equivalencias.routes');
 app.use('/equivalencias', equivalenciasRoutes);
+
+app.get('/subir-equivalencia', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'subir-equivalencia.html'));
+});
+
 const panelRoutes = require('./routes/panel.routes');
 app.use('/panel', panelRoutes);
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
