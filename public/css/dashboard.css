@@ -1,0 +1,259 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f7ff;
+  color: #17233b;
+}
+
+.dashboard {
+  min-height: 100vh;
+  display: flex;
+}
+
+
+/* Sidebar */
+
+.sidebar {
+  width: 230px;
+  background: white;
+  border-right: 1px solid #e8ebf2;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 45px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: #2867df;
+  color: white;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo strong {
+  display: block;
+  font-size: 13px;
+}
+
+.logo small {
+  display: block;
+  font-size: 8px;
+  color: #777;
+}
+
+
+/* Navegación */
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+nav a {
+  padding: 11px 13px;
+  border-radius: 7px;
+  text-decoration: none;
+  color: #626b7b;
+  font-size: 13px;
+}
+
+nav a:hover {
+  background: #f0f4ff;
+}
+
+nav a.active {
+  background: #eaf0ff;
+  color: #2867df;
+  font-weight: bold;
+}
+
+
+/* Usuario */
+
+.user {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e8efff;
+  color: #2867df;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.user strong {
+  display: block;
+  font-size: 12px;
+}
+
+.user small {
+  color: #858b96;
+  font-size: 10px;
+}
+
+
+/* Contenido */
+
+.content {
+  flex: 1;
+  padding: 45px 55px;
+  max-width: 1200px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header p {
+  margin: 0 0 7px;
+  color: #7a8290;
+  font-size: 12px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 600;
+}
+
+
+/* Cerrar sesión */
+
+.logout {
+  background: white;
+  border: 1px solid #dfe3eb;
+  border-radius: 7px;
+  padding: 9px 15px;
+  color: #596171;
+  cursor: pointer;
+}
+
+.logout:hover {
+  background: #f5f7ff;
+}
+
+
+/* Bienvenida */
+
+.welcome {
+  margin-top: 45px;
+  margin-bottom: 25px;
+}
+
+.welcome h2 {
+  margin: 0 0 7px;
+  font-size: 18px;
+}
+
+.welcome p {
+  margin: 0;
+  color: #737b89;
+  font-size: 13px;
+}
+
+
+/* Opciones */
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.option {
+  position: relative;
+  min-height: 220px;
+  padding: 25px;
+
+  background: white;
+  border: 1px solid #e7eaf0;
+  border-radius: 12px;
+
+  text-decoration: none;
+  color: inherit;
+
+  transition: 0.2s;
+}
+
+.option:hover {
+  border-color: #2867df;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(40, 103, 223, 0.08);
+}
+
+.option-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 9px;
+  background: #edf3ff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 25px;
+}
+
+.option-icon svg {
+  width: 23px;
+  height: 23px;
+
+  fill: none;
+  stroke: #2867df;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.option h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.option p {
+  margin: 0;
+  color: #737b89;
+  font-size: 12px;
+  line-height: 19px;
+  max-width: 220px;
+}
+
+.arrow {
+  position: absolute;
+  right: 22px;
+  bottom: 20px;
+
+  color: #2867df;
+  font-size: 18px;
+}
