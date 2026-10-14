@@ -33,7 +33,7 @@ async function revisarCaso(req, res) {
         });
     }
 
-    // Verificar que el caso exista y obtener su estado actual
+    // Verificar que el caso exista y consultar su estado actual
     const { data: casoActual, error: errorBusqueda } = await supabase
         .from('caso_equivalencia')
         .select('id_caso, estado')
@@ -46,11 +46,11 @@ async function revisarCaso(req, res) {
 
     if (!casoActual) {
         return res.status(404).json({
-            error: 'El caso de equivalencia no existe.'
+            error: 'El caso indicado no existe.'
         });
     }
 
-    // E3 / RN2: Solo casos en estado PENDIENTE pueden revisarse
+    // E3 / RN2: Solo los casos en estado PENDIENTE pueden revisarse
     if (casoActual.estado !== 'PENDIENTE') {
         return res.status(409).json({
             error: 'Este caso ya fue revisado'
@@ -77,7 +77,7 @@ async function revisarCaso(req, res) {
         return res.status(500).json({ error: errorActualizacion.message });
     }
 
-    // Si otro revisor modificó el caso entre la consulta y el update
+    // Si otro revisor modificó el caso entre la lectura y el update
     if (!casoActualizado) {
         return res.status(409).json({
             error: 'Este caso ya fue revisado'
