@@ -47,6 +47,11 @@ app.use('/casos', casosRoutes);
 const authRoutes = require('./routes/auth.routes');
 app.use('/auth', authRoutes);
 
+const panelRoutes = require('./routes/panel.routes');
+app.use('/panel', panelRoutes);
+
+const casosRoutes = require('./routes/casos.routes');
+app.use('/casos', casosRoutes);
 
 
 const PORT = process.env.PORT || 3000;
