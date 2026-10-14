@@ -42,6 +42,9 @@ app.get('/subir-equivalencia', (req, res) => {
 const panelRoutes = require('./routes/panel.routes');
 app.use('/panel', panelRoutes);
 
+const authRoutes = require('./routes/auth.routes');
+app.use('/auth', authRoutes);
+
 
 
 const PORT = process.env.PORT || 3000;
