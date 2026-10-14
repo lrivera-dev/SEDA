@@ -185,7 +185,7 @@
                 const token = sessionStorage.getItem('seda_access_token');
 
                 if (!token) {
-                    window.location.replace('/');
+                    window.location.replace('/index.html');
                     return;
                 }
 
@@ -210,6 +210,8 @@
                 const casos = data.casos || [];
 
 
+
+
                 document.getElementById('totalCasos').textContent = casos.length;
 
 
@@ -228,19 +230,13 @@
 
 
                 if (casos.length === 0) {
-
                     container.innerHTML = `
-            <div class="empty">
-              <h3>No hay casos disponibles</h3>
-              <p>
-                Actualmente no existen equivalencias registradas.
-              </p>
-            </div>
-          `;
-
+        <div class="empty">
+            <p>${data.mensaje || 'No hay casos disponibles para mostrar'}</p>
+        </div>
+    `;
                     return;
                 }
-
 
                 container.innerHTML = casos.map(caso => {
 
@@ -349,9 +345,12 @@
                 </div>
 
 
-                <button class="ver-caso">
-                  Ver caso →
-                </button>
+                <a
+                    class="ver-caso"
+                    href="/reporte-caso.html?id=${encodeURIComponent(caso.id_caso)}"
+                    >
+                    Ver reporte
+                </a>
 
               </div>
 
