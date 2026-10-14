@@ -40,7 +40,12 @@ app.get('/subir-equivalencia', (req, res) => {
 });
 
 const panelRoutes = require('./routes/panel.routes');
+const casosRoutes = require('./routes/casos.routes');
 app.use('/panel', panelRoutes);
+app.use('/casos', casosRoutes);
+
+const authRoutes = require('./routes/auth.routes');
+app.use('/auth', authRoutes);
 
 const panelRoutes = require('./routes/panel.routes');
 app.use('/panel', panelRoutes);
