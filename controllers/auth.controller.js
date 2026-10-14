@@ -43,7 +43,6 @@ async function iniciarSesion(req, res) {
         });
     }
 
-    // Al vencer el bloqueo, comienza un período nuevo de intentos.
     if (registro?.bloqueadoHasta && registro.bloqueadoHasta <= ahora) {
         intentosPorCorreo.delete(correo);
         registro = undefined;
@@ -59,7 +58,6 @@ async function iniciarSesion(req, res) {
         return registrarFallo(res, correo);
     }
 
-    // Se usa el cliente del servidor solo para consultar el rol y el estado.
     const { data: usuario, error: errorUsuario } = await supabaseAdmin
         .from('usuario')
         .select('id_usuario, rol, estado')
