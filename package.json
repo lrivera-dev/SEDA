@@ -9,7 +9,9 @@
     "test:unit": "node scripts/qa/run.cjs unit",
     "test:api": "node scripts/qa/run.cjs api",
     "test:qa": "node scripts/qa/run.cjs all",
-    "test:qa-generator": "node --test scripts/qa/generator.test.cjs"
+    "test:qa-generator": "node --test scripts/qa/generator.test.cjs",
+    "test:isolation": "node --test tests/isolation/supabase.test.cjs",
+    "test:load": "npm run test:isolation && node --test tests/isolation/carga.test.cjs"
   },
   "keywords": [],
   "author": "",

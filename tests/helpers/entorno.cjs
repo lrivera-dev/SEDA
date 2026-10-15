@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const { mock } = require('node:test');
+const seguridad = require('./seguridad.cjs');
 
 // Se registra antes de cargar cualquier controlador: nunca se evalúa supabaseClient.js.
 const rutaCliente = path.resolve(__dirname, '../../supabaseClient.js');
@@ -18,7 +19,7 @@ const cliente = {
     from(tabla) {
         const argumentos = { tabla };
         const consulta = {};
-        for (const metodo of ['select', 'eq', 'insert', 'update']) {
+        for (const metodo of ['select', 'eq', 'insert', 'update', 'order']) {
             consulta[metodo] = (...valores) => {
                 (argumentos[metodo] ||= []).push(valores);
                 return consulta;
@@ -29,22 +30,26 @@ const cliente = {
         consulta.then = (ok, error) => resolver('consulta', argumentos).then(ok, error);
         return consulta;
     },
-    auth: { admin: { createUser: datos => resolver('auth', datos) } },
-    storage: { from: bucket => ({ upload: (...datos) => resolver('upload', { bucket, datos }) }) }
+    auth: {
+        admin: { createUser: datos => resolver('auth', datos) },
+        signInWithPassword: datos => resolver('signInWithPassword', datos),
+        getUser: token => resolver('getUser', { token })
+    },
+    storage: { from: bucket => ({
+        upload: (...datos) => resolver('upload', { bucket, datos }),
+        createSignedUrl: (...datos) => resolver('createSignedUrl', { bucket, datos })
+    }) }
 };
 require.cache[rutaCliente] = { id: rutaCliente, filename: rutaCliente, loaded: true, exports: cliente };
-
-// Defensa adicional: solo se permiten conexiones HTTP locales de Supertest.
-const net = require('node:net');
-const conectar = net.Socket.prototype.connect;
-net.Socket.prototype.connect = function (...args) {
-    let opciones = args[0];
-    if (Array.isArray(opciones)) opciones = opciones[0];
-    const host = typeof opciones === 'object' ? opciones.host : args[1];
-    assert.ok(['127.0.0.1', '::1', 'localhost'].includes(host), `Conexión externa bloqueada: ${host}`);
-    return conectar.apply(this, args);
-};
-globalThis.fetch = async () => { throw new Error('fetch externo bloqueado durante QA'); };
+const fabricaciones = [];
+function createClient(url, key) {
+    assert.equal(url, 'https://supabase.invalid');
+    assert.equal(key, 'hachi-clave-ficticia');
+    const nuevo = { ...cliente, auth: { ...cliente.auth } };
+    fabricaciones.push(nuevo);
+    return nuevo;
+}
+seguridad.instalarFabrica(createClient);
 
 function preparar(nuevosPasos = []) {
     pasos = [...nuevosPasos];
@@ -66,4 +71,4 @@ function cargarApp() {
     app.set('env', 'test');
     return app;
 }
-module.exports = { preparar, verificarConsumo, llamadas, respuesta, cargarApp };
+module.exports = { preparar, verificarConsumo, llamadas, respuesta, cargarApp, cliente, createClient, fabricaciones, seguridad };

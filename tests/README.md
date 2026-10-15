@@ -63,3 +63,8 @@ La subida no convierte el CI en exitoso: si una suite o el generador falla, el p
 ## Evidencias publicables
 
 `evidence/unit.txt` y `evidence/api.txt` conservan los resultados y trazas de la ejecución inicial; las rutas personales se sustituyeron por `<repositorio>`. La última ejecución local repitió los mismos resultados. Los logs auxiliares `evidence/api-sandbox-blocked.txt` y `evidence/git-final.txt` se conservan únicamente de forma local y están excluidos mediante `evidence/.gitignore`; no deben incorporarse al futuro commit, tampoco con `git add -f`.
+
+## Aislamiento ampliado tras integrar development
+
+Antes de ejecutar API sobre la versión integrada, consultar [AISLAMIENTO.md](AISLAMIENTO.md).
+`npm run test:isolation` verifica los clientes simulados y las defensas; `npm run test:load` exige primero esa verificación y después carga la aplicación sin escuchar en un puerto. Estos casos de infraestructura no se suman a las 51 pruebas del producto.

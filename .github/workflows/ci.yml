@@ -10,6 +10,9 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   verificar:
     name: Verificar proyecto
@@ -18,8 +21,11 @@ jobs:
     steps:
       - name: Descargar código
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Verificar que .env no esté en el repositorio
+        id: entorno
         run: |
           if git ls-files --error-unmatch .env >/dev/null 2>&1; then
             echo "::error::El archivo .env está versionado. Quítalo del repositorio y agrégalo a .gitignore."
@@ -34,28 +40,66 @@ jobs:
 
       - name: Instalar dependencias
         id: dependencias
-        run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+        run: npm ci
 
       - name: Lint (si existe el script)
+        id: lint
         run: npm run lint --if-present
 
       - name: Build (si existe el script)
+        id: build
+        if: ${{ !cancelled() && steps.dependencias.outcome == 'success' }}
         run: npm run build --if-present
 
+      - name: Verificar aislamiento de Supabase
+        id: aislamiento
+        if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
+        run: npm run test:isolation
+
+      - name: Verificar carga controlada sin servicios externos
+        id: carga
+        if: ${{ !cancelled() && steps.aislamiento.outcome == 'success' }}
+        run: npm run test:load
+
       - name: Pruebas Hachi e informes QA (unitarias y API)
-        if: ${{ !cancelled() && steps.dependencias.outcome == 'success' }}
+        id: regresion
+        if: ${{ !cancelled() && steps.aislamiento.outcome == 'success' && steps.carga.outcome == 'success' }}
         run: npm run test:qa
 
       - name: Publicar informes y evidencia QA
-        if: ${{ always() && steps.dependencias.outcome == 'success' }}
+        id: artefactos
+        if: ${{ always() && (steps.regresion.outcome == 'success' || steps.regresion.outcome == 'failure') }}
         uses: actions/upload-artifact@v4
         with:
           name: hachi-qa-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            qa-output/**/*.pdf
-            qa-output/**/*.md
-            qa-output/**/*.json
-            qa-output/**/*.jsonl
+            qa-output/*/informe.pdf
+            qa-output/*/informe.md
+            qa-output/*/execution.json
+            qa-output/*/results.json
+            qa-output/*/report-error.json
+            qa-output/*/unit.jsonl
+            qa-output/*/api.jsonl
+          include-hidden-files: false
           if-no-files-found: error
           retention-days: 14
+
+      - name: Resumir etapas y evidencia sin ocultar fallos
+        if: ${{ always() }}
+        env:
+          INSTALACION: ${{ steps.dependencias.outcome }}
+          AISLAMIENTO: ${{ steps.aislamiento.outcome }}
+          CARGA: ${{ steps.carga.outcome }}
+          REGRESION: ${{ steps.regresion.outcome }}
+          ARTEFACTOS: ${{ steps.artefactos.outcome }}
+        run: |
+          {
+            echo '## Hachi: estado de las etapas'
+            echo "- Instalación / infraestructura: $INSTALACION"
+            echo "- Aislamiento de Supabase: $AISLAMIENTO"
+            echo "- Carga controlada: $CARGA"
+            echo "- Regresión y generación: $REGRESION"
+            echo "- Publicación de artefactos: $ARTEFACTOS"
+            echo 'Un fallo de regresión no identifica por sí solo un defecto funcional: revisar results.json (casos FAIL/BLOCKED), execution.json y report-error.json si existe.'
+            echo 'Los pasos conservan sus códigos de salida. Publicar un informe no convierte una ejecución fallida en exitosa.'
+          } >> "$GITHUB_STEP_SUMMARY"
