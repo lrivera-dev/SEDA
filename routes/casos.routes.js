@@ -1,11 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const validarMined = require('../middlewares/validarMined');
-const { revisarCaso } = require('../controllers/casos.controller');
+const validarMined = require("../middlewares/validarMined");
+const { revisarCaso, obtenerCaso } = require("../controllers/casos.controller");
 
-router.patch('/:id_caso/revision', validarMined, revisarCaso);
-const { obtenerCaso } = require('../controllers/casos.controller');
-
-router.get('/:id_caso', validarMined, obtenerCaso);
+router.patch("/:id_caso/revision", validarMined, revisarCaso);
+router.get("/:id_caso", validarMined, obtenerCaso);
 
 module.exports = router;
