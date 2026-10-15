@@ -83,7 +83,7 @@
 
                 </div>
 
-                <button class="logout">
+                <button class="logout" id="logoutButton" type="button">
                     Cerrar sesión
                 </button>
 
@@ -182,9 +182,25 @@
 
             try {
 
-                const response = await fetch('/panel');
+                const token = sessionStorage.getItem('seda_access_token');
 
+                if (!token) {
+                    window.location.replace('/index.html');
+                    return;
+                }
+
+                const response = await fetch('/panel', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 const data = await response.json();
+
+                if (response.status === 401) {
+                    sessionStorage.removeItem('seda_access_token');
+                    window.location.replace('/');
+                    return;
+                }
 
                 if (!response.ok) {
                     throw new Error(data.error || 'Error al obtener los casos');
@@ -192,6 +208,8 @@
 
 
                 const casos = data.casos || [];
+
+
 
 
                 document.getElementById('totalCasos').textContent = casos.length;
@@ -212,19 +230,13 @@
 
 
                 if (casos.length === 0) {
-
                     container.innerHTML = `
-            <div class="empty">
-              <h3>No hay casos disponibles</h3>
-              <p>
-                Actualmente no existen equivalencias registradas.
-              </p>
-            </div>
-          `;
-
+        <div class="empty">
+            <p>${data.mensaje || 'No hay casos disponibles para mostrar'}</p>
+        </div>
+    `;
                     return;
                 }
-
 
                 container.innerHTML = casos.map(caso => {
 
@@ -333,9 +345,12 @@
                 </div>
 
 
-                <button class="ver-caso">
-                  Ver caso →
-                </button>
+                <a
+                    class="ver-caso"
+                    href="/reporte-caso.html?id=${encodeURIComponent(caso.id_caso)}"
+                    >
+                    Ver reporte
+                </a>
 
               </div>
 
@@ -359,6 +374,11 @@
 
         }
 
+
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            sessionStorage.removeItem('seda_access_token');
+            window.location.replace('/');
+        });
 
         cargarCasos();
 
