@@ -29,10 +29,11 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Instalar dependencias
+        id: dependencias
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
@@ -42,5 +43,19 @@ jobs:
       - name: Build (si existe el script)
         run: npm run build --if-present
 
-      - name: Pruebas automáticas (si existe el script)
-        run: npm test --if-present
+      - name: Pruebas Hachi e informes QA (unitarias y API)
+        if: ${{ !cancelled() && steps.dependencias.outcome == 'success' }}
+        run: npm run test:qa
+
+      - name: Publicar informes y evidencia QA
+        if: ${{ always() && steps.dependencias.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: hachi-qa-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            qa-output/**/*.pdf
+            qa-output/**/*.md
+            qa-output/**/*.json
+            qa-output/**/*.jsonl
+          if-no-files-found: error
+          retention-days: 14

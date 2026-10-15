@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test:unit": "node scripts/qa/run.cjs unit",
+    "test:api": "node scripts/qa/run.cjs api",
+    "test:qa": "node scripts/qa/run.cjs all",
+    "test:qa-generator": "node --test scripts/qa/generator.test.cjs"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +20,9 @@
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
     "multer": "^2.4.0"
+  },
+  "devDependencies": {
+    "pdfkit": "0.17.2",
+    "supertest": "7.1.4"
   }
 }

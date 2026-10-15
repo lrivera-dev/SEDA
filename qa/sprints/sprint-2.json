@@ -1,0 +1,808 @@
+{
+  "schemaVersion": 1,
+  "id": "sprint-2",
+  "number": 2,
+  "title": "Control y supervisión del MINED",
+  "goal": "Permitir que el MINED inicie sesión de forma segura, abra el reporte detallado de cada caso de equivalencia y lo acepte o emita una advertencia, cerrando el ciclo de control regulatorio.",
+  "sources": [
+    {
+      "id": "ESTRATEGIA",
+      "title": "Estrategia de pruebas-HiGuysP3.pdf",
+      "sha256": "f10fbd56cbff242465fee04ca48314e41d339ea97067d25bc849dafc5a3f6de2",
+      "incorporation": "Extracción revisada de secciones 1 a 5; se omiten nombres y matrículas de la portada."
+    },
+    {
+      "id": "SPRINT2",
+      "title": "Historias de usuario y tareas técnicas del Sprint 2 (texto proporcionado)",
+      "sha256": "354526df8627e8a3e6a46d4597cfbb7eac85054a2ba950818c9a3bb308c660ef",
+      "incorporation": "CA y RN transcritos sin alterar; casos propuestos derivados, todavía no ejecutados."
+    }
+  ],
+  "strategy": {
+    "flows": [
+      {
+        "flow": "Registro de equivalencias",
+        "level": "Integración",
+        "expectation": "Formulario, base de datos y almacenamiento del registro",
+        "sourceRef": "ESTRATEGIA / sección 2 / página 1"
+      },
+      {
+        "flow": "Consulta y visualización",
+        "level": "E2E",
+        "expectation": "Ingreso, consulta y visualización de datos",
+        "sourceRef": "ESTRATEGIA / sección 2 / página 1"
+      },
+      {
+        "flow": "Cálculo de coincidencia",
+        "level": "Unitaria",
+        "expectation": "Funciones de cálculo y porcentajes; fuera del alcance de este Sprint",
+        "sourceRef": "ESTRATEGIA / sección 2 / página 1"
+      }
+    ],
+    "manual": "Pruebas cruzadas por pares con casos negativos; quien desarrolla no debe ser la única persona que prueba y aprueba. Responsabilidades rotativas.",
+    "manualSource": "ESTRATEGIA / sección 3 / página 2",
+    "prevention": [
+      "Conflictos de rutas: pruebas de integración.",
+      "Mensajes en español: comprobación E2E.",
+      "Conflictos entre ramas: integración y regresión.",
+      "Tareas y criterios definidos antes del Sprint: pruebas de aceptación."
+    ],
+    "preventionSource": "ESTRATEGIA / sección 4 / páginas 2-3"
+  },
+  "stories": [
+    {
+      "id": "HU-6",
+      "title": "Inicio de sesión de MINED",
+      "functionality": "Inicio de sesión de MINED",
+      "sourceRef": "SPRINT2 / HISTORIA DE USUARIO 6",
+      "criteria": [
+        {
+          "id": "HU-6-CA1",
+          "sourceRef": "SPRINT2 / HU-6 / CRITERIOS DE ACEPTACIÓN / CA1",
+          "text": "Al ingresar correo y contraseña correctos de una cuenta MINED activa, el sistema inicia sesión y redirige al panel en un máximo de 3 segundos.",
+          "implementation": "No verificado en la referencia evaluada",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "pending": [
+            "Implementar o verificar la funcionalidad en la referencia autorizada.",
+            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-6-CA1",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API/integración",
+              "E2E/manual"
+            ],
+            "steps": [
+              "Cuenta MINED activa; credenciales correctas",
+              "Iniciar sesión y medir hasta la apertura del panel"
+            ],
+            "expected": "Al ingresar correo y contraseña correctos de una cuenta MINED activa, el sistema inicia sesión y redirige al panel en un máximo de 3 segundos."
+          }
+        },
+        {
+          "id": "HU-6-CA2",
+          "sourceRef": "SPRINT2 / HU-6 / CRITERIOS DE ACEPTACIÓN / CA2",
+          "text": "Al ingresar una contraseña incorrecta, el sistema niega el acceso, permite reintentar y muestra **\"Correo o contraseña incorrectos. Te quedan [N] intentos\"**; tras 3 intentos fallidos consecutivos bloquea nuevos intentos durante 5 minutos.",
+          "implementation": "No verificado en la referencia evaluada",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "pending": [
+            "Implementar o verificar la funcionalidad en la referencia autorizada.",
+            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-6-CA2",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API/integración",
+              "E2E/manual"
+            ],
+            "steps": [
+              "Contraseña incorrecta para el mismo correo",
+              "Comprobar intentos restantes, tercer fallo y bloqueo de 5 minutos"
+            ],
+            "expected": "Al ingresar una contraseña incorrecta, el sistema niega el acceso, permite reintentar y muestra **\"Correo o contraseña incorrectos. Te quedan [N] intentos\"**; tras 3 intentos fallidos consecutivos bloquea nuevos intentos durante 5 minutos."
+          }
+        },
+        {
+          "id": "HU-6-CA3",
+          "sourceRef": "SPRINT2 / HU-6 / CRITERIOS DE ACEPTACIÓN / CA3",
+          "text": "Al ingresar un correo no registrado o una cuenta sin rol MINED, el sistema niega el acceso con el mensaje genérico **\"Correo o contraseña incorrectos\"**, sin iniciar sesión y sin revelar cuál dato es incorrecto.",
+          "implementation": "No verificado en la referencia evaluada",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "pending": [
+            "Implementar o verificar la funcionalidad en la referencia autorizada.",
+            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-6-CA3",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API/integración",
+              "E2E/manual"
+            ],
+            "steps": [
+              "Correo no registrado y cuenta sin rol MINED",
+              "Intentar acceso; comprobar mensaje genérico y ausencia de sesión"
+            ],
+            "expected": "Al ingresar un correo no registrado o una cuenta sin rol MINED, el sistema niega el acceso con el mensaje genérico **\"Correo o contraseña incorrectos\"**, sin iniciar sesión y sin revelar cuál dato es incorrecto."
+          }
+        }
+      ],
+      "businessRules": [
+        {
+          "id": "HU-6-RN1",
+          "text": "Solo las cuentas con rol `MINED` y estado `ACTIVO` pueden acceder a las funciones de supervisión.",
+          "sourceRef": "SPRINT2 / HU-6 / REGLAS DE NEGOCIO / RN1"
+        },
+        {
+          "id": "HU-6-RN2",
+          "text": "Se permiten 3 intentos fallidos consecutivos por correo; luego hay un bloqueo temporal de 5 minutos. El contador se maneja en la aplicación, no se guarda en la base de datos.",
+          "sourceRef": "SPRINT2 / HU-6 / REGLAS DE NEGOCIO / RN2"
+        },
+        {
+          "id": "HU-6-RN3",
+          "text": "El mensaje de error es siempre genérico para no revelar qué correos existen.",
+          "sourceRef": "SPRINT2 / HU-6 / REGLAS DE NEGOCIO / RN3"
+        },
+        {
+          "id": "HU-6-RN4",
+          "text": "El panel y las rutas de casos (`/panel`, `/casos`) exigen una sesión MINED válida; sin ella responden 401 y se redirige al inicio de sesión.",
+          "sourceRef": "SPRINT2 / HU-6 / REGLAS DE NEGOCIO / RN4"
+        },
+        {
+          "id": "HU-6-RN5",
+          "text": "Las cuentas MINED las crea el equipo administrador; no existe registro público para MINED.",
+          "sourceRef": "SPRINT2 / HU-6 / REGLAS DE NEGOCIO / RN5"
+        }
+      ],
+      "preconditions": "- Debe existir una cuenta MINED creada en el sistema (Supabase Auth y fila en `usuario` con rol `MINED` y estado `ACTIVO`).",
+      "dependencies": "- Supabase Auth y tabla `usuario` (rol y estado).\n- Cuenta MINED de prueba creada.\n- Variable `SUPABASE_ANON_KEY` en el `.env`.",
+      "outOfScope": "- Recuperación de contraseña.\n- Registro de nuevos usuarios MINED desde la plataforma.\n- Inicio de sesión de universidades.\n- Cierre de sesión por inactividad."
+    },
+    {
+      "id": "HU-8",
+      "title": "Reporte detallado de caso",
+      "functionality": "Reporte detallado de caso",
+      "sourceRef": "SPRINT2 / HISTORIA DE USUARIO 8",
+      "criteria": [
+        {
+          "id": "HU-8-CA1",
+          "sourceRef": "SPRINT2 / HU-8 / CRITERIOS DE ACEPTACIÓN / CA1",
+          "text": "Al seleccionar un caso existente, el sistema abre el reporte en un máximo de 5 segundos, mostrando descripción, estado, fecha de registro, materia, carrera y universidad de origen y de destino, y enlaces a los 4 documentos (pensum y programa de cada lado).",
+          "implementation": "No verificado en la referencia evaluada",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "pending": [
+            "Implementar o verificar la funcionalidad en la referencia autorizada.",
+            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-8-CA1",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API/integración",
+              "E2E/manual"
+            ],
+            "steps": [
+              "Caso existente con cuatro documentos y sesión MINED",
+              "Abrir desde el panel; comprobar todos los datos y tiempo máximo de 5 segundos"
+            ],
+            "expected": "Al seleccionar un caso existente, el sistema abre el reporte en un máximo de 5 segundos, mostrando descripción, estado, fecha de registro, materia, carrera y universidad de origen y de destino, y enlaces a los 4 documentos (pensum y programa de cada lado)."
+          }
+        },
+        {
+          "id": "HU-8-CA2",
+          "sourceRef": "SPRINT2 / HU-8 / CRITERIOS DE ACEPTACIÓN / CA2",
+          "text": "Si falta alguno de los 4 documentos, el reporte se abre igualmente y muestra **\"Documentos faltantes: [lista exacta de los que faltan]\"**, sin mostrar errores.",
+          "implementation": "No verificado en la referencia evaluada",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "pending": [
+            "Implementar o verificar la funcionalidad en la referencia autorizada.",
+            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-8-CA2",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API/integración",
+              "E2E/manual"
+            ],
+            "steps": [
+              "Caso con uno o varios documentos faltantes",
+              "Abrir reporte; comprobar lista exacta y ausencia de errores"
+            ],
+            "expected": "Si falta alguno de los 4 documentos, el reporte se abre igualmente y muestra **\"Documentos faltantes: [lista exacta de los que faltan]\"**, sin mostrar errores."
+          }
+        },
+        {
+          "id": "HU-8-CA3",
+          "sourceRef": "SPRINT2 / HU-8 / CRITERIOS DE ACEPTACIÓN / CA3",
+          "text": "Si el identificador del caso no existe, fue eliminado o tiene un formato inválido, el sistema muestra **\"El caso solicitado no existe o fue eliminado\"** (respuesta 404) y no muestra datos parciales.",
+          "implementation": "No verificado en la referencia evaluada",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "pending": [
+            "Implementar o verificar la funcionalidad en la referencia autorizada.",
+            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-8-CA3",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API/integración",
+              "E2E/manual"
+            ],
+            "steps": [
+              "Identificador inexistente, eliminado y de formato inválido",
+              "Consultar reporte; comprobar 404, mensaje exacto y ausencia de datos parciales"
+            ],
+            "expected": "Si el identificador del caso no existe, fue eliminado o tiene un formato inválido, el sistema muestra **\"El caso solicitado no existe o fue eliminado\"** (respuesta 404) y no muestra datos parciales."
+          }
+        }
+      ],
+      "businessRules": [
+        {
+          "id": "HU-8-RN1",
+          "text": "Solo el rol MINED puede acceder al reporte.",
+          "sourceRef": "SPRINT2 / HU-8 / REGLAS DE NEGOCIO / RN1"
+        },
+        {
+          "id": "HU-8-RN2",
+          "text": "El reporte es de solo lectura; abrir un caso no cambia su estado.",
+          "sourceRef": "SPRINT2 / HU-8 / REGLAS DE NEGOCIO / RN2"
+        },
+        {
+          "id": "HU-8-RN3",
+          "text": "Los documentos considerados son 4: pensum de la carrera de origen, programa de la materia de origen, pensum de la carrera de destino y programa de la materia de destino.",
+          "sourceRef": "SPRINT2 / HU-8 / REGLAS DE NEGOCIO / RN3"
+        },
+        {
+          "id": "HU-8-RN4",
+          "text": "Los enlaces a documentos son temporales (vigencia de 1 hora) y no exponen la ruta interna del almacenamiento.",
+          "sourceRef": "SPRINT2 / HU-8 / REGLAS DE NEGOCIO / RN4"
+        },
+        {
+          "id": "HU-8-RN5",
+          "text": "Si el caso aún no tiene porcentaje de coincidencia (IA), se muestra **\"Pendiente de cálculo\"**.",
+          "sourceRef": "SPRINT2 / HU-8 / REGLAS DE NEGOCIO / RN5"
+        }
+      ],
+      "preconditions": "- El usuario MINED debe haber iniciado sesión (HU-6).\n- Debe existir al menos un caso de equivalencia registrado y visible en el panel (HU-2 y HU-7).",
+      "dependencies": "- HU-6 (inicio de sesión de MINED).\n- HU-7 (panel de control) y HU-2 (archivos y equivalencia registrada).\n- Supabase Storage (bucket `documentos-carreras`) para los enlaces temporales.",
+      "outOfScope": "- Aceptar el caso o emitir advertencias (corresponde a HU-9).\n- Editar o eliminar datos del caso o sus archivos.\n- Exportar el reporte a PDF.\n- Cálculo del porcentaje de coincidencia con IA."
+    },
+    {
+      "id": "HU-9",
+      "title": "Revisión de equivalencia",
+      "functionality": "Revisión de equivalencia",
+      "sourceRef": "SPRINT2 / HISTORIA DE USUARIO 9",
+      "criteria": [
+        {
+          "id": "HU-9-CA1",
+          "sourceRef": "SPRINT2 / HU-9 / CRITERIOS DE ACEPTACIÓN / CA1",
+          "text": "Al aceptar un caso pendiente, el sistema cambia el estado a `ACEPTADO`, guarda el revisor y la fecha de revisión, y muestra **\"Equivalencia aceptada\"** en un máximo de 3 segundos; el panel muestra el estado actualizado.",
+          "implementation": "No verificado en la referencia evaluada",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "pending": [
+            "Implementar o verificar la funcionalidad en la referencia autorizada.",
+            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-9-CA1",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API/integración",
+              "E2E/manual"
+            ],
+            "steps": [
+              "Caso PENDIENTE y sesión MINED",
+              "Aceptar; comprobar estado, revisor, fecha, mensaje y panel en máximo de 3 segundos"
+            ],
+            "expected": "Al aceptar un caso pendiente, el sistema cambia el estado a `ACEPTADO`, guarda el revisor y la fecha de revisión, y muestra **\"Equivalencia aceptada\"** en un máximo de 3 segundos; el panel muestra el estado actualizado."
+          }
+        },
+        {
+          "id": "HU-9-CA2",
+          "sourceRef": "SPRINT2 / HU-9 / CRITERIOS DE ACEPTACIÓN / CA2",
+          "text": "Al emitir una advertencia con observación de al menos 10 caracteres, el sistema cambia el estado a `ADVERTENCIA`, guarda la observación, el revisor y la fecha, y muestra **\"Advertencia emitida\"**. Sin observación, no se envía y muestra **\"Indica el motivo de la advertencia\"**.",
+          "implementation": "No verificado en la referencia evaluada",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "pending": [
+            "Implementar o verificar la funcionalidad en la referencia autorizada.",
+            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-9-CA2",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API/integración",
+              "E2E/manual"
+            ],
+            "steps": [
+              "Caso PENDIENTE; observación vacía, de 9 caracteres y de 10 caracteres",
+              "Emitir advertencia; comprobar validación y persistencia de datos en el caso válido"
+            ],
+            "expected": "Al emitir una advertencia con observación de al menos 10 caracteres, el sistema cambia el estado a `ADVERTENCIA`, guarda la observación, el revisor y la fecha, y muestra **\"Advertencia emitida\"**. Sin observación, no se envía y muestra **\"Indica el motivo de la advertencia\"**."
+          }
+        },
+        {
+          "id": "HU-9-CA3",
+          "sourceRef": "SPRINT2 / HU-9 / CRITERIOS DE ACEPTACIÓN / CA3",
+          "text": "Al intentar terminar la revisión sin elegir una decisión, el sistema no modifica el caso y muestra **\"Debe elegir una decisión: Aceptar o emitir advertencia\"** hasta que el MINED decida.",
+          "implementation": "No verificado en la referencia evaluada",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "pending": [
+            "Implementar o verificar la funcionalidad en la referencia autorizada.",
+            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-9-CA3",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API/integración",
+              "E2E/manual"
+            ],
+            "steps": [
+              "Caso PENDIENTE sin decisión seleccionada",
+              "Intentar terminar; comprobar mensaje y que no se modifica el caso"
+            ],
+            "expected": "Al intentar terminar la revisión sin elegir una decisión, el sistema no modifica el caso y muestra **\"Debe elegir una decisión: Aceptar o emitir advertencia\"** hasta que el MINED decida."
+          }
+        }
+      ],
+      "businessRules": [
+        {
+          "id": "HU-9-RN1",
+          "text": "Solo el rol MINED puede revisar casos.",
+          "sourceRef": "SPRINT2 / HU-9 / REGLAS DE NEGOCIO / RN1"
+        },
+        {
+          "id": "HU-9-RN2",
+          "text": "Solo los casos en estado `PENDIENTE` pueden revisarse; un caso ya aceptado o con advertencia no se modifica.",
+          "sourceRef": "SPRINT2 / HU-9 / REGLAS DE NEGOCIO / RN2"
+        },
+        {
+          "id": "HU-9-RN3",
+          "text": "Las decisiones válidas son únicamente `ACEPTAR` y `ADVERTENCIA`.",
+          "sourceRef": "SPRINT2 / HU-9 / REGLAS DE NEGOCIO / RN3"
+        },
+        {
+          "id": "HU-9-RN4",
+          "text": "La observación es obligatoria para emitir una advertencia (mínimo 10 caracteres) y opcional al aceptar.",
+          "sourceRef": "SPRINT2 / HU-9 / REGLAS DE NEGOCIO / RN4"
+        },
+        {
+          "id": "HU-9-RN5",
+          "text": "Toda decisión registra el revisor (usuario MINED con sesión) y la fecha de revisión de forma automática.",
+          "sourceRef": "SPRINT2 / HU-9 / REGLAS DE NEGOCIO / RN5"
+        }
+      ],
+      "preconditions": "- El usuario MINED debe haber iniciado sesión (HU-6).\n- El caso debe existir y estar en estado `PENDIENTE`.\n- El MINED debe tener abierto el reporte del caso (HU-8).",
+      "dependencies": "- HU-6 (inicio de sesión) y HU-8 (reporte detallado).\n- Columnas `id_revisor` y `fecha_revision` (ya existen) y nueva columna `observacion_revision` en `caso_equivalencia`.",
+      "outOfScope": "- Notificar a la universidad por correo.\n- Flujo para que la universidad corrija el caso tras una advertencia.\n- Historial de revisiones o deshacer una decisión."
+    }
+  ],
+  "dod": [
+    {
+      "id": "DOD-1",
+      "kind": "applicable",
+      "text": "Hemos realizado las pruebas unitarias, de integración o de extremo a extremo que correspondan a las funcionalidades desarrolladas.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-2",
+      "kind": "peers",
+      "text": "Cada funcionalidad ha sido probada manualmente por al menos un integrante diferente de quien la desarrolló, aplicando pruebas cruzadas y casos negativos.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-3",
+      "kind": "regression",
+      "text": "Al finalizar cada Sprint, hemos ejecutado pruebas automatizadas con apoyo de Skills de inteligencia artificial para verificar las funcionalidades implementadas y detectar posibles regresiones.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-4",
+      "kind": "defects",
+      "text": "Hemos revisado los resultados de las pruebas, documentado los defectos encontrados y corregido los errores críticos que impidan cumplir los criterios de aceptación.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-5",
+      "kind": "shared",
+      "text": "Hemos comprobado que las funcionalidades principales operan correctamente en el ambiente compartido y no únicamente en el entorno local.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-6",
+      "kind": "po",
+      "text": "Hemos validado el cumplimiento de los criterios de aceptación con nuestro Product Owner antes de considerar terminado el incremento.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-7",
+      "kind": "branches",
+      "text": "Hemos integrado las funcionalidades desarrolladas en la rama developer, donde realizamos las pruebas unitarias, de integración, de extremo a extremo y las pruebas automatizadas con Skills de IA que correspondan. Una vez que todas las pruebas requeridas sean satisfactorias y los criterios de aceptación estén validados, fusionamos los cambios con la rama main, garantizando que esta contenga únicamente versiones estables del sistema.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 4",
+      "evidence": []
+    }
+  ],
+  "regression": {
+    "description": "Universidades, registro de equivalencias, archivos y errores HTTP de funcionalidades anteriores. No acredita HU-6, HU-8 ni HU-9.",
+    "catalogSourceExecution": "2026-10-14T17-31-33-827Z-5d16d1",
+    "testRefs": [
+      {
+        "id": "UNIT-001",
+        "suite": "unit",
+        "name": "universidad: nombre vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-002",
+        "suite": "unit",
+        "name": "universidad: ubicacion vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-003",
+        "suite": "unit",
+        "name": "universidad: correo_contacto vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-004",
+        "suite": "unit",
+        "name": "universidad: telefono_contacto vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-005",
+        "suite": "unit",
+        "name": "universidad: correo vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-006",
+        "suite": "unit",
+        "name": "universidad: contrasena vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-007",
+        "suite": "unit",
+        "name": "universidad: tipo 123 debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-008",
+        "suite": "unit",
+        "name": "universidad: tipo true debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-009",
+        "suite": "unit",
+        "name": "universidad: tipo {} debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-010",
+        "suite": "unit",
+        "name": "universidad: tipo [] debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-011",
+        "suite": "unit",
+        "name": "universidad: datos válidos crean usuario y universidad",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-012",
+        "suite": "unit",
+        "name": "universidad: duplicada",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-013",
+        "suite": "unit",
+        "name": "universidad: error de búsqueda",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-014",
+        "suite": "unit",
+        "name": "universidad: error de Auth",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-015",
+        "suite": "unit",
+        "name": "equivalencia: falta id_materia_origen",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-016",
+        "suite": "unit",
+        "name": "equivalencia: falta id_materia_destino",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-017",
+        "suite": "unit",
+        "name": "equivalencia: falta descripcion",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-018",
+        "suite": "unit",
+        "name": "equivalencia: falta id_universidad",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-019",
+        "suite": "unit",
+        "name": "equivalencia: materias iguales deben devolver HTTP 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-020",
+        "suite": "unit",
+        "name": "equivalencia: origen inexistente",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-021",
+        "suite": "unit",
+        "name": "equivalencia: destino inexistente",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-022",
+        "suite": "unit",
+        "name": "equivalencia: identificador rechazado por persistencia",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-023",
+        "suite": "unit",
+        "name": "equivalencia: universidad sin permiso",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-024",
+        "suite": "unit",
+        "name": "equivalencia: archivos faltantes impiden insertar",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-025",
+        "suite": "unit",
+        "name": "equivalencia: datos válidos quedan PENDIENTE",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-026",
+        "suite": "unit",
+        "name": "archivo: vacío",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-027",
+        "suite": "unit",
+        "name": "archivo: formato incompatible",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-028",
+        "suite": "unit",
+        "name": "archivo: PDF truncado",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-029",
+        "suite": "unit",
+        "name": "archivo: DOCX truncado",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-030",
+        "suite": "unit",
+        "name": "archivo: PDF válido",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-031",
+        "suite": "unit",
+        "name": "archivo: DOCX válido",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "API-001",
+        "suite": "api",
+        "name": "/universidades: campos ausentes, 400 JSON en español",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-002",
+        "suite": "api",
+        "name": "/equivalencias: campos ausentes, 400 JSON en español",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-003",
+        "suite": "api",
+        "name": "universidades: tipo incorrecto debe devolver 400 JSON",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-004",
+        "suite": "api",
+        "name": "universidades: duplicada devuelve 409",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-005",
+        "suite": "api",
+        "name": "universidades: registro válido devuelve 201 y universidad",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-006",
+        "suite": "api",
+        "name": "equivalencias: materias iguales deben devolver 400 y mensaje en español",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-007",
+        "suite": "api",
+        "name": "equivalencias: origen inexistente devuelve 400",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-008",
+        "suite": "api",
+        "name": "equivalencias: error del servicio se propaga como 500",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-009",
+        "suite": "api",
+        "name": "equivalencias: registro válido devuelve 201",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-010",
+        "suite": "api",
+        "name": "archivos: solicitud sin archivo devuelve 400",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-011",
+        "suite": "api",
+        "name": "archivos: vacío",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-012",
+        "suite": "api",
+        "name": "archivos: MIME incompatible",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-013",
+        "suite": "api",
+        "name": "archivos: contenido incompatible",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-014",
+        "suite": "api",
+        "name": "archivos: más de 20 MB",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-015",
+        "suite": "api",
+        "name": "archivos: PDF válido devuelve 201",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-016",
+        "suite": "api",
+        "name": "archivos: DOCX válido devuelve 201",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-017",
+        "suite": "api",
+        "name": "archivos: Debe indicar el tipo de documento: pensum o programa.",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-018",
+        "suite": "api",
+        "name": "archivos: Falta id_carrera para subir el pensum.",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-019",
+        "suite": "api",
+        "name": "archivos: Falta id_materia para subir el programa.",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-020",
+        "suite": "api",
+        "name": "archivos: error de almacenamiento devuelve 500",
+        "file": "tests/api/endpoints.test.cjs"
+      }
+    ]
+  },
+  "outOfScope": [
+    "Cálculo de coincidencia mediante IA. Mostrar \"Pendiente de cálculo\" pertenece a HU-8-RN5 y no equivale a implementar el cálculo."
+  ],
+  "openQuestions": [
+    {
+      "id": "ACL-01",
+      "sourceRef": "ESTRATEGIA / páginas 3-4; CI local",
+      "text": "La estrategia nombra developer; el workflow y el destino previsto usan development. Confirmar equivalencia de nombres con el equipo; no se cambian ramas ni requisitos."
+    },
+    {
+      "id": "ACL-02",
+      "sourceRef": "SPRINT2 / HU-6 CA3 y tarea técnica 3",
+      "text": "CA3 pide \"Correo o contraseña incorrectos\" para correo inexistente o rol distinto; la tarea 3 agrega intentos restantes en todos los fallos. Mantener CA3 literal hasta aclaración del PO."
+    },
+    {
+      "id": "ACL-03",
+      "sourceRef": "SPRINT2 / HU-8 RN4 y tarea técnica 1",
+      "text": "RN4 exige enlaces temporales de 1 hora sin ruta interna; la tarea 1 permite URL pública si el bucket es público. Requiere aclaración; no se sustituye RN4."
+    },
+    {
+      "id": "ACL-04",
+      "sourceRef": "SPRINT2 / HU-6 CA2 y notas finales",
+      "text": "La nota propone recortar el bloqueo si falta tiempo; CA2 mantiene bloqueo de 5 minutos tras 3 fallos. No se elimina ese criterio sin acuerdo explícito."
+    }
+  ]
+}
