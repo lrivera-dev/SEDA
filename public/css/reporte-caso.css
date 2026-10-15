@@ -1,0 +1,203 @@
+/* Pantalla: reporte detallado de un caso (HU-08).
+   Reutiliza mined.css (sidebar, tarjetas, avisos) y agrega solo lo propio de esta pantalla. */
+
+/* Los elementos con atributo hidden deben ocultarse aunque su clase defina display */
+[hidden] {
+  display: none !important;
+}
+
+
+/* ESPACIADO DE LOS BLOQUES PRINCIPALES */
+
+#reporte-cargando,
+#reporte-error,
+#reporte-contenido {
+  margin-top: 30px;
+}
+
+.ver-caso {
+  display: inline-block;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+#reporte-error .ver-caso {
+  margin-top: 18px;
+}
+
+.caso-id {
+  overflow-wrap: anywhere;
+}
+
+
+/* ETIQUETAS DE ESTADO (valores de la base de datos en mayúsculas) */
+
+.estado--pendiente {
+  background: #fff5df;
+  color: #a66b00;
+}
+
+.estado--en-revision {
+  background: #eaf0ff;
+  color: #2867df;
+}
+
+.estado--aceptado {
+  background: #e6f7ed;
+  color: #198754;
+}
+
+.estado--advertencia {
+  background: #ffeede;
+  color: #b3470a;
+}
+
+
+/* DESCRIPCIÓN DEL CASO */
+
+.reporte__seccion {
+  padding: 18px 0 4px;
+}
+
+.reporte__titulo {
+  margin: 0 0 8px;
+
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+
+  color: #7a8290;
+}
+
+.reporte__texto {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+
+/* AVISO DE DOCUMENTOS FALTANTES */
+
+.aviso {
+  margin-top: 16px;
+
+  padding: 12px 15px;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.aviso p {
+  margin: 0;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.aviso--advertencia {
+  background: #fff5df;
+  border-color: #f3dfa8;
+  color: #a66b00;
+}
+
+
+/* MATERIAS Y SUS DOCUMENTOS */
+
+.materias {
+  align-items: start;
+}
+
+.documentos {
+  margin: 14px 0 0;
+  padding: 0;
+
+  list-style: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.documento {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+
+  min-height: 38px;
+  padding: 9px 11px;
+
+  background: white;
+
+  border: 1px solid #e7eaf0;
+  border-radius: 6px;
+
+  font-size: 11px;
+}
+
+.documento__nombre {
+  color: #4d5564;
+}
+
+.documento__enlace {
+  color: #2867df;
+
+  font-weight: bold;
+  text-decoration: none;
+
+  white-space: nowrap;
+}
+
+.documento__enlace:hover {
+  text-decoration: underline;
+}
+
+.documento__faltante {
+  padding: 3px 8px;
+
+  border-radius: 20px;
+
+  background: #ffe8e8;
+  color: #c0392b;
+
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+
+/* PANTALLAS PEQUEÑAS */
+
+@media (max-width: 800px) {
+
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e8ebf2;
+  }
+
+  .content {
+    padding: 25px 20px;
+  }
+
+  .materias {
+    grid-template-columns: 1fr;
+  }
+
+  .flecha {
+    transform: rotate(90deg);
+  }
+
+  .caso-footer {
+    flex-wrap: wrap;
+  }
+
+}
