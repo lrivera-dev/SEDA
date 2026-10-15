@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MINED - Reporte del caso</title>
+
+    <link rel="stylesheet" href="css/mined.css">
+    <link rel="stylesheet" href="css/reporte-caso.css">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="logo">
+
+                <div class="logo-icon">
+                    ↗
+                </div>
+
+                <div>
+                    <strong>SEDA</strong>
+                    <small>Sistema de Equivalencias y Documentación Académica</small>
+                </div>
+
+            </div>
+
+
+            <nav>
+
+                <a href="/mined.html">
+                    Dashboard
+                </a>
+
+                <a href="#" class="active">
+                    Equivalencias
+                </a>
+
+                <a href="#">
+                    Universidades
+                </a>
+
+                <a href="#">
+                    Carreras
+                </a>
+
+            </nav>
+
+
+            <div class="user">
+
+                <div class="user-icon">
+                    M
+                </div>
+
+                <div>
+                    <strong>MINED</strong>
+                    <small>Administrador</small>
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- CONTENIDO -->
+        <main class="content">
+
+            <header>
+
+                <div>
+
+                    <p>Panel de administración</p>
+
+                    <h1>
+                        Reporte del caso
+                    </h1>
+
+                </div>
+
+                <button class="logout" id="boton-cerrar-sesion" type="button">
+                    Cerrar sesión
+                </button>
+
+            </header>
+
+
+            <!-- ESTADO: CARGANDO -->
+            <div id="reporte-cargando" class="loading" aria-live="polite">
+                Cargando reporte del caso...
+            </div>
+
+
+            <!-- ESTADO: ERROR (caso no encontrado u otro fallo) -->
+            <div id="reporte-error" class="error" role="alert" hidden>
+
+                <h3 id="reporte-error-titulo">
+                    No se pudo cargar el reporte
+                </h3>
+
+                <p id="reporte-error-mensaje"></p>
+
+                <a class="ver-caso" href="/mined.html">
+                    Volver al panel
+                </a>
+
+            </div>
+
+
+            <!-- REPORTE DEL CASO -->
+            <article id="reporte-contenido" class="caso" hidden>
+
+                <div class="caso-header">
+
+                    <div>
+
+                        <span class="caso-id">
+                            Caso #<span id="caso-id"></span>
+                        </span>
+
+                        <span class="estado" id="caso-estado"></span>
+
+                    </div>
+
+                    <span class="fecha" id="caso-fecha"></span>
+
+                </div>
+
+
+                <div class="reporte__seccion">
+
+                    <h2 class="reporte__titulo">
+                        Descripción de la equivalencia
+                    </h2>
+
+                    <p class="reporte__texto" id="caso-descripcion"></p>
+
+                </div>
+
+
+                <!-- Aviso: solo aparece si falta algún documento -->
+                <div id="aviso-documentos-faltantes" class="aviso aviso--advertencia" role="alert" hidden>
+                    <p id="aviso-documentos-faltantes-texto"></p>
+                </div>
+
+
+                <div class="materias">
+
+                    <!-- Origen -->
+                    <div class="materia" id="bloque-origen">
+
+                        <span class="materia-label">
+                            MATERIA ORIGEN
+                        </span>
+
+                        <h3 id="origen-materia"></h3>
+
+                        <p id="origen-carrera"></p>
+
+                        <small id="origen-universidad"></small>
+
+                        <ul class="documentos">
+
+                            <li class="documento" data-documento="pensum_origen">
+                                <span class="documento__nombre">Pensum de la carrera</span>
+                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir documento</a>
+                                <span class="documento__faltante" hidden>No disponible</span>
+                            </li>
+
+                            <li class="documento" data-documento="programa_origen">
+                                <span class="documento__nombre">Programa de la materia</span>
+                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir documento</a>
+                                <span class="documento__faltante" hidden>No disponible</span>
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
+                    <div class="flecha">
+                        →
+                    </div>
+
+
+                    <!-- Destino -->
+                    <div class="materia" id="bloque-destino">
+
+                        <span class="materia-label">
+                            MATERIA DESTINO
+                        </span>
+
+                        <h3 id="destino-materia"></h3>
+
+                        <p id="destino-carrera"></p>
+
+                        <small id="destino-universidad"></small>
+
+                        <ul class="documentos">
+
+                            <li class="documento" data-documento="pensum_destino">
+                                <span class="documento__nombre">Pensum de la carrera</span>
+                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir documento</a>
+                                <span class="documento__faltante" hidden>No disponible</span>
+                            </li>
+
+                            <li class="documento" data-documento="programa_destino">
+                                <span class="documento__nombre">Programa de la materia</span>
+                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir documento</a>
+                                <span class="documento__faltante" hidden>No disponible</span>
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+
+                <div class="caso-footer">
+
+                    <div>
+
+                        <span>
+                            Coincidencia
+                        </span>
+
+                        <strong id="caso-porcentaje"></strong>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div class="progress-bar" id="caso-porcentaje-barra"></div>
+
+                    </div>
+
+                    <a class="ver-caso" href="/mined.html">
+                        Volver al panel
+                    </a>
+
+                </div>
+
+            </article>
+
+        </main>
+
+    </div>
+
+
+    <script src="js/reporte-caso.js"></script>
+
+</body>
+
+</html>
