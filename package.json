@@ -4,9 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node --test",
-    "lint": "node scripts/revisar-sintaxis.js",
-    "start": "node server.js"
+    "test": "npm run test:team",
+    "start": "node server.js",
+    "test:unit": "node scripts/qa/run.cjs unit",
+    "test:api": "node scripts/qa/run.cjs api",
+    "test:qa": "node scripts/qa/run.cjs all",
+    "test:qa-generator": "node --test scripts/qa/generator.test.cjs",
+    "test:isolation": "node --test tests/isolation/supabase.test.cjs tests/isolation/equipo.test.cjs",
+    "test:load": "npm run test:isolation && node --test tests/isolation/carga.test.cjs",
+    "test:team": "node --require ./tests/helpers/equipo-bootstrap.cjs --test tests/exportaciones.test.js tests/rutas.test.js tests/validar-archivos.test.js",
+    "lint": "node scripts/revisar-sintaxis.js"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +24,9 @@
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
     "multer": "^2.4.0"
+  },
+  "devDependencies": {
+    "pdfkit": "0.17.2",
+    "supertest": "7.1.4"
   }
 }
