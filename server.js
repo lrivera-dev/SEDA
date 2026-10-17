@@ -45,7 +45,12 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Error inesperado al procesar el archivo.' });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
+// El puerto solo se abre al ejecutar "npm start"; las pruebas importan la app sin abrirlo.
+if (require.main === module) {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;

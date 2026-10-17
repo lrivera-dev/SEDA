@@ -183,7 +183,6 @@
 
                     </div>
 
-
                     <div class="flecha">
                         →
                     </div>
@@ -222,6 +221,50 @@
 
                 </div>
 
+                <!-- REVISIÓN DEL CASO (HU-09): solo aparece si el caso está PENDIENTE -->
+                <section id="revision" class="revision" hidden>
+
+                    <h2 class="reporte__titulo">
+                        Revisión de la equivalencia
+                    </h2>
+
+                    <form id="form-revision" novalidate>
+
+                        <fieldset class="revision__grupo">
+                            <legend class="revision__leyenda">Decisión</legend>
+
+                            <div class="revision__opciones">
+                                <label class="revision__opcion">
+                                    <input type="radio" name="decision" value="ACEPTAR">
+                                    Aceptar
+                                </label>
+
+                                <label class="revision__opcion">
+                                    <input type="radio" name="decision" value="ADVERTENCIA">
+                                    Emitir advertencia
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <div id="campo-observacion" class="revision__observacion" hidden>
+                            <label for="observacion">Observación (mínimo 10 caracteres)</label>
+                            <textarea id="observacion" name="observacion" rows="3" maxlength="500"></textarea>
+                        </div>
+
+                        <p id="revision-error" class="revision__error" role="alert" hidden></p>
+
+                        <button type="submit" id="boton-confirmar-revision" class="ver-caso">
+                            Confirmar revisión
+                        </button>
+
+                    </form>
+
+                </section>
+
+                <!-- Resultado de la revisión (o aviso de caso ya revisado) -->
+                <div id="revision-resultado" class="aviso" role="status" aria-live="polite" hidden>
+                    <p id="revision-resultado-texto"></p>
+                </div>
 
                 <div class="caso-footer">
 
