@@ -1,0 +1,3 @@
+# Logs auxiliares locales: conservar en disco, excluir del futuro PR.
+/api-sandbox-blocked.txt
+/git-final.txt
