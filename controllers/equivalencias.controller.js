@@ -19,7 +19,7 @@ async function registrarEquivalencias(req, res) {
 
     // Materias no pueden ser la misma
     if (id_materia_origen === id_materia_destino) {
-        return res.json(400).json({ error: 'La materia de origen y destino no pueden ser la misma.' })
+        return res.status(400).json({ error: 'La materia de origen y destino no pueden ser la misma.' })
     }
 
     // Obtener materia_origen junto con su carrera y universidad
