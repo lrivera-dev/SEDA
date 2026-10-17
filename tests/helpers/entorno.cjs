@@ -65,9 +65,12 @@ function respuesta() {
 function cargarApp() {
     const express = require('express');
     let app;
-    const escuchar = mock.method(express.application, 'listen', function () { app = this; });
-    try { require('../../server'); } finally { escuchar.mock.restore(); }
-    assert.ok(app, 'No se capturó la aplicación real');
+    const escuchar = mock.method(express.application, 'listen', function () {
+        throw new Error('La importación de SEDA no debe abrir un servidor');
+    });
+    try { app = require('../../server'); } finally { escuchar.mock.restore(); }
+    assert.equal(typeof app, 'function', 'server.js debe exportar la aplicación Express');
+    assert.equal(typeof app.set, 'function');
     app.set('env', 'test');
     return app;
 }

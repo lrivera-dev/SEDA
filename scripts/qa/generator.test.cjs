@@ -60,10 +60,55 @@ test('la serialización de una ejecución completa conserva expected y actual an
     assert.match(m.cases[0].observed, /Esperado: 400; obtenido: 500/);
     assert.equal(m.findings[0].id, 'QA-001');
 });
-test('las materias iguales se agrupan en QA-002 con evidencia HTTP exacta', () => {
+// Fuentes simuladas solo para el clasificador; nunca se escriben controladores.
+// La lectura interceptada se limita al archivo de equivalencias y node:test la restaura.
+const fuenteDefectuosa = `if (id_materia_origen === id_materia_destino) {
+    return res.json(400).json({ error: 'La materia de origen y destino no pueden ser la misma.' });
+}`;
+const fuenteCorregida = fuenteDefectuosa.replace('res.json(400).json', 'res.status(400).json');
+function simularFuenteEquivalencias(t, fuente) {
+    const fs = require('node:fs');
+    const path = require('node:path');
+    const original = fs.readFileSync;
+    const target = path.join(root, 'controllers/equivalencias.controller.js');
+    t.mock.method(fs, 'readFileSync', function (file, ...args) {
+        if (typeof file === 'string' && path.resolve(file) === target) return fuente;
+        return original.call(this, file, ...args);
+    });
+}
+
+test('las materias iguales se agrupan en QA-002 con evidencia HTTP exacta', t => {
+    simularFuenteEquivalencias(t, fuenteDefectuosa);
     const m = model([event('equivalencias: materias iguales deben devolver 400', { details: { error: { cause: { actual: 200, expected: 400 } } } }, 'test:fail')], 1);
     assert.equal(m.findings[0].id, 'QA-002'); assert.equal(m.findings[0].tests.length, 1);
 });
+test('fuente corregida y fallo simulado conservan FAIL como INV sin atribuir QA-002', t => {
+    simularFuenteEquivalencias(t, fuenteCorregida);
+    const m = model([event('equivalencias: materias iguales deben devolver 400',
+        { details: { error: { cause: { actual: 200, expected: 400 } } } }, 'test:fail')], 1);
+    assert.equal(m.totals.FAIL, 1);
+    assert.equal(m.findings[0].id, 'INV-UNIT-001');
+    assert.equal(m.findings[0].cause, 'Requiere investigación');
+    assert.match(m.cases[0].observed, /Esperado: 400; obtenido: 200/);
+});
+
+test('comparación genérica HTTP 200/400 no acredita QA-002 aunque exista su firma', t => {
+    simularFuenteEquivalencias(t, fuenteDefectuosa);
+    const m = model([event('equivalencias: otro rechazo debe devolver 400',
+        { details: { error: { actual: 200, expected: 400 } } }, 'test:fail')], 1);
+    assert.equal(m.totals.FAIL, 1);
+    assert.equal(m.findings[0].id, 'INV-UNIT-001');
+    assert.equal(m.findings[0].cause, 'Requiere investigación');
+});
+
+test('casos PASS no activan QA-001 ni QA-002 incluso ante una firma de código', t => {
+    simularFuenteEquivalencias(t, fuenteDefectuosa);
+    const m = model([event('universidades: tipo incorrecto debe devolver 400 JSON'),
+        event('equivalencias: materias iguales deben devolver 400')]);
+    assert.deepEqual(m.totals, { PASS: 2, FAIL: 0, BLOCKED: 0, NOT_RUN: 0 });
+    assert.deepEqual(m.findings, []);
+});
+
 test('un campo id_universidad no cambia la funcionalidad de equivalencias', () => {
     assert.equal(model([event('equivalencia: falta id_universidad')]).cases[0].functionality, 'Equivalencias');
 });
@@ -189,7 +234,8 @@ test('enlaces exigen suite y archivo exactos además del nombre', () => {
     }
 });
 
-test('PASS de HU-6 no cambia los FAIL de regresión QA-001 y QA-002', () => {
+test('PASS de HU-6 no cambia los FAIL de regresión QA-001 y QA-002', t => {
+    simularFuenteEquivalencias(t, fuenteDefectuosa);
     const config = sprint(); const ref = config.stories[0].criteria[0].testRefs[0];
     const m = applyTraceability(buildModel({ metadata: {}, suites: [{ suite: 'api', exitCode: 1, events: [
         event(ref.name, { file: ref.file }),
