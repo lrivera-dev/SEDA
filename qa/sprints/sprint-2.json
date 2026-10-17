@@ -60,15 +60,136 @@
           "id": "HU-6-CA1",
           "sourceRef": "SPRINT2 / HU-6 / CRITERIOS DE ACEPTACIÓN / CA1",
           "text": "Al ingresar correo y contraseña correctos de una cuenta MINED activa, el sistema inicia sesión y redirige al panel en un máximo de 3 segundos.",
-          "implementation": "No verificado en la referencia evaluada",
-          "testRefs": [],
+          "implementation": "Backend inspeccionado; comportamiento sujeto a los resultados de la ejecución vinculada. Navegador no verificado.",
+          "testRefs": [
+            {
+              "id": "HU6-01",
+              "suite": "api",
+              "name": "HU6-01 CA1: MINED ACTIVO obtiene HTTP 200 y token ficticio",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-02",
+              "suite": "api",
+              "name": "HU6-02: credenciales incompletas {} devuelven 400 sin consultar Auth",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-03",
+              "suite": "api",
+              "name": "HU6-03: credenciales incompletas {\"correo\":\"qa@example.test\"} devuelven 400 sin consultar Auth",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-04",
+              "suite": "api",
+              "name": "HU6-04: credenciales incompletas {\"contrasena\":\"clave-ficticia\"} devuelven 400 sin consultar Auth",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-05",
+              "suite": "api",
+              "name": "HU6-05: credenciales incompletas {\"correo\":\" \",\"contrasena\":\"clave-ficticia\"} devuelven 400 sin consultar Auth",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-06",
+              "suite": "api",
+              "name": "HU6-06: credenciales incompletas {\"correo\":\"qa@example.test\",\"contrasena\":\"\"} devuelven 400 sin consultar Auth",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-15",
+              "suite": "api",
+              "name": "HU6-15 RN1: MINED INACTIVO no obtiene token",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-17",
+              "suite": "api",
+              "name": "HU6-17 RN4: GET /panel rechaza sin sesión",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-18",
+              "suite": "api",
+              "name": "HU6-18 RN4: GET /panel rechaza token inválido",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-19",
+              "suite": "api",
+              "name": "HU6-19 RN4: GET /panel rechaza rol incorrecto",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-20",
+              "suite": "api",
+              "name": "HU6-20 RN4: GET /panel rechaza cuenta inactiva",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-21",
+              "suite": "api",
+              "name": "HU6-21 RN4: GET /casos/1 rechaza sin sesión",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-22",
+              "suite": "api",
+              "name": "HU6-22 RN4: GET /casos/1 rechaza token inválido",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-23",
+              "suite": "api",
+              "name": "HU6-23 RN4: GET /casos/1 rechaza rol incorrecto",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-24",
+              "suite": "api",
+              "name": "HU6-24 RN4: GET /casos/1 rechaza cuenta inactiva",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-25",
+              "suite": "api",
+              "name": "HU6-25 RN4: PATCH /casos/1/revision rechaza sin sesión",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-26",
+              "suite": "api",
+              "name": "HU6-26 RN4: PATCH /casos/1/revision rechaza token inválido",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-27",
+              "suite": "api",
+              "name": "HU6-27 RN4: PATCH /casos/1/revision rechaza rol incorrecto",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-28",
+              "suite": "api",
+              "name": "HU6-28 RN4: PATCH /casos/1/revision rechaza cuenta inactiva",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-29",
+              "suite": "api",
+              "name": "HU6-29 RN1: middleware permite MINED ACTIVO y propaga identidad verificada",
+              "file": "tests/api/hu6-auth.test.cjs"
+            }
+          ],
           "evidence": [],
           "verification": "SIN_EVIDENCIA",
           "coverageComplete": false,
-          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "observations": "Evidencia parcial de servidor con Supabase simulado. Las pruebas de autorización son soporte de RN1/RN4; no acreditan navegación ni tiempos del navegador.",
           "pending": [
-            "Implementar o verificar la funcionalidad en la referencia autorizada.",
-            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+            "Validar mensajes y navegación en navegador con servicios aislados.",
+            "Obtener revisión por pares y validación del Product Owner."
           ],
           "plannedCase": {
             "id": "PLAN-HU-6-CA1",
@@ -88,15 +209,52 @@
           "id": "HU-6-CA2",
           "sourceRef": "SPRINT2 / HU-6 / CRITERIOS DE ACEPTACIÓN / CA2",
           "text": "Al ingresar una contraseña incorrecta, el sistema niega el acceso, permite reintentar y muestra **\"Correo o contraseña incorrectos. Te quedan [N] intentos\"**; tras 3 intentos fallidos consecutivos bloquea nuevos intentos durante 5 minutos.",
-          "implementation": "No verificado en la referencia evaluada",
-          "testRefs": [],
+          "implementation": "Backend inspeccionado; comportamiento sujeto a los resultados de la ejecución vinculada. Navegador no verificado.",
+          "testRefs": [
+            {
+              "id": "HU6-07",
+              "suite": "api",
+              "name": "HU6-07 CA2: intento fallido 1, mensaje y estado HTTP",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-08",
+              "suite": "api",
+              "name": "HU6-08 CA2: intento fallido 2, mensaje y estado HTTP",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-09",
+              "suite": "api",
+              "name": "HU6-09 CA2: intento fallido 3, mensaje y estado HTTP",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-10",
+              "suite": "api",
+              "name": "HU6-10 CA2: bloqueo hasta 299999 ms, sin llamadas a Auth; acceso a 300000 ms",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-11",
+              "suite": "api",
+              "name": "HU6-11 RN2: después del bloqueo un nuevo fallo reinicia el contador",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-12",
+              "suite": "api",
+              "name": "HU6-12 RN2: acceso exitoso interrumpe la secuencia de fallos",
+              "file": "tests/api/hu6-auth.test.cjs"
+            }
+          ],
           "evidence": [],
           "verification": "SIN_EVIDENCIA",
           "coverageComplete": false,
-          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "observations": "Evidencia parcial de servidor con Supabase simulado. Las pruebas de autorización son soporte de RN1/RN4; no acreditan navegación ni tiempos del navegador.",
           "pending": [
-            "Implementar o verificar la funcionalidad en la referencia autorizada.",
-            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+            "Validar mensajes y navegación en navegador con servicios aislados.",
+            "Obtener revisión por pares y validación del Product Owner."
           ],
           "plannedCase": {
             "id": "PLAN-HU-6-CA2",
@@ -116,15 +274,35 @@
           "id": "HU-6-CA3",
           "sourceRef": "SPRINT2 / HU-6 / CRITERIOS DE ACEPTACIÓN / CA3",
           "text": "Al ingresar un correo no registrado o una cuenta sin rol MINED, el sistema niega el acceso con el mensaje genérico **\"Correo o contraseña incorrectos\"**, sin iniciar sesión y sin revelar cuál dato es incorrecto.",
-          "implementation": "No verificado en la referencia evaluada",
-          "testRefs": [],
+          "implementation": "Backend inspeccionado; comportamiento sujeto a los resultados de la ejecución vinculada. Navegador no verificado.",
+          "testRefs": [
+            {
+              "id": "HU6-13",
+              "suite": "api",
+              "name": "HU6-13 CA3 propuesto: correo inexistente rechaza sin revelar cuenta ni rol",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-14",
+              "suite": "api",
+              "name": "HU6-14 CA3 propuesto: rol UNIVERSIDAD rechaza sin revelar cuenta ni rol",
+              "file": "tests/api/hu6-auth.test.cjs"
+            },
+            {
+              "id": "HU6-16",
+              "suite": "api",
+              "name": "HU6-16 RN3: inexistente y rol incorrecto no revelan cuál dato fue rechazado",
+              "file": "tests/api/hu6-auth.test.cjs"
+            }
+          ],
           "evidence": [],
           "verification": "SIN_EVIDENCIA",
           "coverageComplete": false,
-          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "observations": "Evidencia parcial de servidor con Supabase simulado. Las pruebas de autorización son soporte de RN1/RN4; no acreditan navegación ni tiempos del navegador.",
           "pending": [
-            "Implementar o verificar la funcionalidad en la referencia autorizada.",
-            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+            "Validar mensajes y navegación en navegador con servicios aislados.",
+            "Obtener revisión por pares y validación del Product Owner.",
+            "Validación formal del Product Owner de la propuesta CA3; el criterio original sigue vigente hasta aprobación."
           ],
           "plannedCase": {
             "id": "PLAN-HU-6-CA3",
@@ -138,6 +316,12 @@
               "Intentar acceso; comprobar mensaje genérico y ausencia de sesión"
             ],
             "expected": "Al ingresar un correo no registrado o una cuenta sin rol MINED, el sistema niega el acceso con el mensaje genérico **\"Correo o contraseña incorrectos\"**, sin iniciar sesión y sin revelar cuál dato es incorrecto."
+          },
+          "proposal": {
+            "status": "PENDIENTE_PO",
+            "text": "Al ingresar un correo inexistente o una cuenta sin permisos MINED, el sistema rechaza el acceso sin devolver token. El mensaje es genérico y puede indicar los intentos restantes, sin revelar si el correo existe, el rol asociado ni información sensible. Se conserva el bloqueo de CA2 tras tres fallos durante cinco minutos.",
+            "rationale": "Mostrar intentos restantes orienta al usuario y permite corregir errores antes del bloqueo sin identificar la cuenta ni su rol.",
+            "history": "2026-10-15: 29 pruebas, 27 PASS y 2 FAIL con el contrato original (HU6-13 y HU6-14). Se revisan solo esas dos expectativas por autorización del equipo; no se corrigió producción. Los PASS nuevos evalúan la propuesta y no aprueban retroactivamente el criterio original."
           }
         }
       ],
@@ -792,7 +976,7 @@
     {
       "id": "ACL-02",
       "sourceRef": "SPRINT2 / HU-6 CA3 y tarea técnica 3",
-      "text": "CA3 pide \"Correo o contraseña incorrectos\" para correo inexistente o rol distinto; la tarea 3 agrega intentos restantes en todos los fallos. Mantener CA3 literal hasta aclaración del PO."
+      "text": "CA3 original pide mensaje genérico literal; existe una propuesta que permite contador sin revelar cuenta ni rol. Pendiente de validación formal del Product Owner; ver proposal de HU-6-CA3."
     },
     {
       "id": "ACL-03",

@@ -46,16 +46,17 @@ function applyTraceability(model, config) {
                 evidence: c ? `${c.location}; ejecución ${model.metadata.id}; ${c.observed}` : 'No se encontró un resultado con la misma suite, nombre y archivo.' };
         });
         const testResult = aggregate(links.map(l => l.status));
-        const status = testResult === 'PASS' && !criterion.coverageComplete ? 'SIN_EVIDENCIA' : testResult;
+        const status = testResult === 'PASS' && (!criterion.coverageComplete || criterion.proposal?.status === 'PENDIENTE_PO') ? 'SIN_EVIDENCIA' : testResult;
         rows.push({ storyId: story.id, storyTitle: story.title, functionality: story.functionality,
             id: criterion.id, criterion: criterion.text, sourceRef: criterion.sourceRef,
             implementation: criterion.implementation || 'No verificado en la referencia evaluada', links, testResult, status,
             evidence: [...links.map(l => l.evidence), ...criterion.evidence], observations: criterion.observations || '',
             coverageComplete: criterion.coverageComplete, pending: criterion.pending,
-            plannedCase: criterion.plannedCase });
+            plannedCase: criterion.plannedCase, proposal: criterion.proposal });
     }
     const regression = model.cases.filter(c => (config.regression?.testRefs || []).some(ref => matchRef(ref, [c])));
     const mapped = new Set(rows.flatMap(row => row.links.filter(l => l.status !== 'NOT_RUN').map(l => l.id)));
+    const sprintCases = model.cases.filter(c => mapped.has(c.id) && !regression.includes(c));
     const unmapped = model.cases.filter(c => !regression.includes(c) && !mapped.has(c.id));
     const counts = list => Object.fromEntries(['PASS', 'FAIL', 'BLOCKED', 'NOT_RUN', 'SIN_EVIDENCIA'].map(s => [s, list.filter(c => c.status === s).length]));
     const dod = config.dod.map(d => {
@@ -73,6 +74,7 @@ function applyTraceability(model, config) {
             sources: config.sources, strategy: config.strategy, rows, totals: counts(rows),
             stories: config.stories.map(s => ({ id: s.id, title: s.title, status: aggregate(rows.filter(r => r.storyId === s.id).map(r => r.status)), businessRules: s.businessRules, dependencies: s.dependencies })),
             regression: { description: config.regression?.description || 'Regresión configurada.', totals: counts(regression), ids: regression.map(c => c.id) },
+            sprintCases: { totals: counts(sprintCases), ids: sprintCases.map(c => c.id) },
             unmappedIds: unmapped.map(c => c.id), openQuestions: config.openQuestions, dod, outOfScope: config.outOfScope,
             closure: 'NO ACREDITADO: una historia requiere todos sus criterios y el Sprint requiere además evidencia de la Definition of Done.' },
         pending: [...config.outOfScope, 'Implementación del alcance nuevo: No verificado en la referencia evaluada. Las funcionalidades futuras no se clasifican como defectos.',

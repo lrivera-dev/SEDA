@@ -101,6 +101,13 @@ function documentBlocks(m) {
     summary.push({ type: 'paragraph', text: `Alcance nuevo: ${t.rows.length} criterios de ${t.stories.map(s => s.id).join(', ')}; ${t.totals.PASS} PASS, ${t.totals.FAIL} FAIL, ${t.totals.BLOCKED} BLOCKED, ${t.totals.NOT_RUN} NOT_RUN y ${t.totals.SIN_EVIDENCIA} SIN_EVIDENCIA. Los resultados de regresión no aprueban estas historias.` });
     summary.push({ type: 'paragraph', text: `Definition of Done: ${t.closure} Prioridades: verificar el alcance en la referencia autorizada, ejecutar los casos específicos y aportar revisión por pares, PO, ambiente compartido e integración.` });
     if (m.report) summary.splice(1, 0, { type: 'paragraph', text: 'LECTURA HISTÓRICA: los resultados corresponden a la fecha de ejecución de la portada, no a la fecha de generación del informe.' });
+    summary.push({ type: 'paragraph', text: `Pruebas del Sprint vinculadas: ${t.sprintCases.ids.length}; ${t.sprintCases.totals.PASS} PASS y ${t.sprintCases.totals.FAIL} FAIL. Regresión previa en esta ejecución: ${t.regression.ids.length} casos (catálogo independiente; no se reutilizan resultados históricos).` });
+    for (const r of t.rows.filter(r => r.proposal)) {
+        summary.push({ type: 'heading', text: `${r.id}: propuesta ${r.proposal.status}` });
+        summary.push({ type: 'paragraph', text: `Original vigente: ${r.criterion}` });
+        summary.push({ type: 'paragraph', text: `Propuesta: ${r.proposal.text} Valor: ${r.proposal.rationale}` });
+        summary.push({ type: 'paragraph', text: r.proposal.history });
+    }
     const sprint = [{ type: 'title', text: 'C. Evaluación del Sprint y criterios de aceptación' },
         { type: 'paragraph', text: `Objetivo: ${t.goal}` },
         { type: 'paragraph', text: 'PASS/FAIL proceden exclusivamente de casos ejecutados y vinculados por suite, nombre y archivo. BLOCKED expresa impedimentos de ejecución; NOT_RUN, pruebas planificadas sin resultado. SIN_EVIDENCIA indica ausencia de pruebas vinculadas o cobertura incompleta del criterio. Una historia exige todos sus criterios; el cierre del Sprint requiere además la DoD.' },
@@ -109,9 +116,9 @@ function documentBlocks(m) {
         { type: 'paragraph', text: `Casos sin clasificación de alcance: ${t.unmappedIds.join(', ') || 'Ninguno'}. No se asignan automáticamente a historias.` }];
     for (const story of t.stories) sprint.push({ type: 'matrix', text: `${story.id}: ${story.title}`, headers: ['Historia / CA', 'Criterio de aceptación original', 'Implementación conocida', 'Pruebas relacionadas', 'Resultado / estado', 'Evidencia', 'Observaciones', 'Pendientes'],
         rows: t.rows.filter(r => r.storyId === story.id).map(r => [r.id, r.criterion, r.implementation,
-            r.links.map(l => `${l.id}: ${l.name}`).join('\n') || 'Ninguna automatizada vinculada',
-            `${r.status}\nPruebas: ${r.testResult}`, r.evidence.join('\n') || `Sin evidencia de ejecución. Fuente del requisito: ${r.sourceRef}`,
-            r.observations + (!r.coverageComplete ? ' Cobertura completa no acreditada.' : ''), `${r.pending.join(' ')} Caso propuesto: ${r.plannedCase?.id || 'No definido'} (no ejecutado).`]) });
+            r.links.map(l => l.configuredId).join(', ') || 'Ninguna automatizada vinculada',
+            `${r.status}\nPruebas: ${r.testResult}`, (r.links.length ? `Ejecución ${m.metadata.id}. Detalle individual y fuente de cada prueba en anexos. ` + r.links.map(l => `${l.configuredId} ${l.status}`).join('; ') : r.evidence.join('\n')) || `Sin evidencia de ejecución. Fuente del requisito: ${r.sourceRef}`,
+            r.observations + (r.proposal ? ` Propuesta ${r.proposal.status}; no acredita CA original.` : '') + (!r.coverageComplete ? ' Cobertura completa no acreditada.' : ''), `${r.pending.join(' ')} Caso propuesto: ${r.plannedCase?.id || 'No definido'} (no ejecutado).`]) });
     const dod = [{ type: 'title', text: 'D. Definition of Done' },
         { type: 'paragraph', text: 'Se incorporan los siete criterios de la estrategia del equipo (sección 5, páginas 3-4). Los documentos están disponibles; lo pendiente es la evidencia de cumplimiento.' },
         { type: 'table', compact: true, headers: ['Criterio original', 'Evaluación y evidencia'], rows: t.dod.map(d => [d.text, `${d.status}: ${d.evaluation}\nFuente: ${d.sourceRef}`]) }];

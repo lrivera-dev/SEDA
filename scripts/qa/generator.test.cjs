@@ -85,14 +85,17 @@ test('Sprint proporcionado conserva 9 CA, 15 RN y 7 criterios DoD, sin atribuir 
     assert.equal(config.stories.flatMap(s => s.criteria).length, 9);
     assert.equal(config.stories.flatMap(s => s.businessRules).length, 15);
     assert.equal(config.dod.length, 7);
-    assert.ok(config.stories.flatMap(s => s.criteria).every(c => c.testRefs.length === 0));
+    assert.ok(config.stories.slice(1).flatMap(s => s.criteria).every(c => c.testRefs.length === 0));
+    assert.equal(config.stories[0].criteria.flatMap(c => c.testRefs).length, 29);
     const m = applyTraceability(model([event('archivo: PDF válido')]), config);
-    assert.equal(m.traceability.totals.SIN_EVIDENCIA, 9);
-    assert.ok(m.traceability.stories.every(s => s.status === 'SIN_EVIDENCIA'));
+    assert.equal(m.traceability.totals.SIN_EVIDENCIA, 6);
+    assert.equal(m.traceability.totals.NOT_RUN, 3);
+    assert.ok(m.traceability.stories.slice(1).every(s => s.status === 'SIN_EVIDENCIA'));
     assert.equal(m.totals.PASS, 1);
 });
 function linked(status = 'PASS', complete = true) {
     const config = sprint();
+    config.stories[0].criteria.forEach(c => { c.testRefs = []; });
     config.stories[0].criteria[0].testRefs = [{ id: 'UNIT-001', name: 'criterio controlado', suite: 'unit', file: 'tests/fixture.cjs' }];
     config.stories[0].criteria[0].coverageComplete = complete;
     const extra = status === 'NOT_RUN' ? { skip: 'No ejecutado' } : status === 'BLOCKED' ? { details: { error: { code: 'EACCES' } } } : {};
@@ -113,6 +116,7 @@ for (const status of ['FAIL', 'BLOCKED', 'NOT_RUN']) test(`trazabilidad conserva
 });
 test('mismo ordinal con otro nombre no enlaza pruebas por accidente', () => {
     const config = sprint();
+    config.stories[0].criteria.forEach(c => { c.testRefs = []; });
     config.stories[0].criteria[0].testRefs = [{ id: 'UNIT-001', name: 'otro caso', suite: 'unit', file: 'tests/fixture.cjs' }];
     const m = applyTraceability(model([event('caso diferente')]), config);
     assert.equal(m.traceability.rows[0].status, 'NOT_RUN');
@@ -143,4 +147,57 @@ test('el informe histórico conserva fecha, totales y hallazgos de la evidencia'
     assert.deepEqual(m.totals, original.totals); assert.deepEqual(m.findings, original.findings);
     assert.equal(m.metadata.started, original.metadata.started);
     assert.match(markdown(documentBlocks(m)), /EVIDENCIA HISTÓRICA/);
+});
+
+
+test('HU-6: 29 resultados simulados vinculados sin aprobar CA3 pendiente ni HU-8/HU-9', () => {
+    const config = sprint();
+    const refs = config.stories[0].criteria.flatMap(c => c.testRefs);
+    const events = refs.map(r => event(r.name, { file: r.file }));
+    const m = applyTraceability(buildModel({ metadata: { id: 'fixture-simulada-no-ejecucion-producto' },
+        suites: [{ suite: 'api', exitCode: 0, events }] }), config);
+    assert.equal(m.cases.length, 29);
+    assert.equal(m.traceability.sprintCases.totals.PASS, 29);
+    assert.equal(m.traceability.regression.ids.length, 0);
+    assert.equal(m.traceability.unmappedIds.length, 0);
+    assert.ok(m.cases.every(c => c.functionality.startsWith('HU-6')));
+    assert.ok(m.cases.every(c => !c.expected.includes('HTTP 400')));
+    assert.ok(m.traceability.rows.slice(0, 3).every(r => r.testResult === 'PASS' && r.status === 'SIN_EVIDENCIA'));
+    assert.ok(m.traceability.rows.slice(3).every(r => r.links.length === 0 && r.status === 'SIN_EVIDENCIA'));
+    const md = markdown(documentBlocks(m));
+    assert.match(md, /PENDIENTE_PO/);
+    assert.match(md, /27 PASS y 2 FAIL/);
+    assert.match(md, /Original vigente/);
+    assert.match(md, /NO ACREDITADO/);
+    assert.match(md, /29 PASS/);
+});
+
+test('aprobación PO pendiente impide PASS incluso con cobertura declarada completa', () => {
+    const config = sprint();
+    const ca = config.stories[0].criteria[2]; ca.coverageComplete = true;
+    const m = applyTraceability(buildModel({ metadata: {}, suites: [{ suite: 'api', exitCode: 0,
+        events: ca.testRefs.map(r => event(r.name, { file: r.file })) }] }), config);
+    assert.equal(m.traceability.rows[2].status, 'SIN_EVIDENCIA');
+});
+
+test('enlaces exigen suite y archivo exactos además del nombre', () => {
+    const config = sprint(); const ref = config.stories[0].criteria[2].testRefs[0];
+    for (const [suite, file] of [['unit', ref.file], ['api', 'tests/otro.cjs']]) {
+        const m = applyTraceability(buildModel({ metadata: {}, suites: [{ suite, exitCode: 0,
+            events: [event(ref.name, { file })] }] }), config);
+        assert.equal(m.traceability.rows[2].links[0].status, 'NOT_RUN');
+    }
+});
+
+test('PASS de HU-6 no cambia los FAIL de regresión QA-001 y QA-002', () => {
+    const config = sprint(); const ref = config.stories[0].criteria[0].testRefs[0];
+    const m = applyTraceability(buildModel({ metadata: {}, suites: [{ suite: 'api', exitCode: 1, events: [
+        event(ref.name, { file: ref.file }),
+        event('universidades: tipo incorrecto debe devolver 400 JSON', { file: 'tests/api/endpoints.test.cjs', details: { error: { actual: 500, expected: 400 } } }, 'test:fail'),
+        event('equivalencias: materias iguales deben devolver 400 y mensaje en español', { file: 'tests/api/endpoints.test.cjs', details: { error: { actual: 200, expected: 400 } } }, 'test:fail')
+    ] }] }), config);
+    assert.equal(m.totals.FAIL, 2);
+    assert.equal(m.traceability.regression.totals.FAIL, 2);
+    assert.equal(m.traceability.sprintCases.totals.PASS, 1);
+    assert.deepEqual(m.findings.map(f => f.id), ['QA-001', 'QA-002']);
 });

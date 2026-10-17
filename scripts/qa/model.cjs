@@ -13,6 +13,7 @@ function errorChain(error) {
     return chain;
 }
 function expected(name, suite) {
+    if (/^HU6-/.test(name)) return 'Comportamiento HU-6 indicado en el nombre y las aserciones del caso. CA3 propuesto no equivale a aprobación del contrato original.';
     if (/materias iguales|tipo .*debe producir|tipo incorrecto/.test(name)) return 'Rechazo de validación con estado HTTP 400 y mensaje de error.';
     if (/duplicada/.test(name)) return 'HTTP 409 con mensaje de universidad ya registrada.';
     if (/sin permiso/.test(name)) return 'HTTP 403 por falta de permiso sobre la materia de origen.';
@@ -43,7 +44,7 @@ function buildModel(raw) {
             const assertion = [...chain].reverse().find(e => e.actual !== undefined || e.expected !== undefined);
             const location = `${d.file || 'Archivo no disponible'}:${d.line || '?'}${d.column ? ':' + d.column : ''}`;
             const c = { id: `${run.suite.toUpperCase()}-${String(local.length + 1).padStart(3, '0')}`, suite: run.suite,
-                name: d.name, status, functionality: /^\/?universidad/.test(d.name) ? 'Universidades' : /^\/?equivalencia/.test(d.name) ? 'Equivalencias' : /^\/?archivo/.test(d.name) ? 'Archivos' : 'Otra',
+                name: d.name, status, functionality: /^HU6-/.test(d.name) ? 'HU-6: autenticación y autorización MINED' : /^\/?universidad/.test(d.name) ? 'Universidades' : /^\/?equivalencia/.test(d.name) ? 'Equivalencias' : /^\/?archivo/.test(d.name) ? 'Archivos' : 'Otra',
                 behavior: d.name, expected: expected(d.name, run.suite), location, durationMs: d.details?.duration_ms,
                 observed: status === 'PASS' ? 'PASS confirmado por node:test; no se registraron valores de respuesta adicionales.'
                     : assertion ? `Esperado: ${JSON.stringify(assertion.expected)}; obtenido: ${JSON.stringify(assertion.actual)}.`
