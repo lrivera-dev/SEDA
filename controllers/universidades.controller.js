@@ -3,10 +3,10 @@ const supabase = require('../supabaseClient');
 const CAMPOS_OBLIGATORIOS = ['nombre', 'ubicacion', 'correo_contacto', 'telefono_contacto', 'correo', 'contrasena'];
 
 async function registrarUniversidad(req, res) {
-    const datos = req.body;
+    const datos = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
 
     // Validar campos
-    const faltantes = CAMPOS_OBLIGATORIOS.filter(campo => !datos[campo] || datos[campo].trim() === '');
+    const faltantes = CAMPOS_OBLIGATORIOS.filter(campo => typeof datos[campo] !== 'string' || datos[campo].trim() === '');
 
     if (faltantes.length > 0) {
         return res.status(400).json({
