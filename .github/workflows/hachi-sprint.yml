@@ -1,0 +1,143 @@
+name: Hachi - evaluación de Sprint
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 6'
+
+concurrency:
+  group: hachi-sprint-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    name: Evaluar development
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: development
+
+      - name: Seleccionar Sprint versionado
+        id: plan
+        env:
+          EVENTO: ${{ github.event_name }}
+        run: |
+          node -e "const fs=require('fs'); const c=require('./qa/config.json'); if(!/^sprint-[0-9]+$/.test(c.activeSprint)) throw Error('Sprint inválido'); const s=require('./qa/sprints/'+c.activeSprint+'.json'); const enabled=process.env.EVENTO!=='schedule'||(c.weeklyEnabled===true&&s.number>=3); fs.appendFileSync(process.env.GITHUB_OUTPUT,'enabled='+enabled+'\n'); if(!enabled) console.log('Calendario deshabilitado: requiere weeklyEnabled y Sprint posterior al 2.');"
+
+      - name: Verificar que .env no esté en el repositorio
+        id: entorno
+        if: ${{ steps.plan.outputs.enabled == 'true' }}
+        run: |
+          if git ls-files --error-unmatch .env >/dev/null 2>&1; then
+            echo "::error::El archivo .env está versionado. Quítalo del repositorio y agrégalo a .gitignore."
+            exit 1
+          fi
+
+      - name: Configurar Node.js
+        if: ${{ steps.plan.outputs.enabled == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        id: dependencias
+        if: ${{ steps.entorno.outcome == 'success' }}
+        run: npm ci
+
+      - name: Lint y sintaxis obligatorios
+        id: lint
+        if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
+        run: npm run lint
+
+      - name: Build (si existe el script)
+        id: build
+        if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
+        run: npm run build --if-present
+
+      - name: Verificar aislamiento de Supabase
+        id: aislamiento
+        if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
+        run: npm run test:isolation
+
+      - name: Pruebas del equipo
+        id: equipo
+        if: ${{ !cancelled() && steps.aislamiento.outcome == 'success' }}
+        run: npm run test:team
+
+      - name: Carga controlada de Hachi
+        id: carga
+        if: ${{ !cancelled() && steps.aislamiento.outcome == 'success' }}
+        # test:load repite test:isolation; aquí ya pasó en su etapa independiente.
+        run: node --test tests/isolation/carga.test.cjs
+
+      - name: Pruebas del generador de Hachi
+        id: generador
+        if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
+        run: npm run test:qa-generator
+
+      - name: Regresión y Sprint activo de Hachi e informes
+        id: regresion
+        if: ${{ !cancelled() && steps.aislamiento.outcome == 'success' && steps.carga.outcome == 'success' }}
+        run: npm run test:qa
+
+      - name: Publicar informes y evidencia QA
+        id: artefactos
+        if: ${{ always() && (steps.regresion.outcome == 'success' || steps.regresion.outcome == 'failure') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: hachi-qa-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ steps.regresion.outputs.report-directory }}/informe.pdf
+            ${{ steps.regresion.outputs.report-directory }}/informe.md
+            ${{ steps.regresion.outputs.report-directory }}/execution.json
+            ${{ steps.regresion.outputs.report-directory }}/results.json
+            ${{ steps.regresion.outputs.report-directory }}/report-error.json
+            ${{ steps.regresion.outputs.report-directory }}/unit.jsonl
+            ${{ steps.regresion.outputs.report-directory }}/api.jsonl
+          include-hidden-files: false
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Resumir etapas sin ocultar fallos
+        if: ${{ always() }}
+        env:
+          PLAN: ${{ steps.plan.outputs.enabled }}
+          ENTORNO: ${{ steps.entorno.outcome }}
+          INSTALACION: ${{ steps.dependencias.outcome }}
+          LINT: ${{ steps.lint.outcome }}
+          BUILD: ${{ steps.build.outcome }}
+          AISLAMIENTO: ${{ steps.aislamiento.outcome }}
+          EQUIPO: ${{ steps.equipo.outcome }}
+          CARGA: ${{ steps.carga.outcome }}
+          GENERADOR: ${{ steps.generador.outcome }}
+          REGRESION: ${{ steps.regresion.outcome }}
+          ARTEFACTOS: ${{ steps.artefactos.outcome }}
+        run: |
+          {
+            echo "- Evaluación habilitada: $PLAN. Si es false, no se ejecutaron pruebas; no equivale a PASS."
+            echo '## Infraestructura y controles'
+            echo "- Control de entorno: $ENTORNO"
+            echo "- Instalación: $INSTALACION"
+            echo "- Lint / sintaxis: $LINT"
+            echo "- Build: $BUILD"
+            echo "- Aislamiento: $AISLAMIENTO"
+            echo '## Pruebas del equipo'
+            echo "- Suite explícita del equipo: $EQUIPO"
+            echo '## Hachi'
+            echo "- Carga controlada: $CARGA"
+            echo "- Pruebas del generador: $GENERADOR"
+            echo "- Regresión y Sprint activo: $REGRESION"
+            echo "- Publicación de artefactos: $ARTEFACTOS"
+            echo 'Los totales previstos no son resultados: consultar cada suite y los informes.'
+            echo 'Un paso omitido no equivale a PASS. Un fallo de ejecución no identifica por sí solo un defecto funcional.'
+            echo 'Revisar results.json para FAIL/BLOCKED/NOT_RUN, execution.json y report-error.json si existe; para el equipo, consultar el log de su etapa.'
+            echo 'Los pasos conservan sus códigos de salida. Publicar informes no convierte el CI fallido en exitoso.'
+          } >> "$GITHUB_STEP_SUMMARY"
