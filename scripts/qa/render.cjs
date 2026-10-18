@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { finished } = require('node:stream/promises');
+const { executiveBlocks, countPdfPages } = require('./executive.cjs');
 
 const display = value => value === undefined || value === null || value === '' ? 'No disponible' : String(value);
 function documentBlocks(m) {
@@ -256,7 +257,12 @@ async function generate(model, directory, renderPdf = pdf) {
     fs.writeFileSync(path.join(directory, 'informe.md'), markdown(blocks));
     // PDF se publica con su nombre final solo después de terminar el stream.
     const temporary = path.join(directory, 'informe.pdf.partial');
-    try { await renderPdf(blocks, temporary); fs.renameSync(temporary, path.join(directory, 'informe.pdf')); }
+    try {
+        await renderPdf(executiveBlocks(model), temporary);
+        const pages = countPdfPages(temporary);
+        if (pages < 1 || pages > 10) throw new Error(`PDF ejecutivo fuera del límite: ${pages} páginas (máximo 10). Evidencia completa conservada.`);
+        fs.renameSync(temporary, path.join(directory, 'informe.pdf'));
+    }
     catch (error) { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); throw error; }
 }
 module.exports = { documentBlocks, markdown, generate };

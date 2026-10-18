@@ -1,3 +1,5 @@
+> Operación actual: consultar [OPERACION-HACHI.md](OPERACION-HACHI.md). PDF ejecutivo máximo 10 páginas; evidencia técnica completa en Markdown/JSON. El calendario requiere instalación y habilitación explícita.
+
 # Hachi: primera suite de regresión
 
 Requiere Node.js 22 o superior y acceso a loopback para Supertest. No necesita `.env`, credenciales ni servicios de Supabase. Desde la raíz del repositorio:
