@@ -1,0 +1,132 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [development, staging, main]
+  push:
+    branches: [development, staging, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    name: Verificar proyecto
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verificar que .env no esté en el repositorio
+        id: entorno
+        run: |
+          if git ls-files --error-unmatch .env >/dev/null 2>&1; then
+            echo "::error::El archivo .env está versionado. Quítalo del repositorio y agrégalo a .gitignore."
+            exit 1
+          fi
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        id: dependencias
+        run: npm ci
+
+      - name: Lint y sintaxis obligatorios
+        id: lint
+        if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
+        run: npm run lint
+
+      - name: Build (si existe el script)
+        id: build
+        if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
+        run: npm run build --if-present
+
+      - name: Verificar aislamiento de Supabase
+        id: aislamiento
+        if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
+        run: npm run test:isolation
+
+      # Adaptar y validar el aislamiento del equipo antes de publicar este CI.
+      - name: Pruebas del equipo (35 casos)
+        id: equipo
+        if: ${{ !cancelled() && steps.aislamiento.outcome == 'success' }}
+        run: npm run test:team
+
+      - name: Carga controlada de Hachi
+        id: carga
+        if: ${{ !cancelled() && steps.aislamiento.outcome == 'success' }}
+        # test:load repite test:isolation; aquí ya pasó en su etapa independiente.
+        run: node --test tests/isolation/carga.test.cjs
+
+      - name: Pruebas del generador de Hachi
+        id: generador
+        if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
+        run: npm run test:qa-generator
+
+      - name: Regresión y HU-6 de Hachi e informes (80 casos)
+        id: regresion
+        if: ${{ !cancelled() && steps.aislamiento.outcome == 'success' && steps.carga.outcome == 'success' }}
+        run: npm run test:qa
+
+      - name: Publicar informes y evidencia QA
+        id: artefactos
+        if: ${{ always() && (steps.regresion.outcome == 'success' || steps.regresion.outcome == 'failure') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: hachi-qa-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            qa-output/*/informe.pdf
+            qa-output/*/informe.md
+            qa-output/*/execution.json
+            qa-output/*/results.json
+            qa-output/*/report-error.json
+            qa-output/*/unit.jsonl
+            qa-output/*/api.jsonl
+          include-hidden-files: false
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Resumir etapas sin ocultar fallos
+        if: ${{ always() }}
+        env:
+          ENTORNO: ${{ steps.entorno.outcome }}
+          INSTALACION: ${{ steps.dependencias.outcome }}
+          LINT: ${{ steps.lint.outcome }}
+          BUILD: ${{ steps.build.outcome }}
+          AISLAMIENTO: ${{ steps.aislamiento.outcome }}
+          EQUIPO: ${{ steps.equipo.outcome }}
+          CARGA: ${{ steps.carga.outcome }}
+          GENERADOR: ${{ steps.generador.outcome }}
+          REGRESION: ${{ steps.regresion.outcome }}
+          ARTEFACTOS: ${{ steps.artefactos.outcome }}
+        run: |
+          {
+            echo '## Infraestructura y controles'
+            echo "- Control de entorno: $ENTORNO"
+            echo "- Instalación: $INSTALACION"
+            echo "- Lint / sintaxis: $LINT"
+            echo "- Build: $BUILD"
+            echo "- Aislamiento: $AISLAMIENTO"
+            echo '## Pruebas del equipo'
+            echo "- Suite explícita (35 casos previstos): $EQUIPO"
+            echo '## Hachi'
+            echo "- Carga controlada: $CARGA"
+            echo "- Pruebas del generador: $GENERADOR"
+            echo "- Regresión y HU-6 (80 casos previstos): $REGRESION"
+            echo "- Publicación de artefactos: $ARTEFACTOS"
+            echo 'Los totales previstos no son resultados: consultar cada suite y los informes.'
+            echo 'Un paso omitido no equivale a PASS. Un fallo de ejecución no identifica por sí solo un defecto funcional.'
+            echo 'Revisar results.json para FAIL/BLOCKED/NOT_RUN, execution.json y report-error.json si existe; para el equipo, consultar el log de su etapa.'
+            echo 'Los pasos conservan sus códigos de salida. Publicar informes no convierte el CI fallido en exitoso.'
+          } >> "$GITHUB_STEP_SUMMARY"

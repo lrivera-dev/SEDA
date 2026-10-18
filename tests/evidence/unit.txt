@@ -1,0 +1,268 @@
+
+> seda@1.0.0 test:unit
+> node --test --test-reporter=tap tests/unit/*.test.cjs
+
+TAP version 13
+# Subtest: universidad: nombre vacío devuelve 400
+ok 1 - universidad: nombre vacío devuelve 400
+  ---
+  duration_ms: 3.4962
+  type: 'test'
+  ...
+# Subtest: universidad: ubicacion vacío devuelve 400
+ok 2 - universidad: ubicacion vacío devuelve 400
+  ---
+  duration_ms: 0.3319
+  type: 'test'
+  ...
+# Subtest: universidad: correo_contacto vacío devuelve 400
+ok 3 - universidad: correo_contacto vacío devuelve 400
+  ---
+  duration_ms: 0.2961
+  type: 'test'
+  ...
+# Subtest: universidad: telefono_contacto vacío devuelve 400
+ok 4 - universidad: telefono_contacto vacío devuelve 400
+  ---
+  duration_ms: 0.5711
+  type: 'test'
+  ...
+# Subtest: universidad: correo vacío devuelve 400
+ok 5 - universidad: correo vacío devuelve 400
+  ---
+  duration_ms: 0.2938
+  type: 'test'
+  ...
+# Subtest: universidad: contrasena vacío devuelve 400
+ok 6 - universidad: contrasena vacío devuelve 400
+  ---
+  duration_ms: 0.9703
+  type: 'test'
+  ...
+# Subtest: universidad: tipo 123 debe producir error de validación
+not ok 7 - universidad: tipo 123 debe producir error de validación
+  ---
+  duration_ms: 0.4591
+  type: 'test'
+  location: '<repositorio>\\tests\\unit\\validaciones.test.cjs:21:5'
+  failureType: 'testCodeFailure'
+  error: 'datos[campo].trim is not a function'
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    <repositorio>\controllers\universidades.controller.js:9:89
+    Array.filter (<anonymous>)
+    registrarUniversidad (<repositorio>\controllers\universidades.controller.js:9:43)
+    TestContext.<anonymous> (<repositorio>\tests\unit\validaciones.test.cjs:23:15)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: universidad: tipo true debe producir error de validación
+not ok 8 - universidad: tipo true debe producir error de validación
+  ---
+  duration_ms: 0.1703
+  type: 'test'
+  location: '<repositorio>\\tests\\unit\\validaciones.test.cjs:21:5'
+  failureType: 'testCodeFailure'
+  error: 'datos[campo].trim is not a function'
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    <repositorio>\controllers\universidades.controller.js:9:89
+    Array.filter (<anonymous>)
+    registrarUniversidad (<repositorio>\controllers\universidades.controller.js:9:43)
+    TestContext.<anonymous> (<repositorio>\tests\unit\validaciones.test.cjs:23:15)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: universidad: tipo {} debe producir error de validación
+not ok 9 - universidad: tipo {} debe producir error de validación
+  ---
+  duration_ms: 0.1566
+  type: 'test'
+  location: '<repositorio>\\tests\\unit\\validaciones.test.cjs:21:5'
+  failureType: 'testCodeFailure'
+  error: 'datos[campo].trim is not a function'
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    <repositorio>\controllers\universidades.controller.js:9:89
+    Array.filter (<anonymous>)
+    registrarUniversidad (<repositorio>\controllers\universidades.controller.js:9:43)
+    TestContext.<anonymous> (<repositorio>\tests\unit\validaciones.test.cjs:23:15)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: universidad: tipo [] debe producir error de validación
+not ok 10 - universidad: tipo [] debe producir error de validación
+  ---
+  duration_ms: 0.1951
+  type: 'test'
+  location: '<repositorio>\\tests\\unit\\validaciones.test.cjs:21:5'
+  failureType: 'testCodeFailure'
+  error: 'datos[campo].trim is not a function'
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    <repositorio>\controllers\universidades.controller.js:9:89
+    Array.filter (<anonymous>)
+    registrarUniversidad (<repositorio>\controllers\universidades.controller.js:9:43)
+    TestContext.<anonymous> (<repositorio>\tests\unit\validaciones.test.cjs:23:15)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: universidad: datos válidos crean usuario y universidad
+ok 11 - universidad: datos válidos crean usuario y universidad
+  ---
+  duration_ms: 0.5992
+  type: 'test'
+  ...
+# Subtest: universidad: duplicada
+ok 12 - universidad: duplicada
+  ---
+  duration_ms: 0.4643
+  type: 'test'
+  ...
+# Subtest: universidad: error de búsqueda
+ok 13 - universidad: error de búsqueda
+  ---
+  duration_ms: 0.318
+  type: 'test'
+  ...
+# Subtest: universidad: error de Auth
+ok 14 - universidad: error de Auth
+  ---
+  duration_ms: 0.2707
+  type: 'test'
+  ...
+# Subtest: equivalencia: falta id_materia_origen
+ok 15 - equivalencia: falta id_materia_origen
+  ---
+  duration_ms: 0.5904
+  type: 'test'
+  ...
+# Subtest: equivalencia: falta id_materia_destino
+ok 16 - equivalencia: falta id_materia_destino
+  ---
+  duration_ms: 0.344
+  type: 'test'
+  ...
+# Subtest: equivalencia: falta descripcion
+ok 17 - equivalencia: falta descripcion
+  ---
+  duration_ms: 0.774
+  type: 'test'
+  ...
+# Subtest: equivalencia: falta id_universidad
+ok 18 - equivalencia: falta id_universidad
+  ---
+  duration_ms: 0.2436
+  type: 'test'
+  ...
+# Subtest: equivalencia: materias iguales deben devolver HTTP 400
+not ok 19 - equivalencia: materias iguales deben devolver HTTP 400
+  ---
+  duration_ms: 1.6525
+  type: 'test'
+  location: '<repositorio>\\tests\\unit\\validaciones.test.cjs:57:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    200 !== 400
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 400
+  actual: 200
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repositorio>\tests\unit\validaciones.test.cjs:60:12)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: equivalencia: origen inexistente
+ok 20 - equivalencia: origen inexistente
+  ---
+  duration_ms: 0.5274
+  type: 'test'
+  ...
+# Subtest: equivalencia: destino inexistente
+ok 21 - equivalencia: destino inexistente
+  ---
+  duration_ms: 0.194
+  type: 'test'
+  ...
+# Subtest: equivalencia: identificador rechazado por persistencia
+ok 22 - equivalencia: identificador rechazado por persistencia
+  ---
+  duration_ms: 0.2231
+  type: 'test'
+  ...
+# Subtest: equivalencia: universidad sin permiso
+ok 23 - equivalencia: universidad sin permiso
+  ---
+  duration_ms: 0.2166
+  type: 'test'
+  ...
+# Subtest: equivalencia: archivos faltantes impiden insertar
+ok 24 - equivalencia: archivos faltantes impiden insertar
+  ---
+  duration_ms: 0.2634
+  type: 'test'
+  ...
+# Subtest: equivalencia: datos válidos quedan PENDIENTE
+ok 25 - equivalencia: datos válidos quedan PENDIENTE
+  ---
+  duration_ms: 0.253
+  type: 'test'
+  ...
+# Subtest: archivo: vacío
+ok 26 - archivo: vacío
+  ---
+  duration_ms: 0.218
+  type: 'test'
+  ...
+# Subtest: archivo: formato incompatible
+ok 27 - archivo: formato incompatible
+  ---
+  duration_ms: 0.0921
+  type: 'test'
+  ...
+# Subtest: archivo: PDF truncado
+ok 28 - archivo: PDF truncado
+  ---
+  duration_ms: 0.1463
+  type: 'test'
+  ...
+# Subtest: archivo: DOCX truncado
+ok 29 - archivo: DOCX truncado
+  ---
+  duration_ms: 0.7176
+  type: 'test'
+  ...
+# Subtest: archivo: PDF válido
+ok 30 - archivo: PDF válido
+  ---
+  duration_ms: 0.1413
+  type: 'test'
+  ...
+# Subtest: archivo: DOCX válido
+ok 31 - archivo: DOCX válido
+  ---
+  duration_ms: 0.1032
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 26
+# fail 5
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 202.8625

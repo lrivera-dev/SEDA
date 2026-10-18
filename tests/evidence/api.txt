@@ -1,0 +1,179 @@
+
+> seda@1.0.0 test:api
+> node --test --test-reporter=tap tests/api/*.test.cjs
+
+TAP version 13
+# Subtest: /universidades: campos ausentes, 400 JSON en español
+ok 1 - /universidades: campos ausentes, 400 JSON en español
+  ---
+  duration_ms: 363.8348
+  type: 'test'
+  ...
+# Subtest: /equivalencias: campos ausentes, 400 JSON en español
+ok 2 - /equivalencias: campos ausentes, 400 JSON en español
+  ---
+  duration_ms: 8.5681
+  type: 'test'
+  ...
+# TypeError: datos[campo].trim is not a function
+#     at <repositorio>\\controllers\\universidades.controller.js:9:89
+#     at Array.filter (<anonymous>)
+#     at registrarUniversidad (<repositorio>\\controllers\\universidades.controller.js:9:43)
+#     at Layer.handleRequest (<repositorio>\\node_modules\\router\\lib\\layer.js:152:17)
+#     at next (<repositorio>\\node_modules\\router\\lib\\route.js:157:13)
+#     at Route.dispatch (<repositorio>\\node_modules\\router\\lib\\route.js:117:3)
+#     at handle (<repositorio>\\node_modules\\router\\index.js:435:11)
+#     at Layer.handleRequest (<repositorio>\\node_modules\\router\\lib\\layer.js:152:17)
+#     at <repositorio>\\node_modules\\router\\index.js:295:15
+#     at processParams (<repositorio>\\node_modules\\router\\index.js:582:12)
+# Subtest: universidades: tipo incorrecto debe devolver 400 JSON
+not ok 3 - universidades: tipo incorrecto debe devolver 400 JSON
+  ---
+  duration_ms: 9.0264
+  type: 'test'
+  location: '<repositorio>\\tests\\api\\endpoints.test.cjs:17:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    500 !== 400
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 400
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repositorio>\tests\api\endpoints.test.cjs:19:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: universidades: duplicada devuelve 409
+ok 4 - universidades: duplicada devuelve 409
+  ---
+  duration_ms: 13.2607
+  type: 'test'
+  ...
+# Subtest: universidades: registro válido devuelve 201 y universidad
+ok 5 - universidades: registro válido devuelve 201 y universidad
+  ---
+  duration_ms: 10.7425
+  type: 'test'
+  ...
+# Subtest: equivalencias: materias iguales deben devolver 400 y mensaje en español
+not ok 6 - equivalencias: materias iguales deben devolver 400 y mensaje en español
+  ---
+  duration_ms: 9.0292
+  type: 'test'
+  location: '<repositorio>\\tests\\api\\endpoints.test.cjs:34:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    200 !== 400
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 400
+  actual: 200
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repositorio>\tests\api\endpoints.test.cjs:36:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: equivalencias: origen inexistente devuelve 400
+ok 7 - equivalencias: origen inexistente devuelve 400
+  ---
+  duration_ms: 7.7516
+  type: 'test'
+  ...
+# Subtest: equivalencias: error del servicio se propaga como 500
+ok 8 - equivalencias: error del servicio se propaga como 500
+  ---
+  duration_ms: 9.5656
+  type: 'test'
+  ...
+# Subtest: equivalencias: registro válido devuelve 201
+ok 9 - equivalencias: registro válido devuelve 201
+  ---
+  duration_ms: 6.9287
+  type: 'test'
+  ...
+# Subtest: archivos: solicitud sin archivo devuelve 400
+ok 10 - archivos: solicitud sin archivo devuelve 400
+  ---
+  duration_ms: 6.2209
+  type: 'test'
+  ...
+# Subtest: archivos: vacío
+ok 11 - archivos: vacío
+  ---
+  duration_ms: 9.9425
+  type: 'test'
+  ...
+# Subtest: archivos: MIME incompatible
+ok 12 - archivos: MIME incompatible
+  ---
+  duration_ms: 7.9662
+  type: 'test'
+  ...
+# Subtest: archivos: contenido incompatible
+ok 13 - archivos: contenido incompatible
+  ---
+  duration_ms: 6.9005
+  type: 'test'
+  ...
+# Subtest: archivos: más de 20 MB
+ok 14 - archivos: más de 20 MB
+  ---
+  duration_ms: 75.0657
+  type: 'test'
+  ...
+# Subtest: archivos: PDF válido devuelve 201
+ok 15 - archivos: PDF válido devuelve 201
+  ---
+  duration_ms: 12.3218
+  type: 'test'
+  ...
+# Subtest: archivos: DOCX válido devuelve 201
+ok 16 - archivos: DOCX válido devuelve 201
+  ---
+  duration_ms: 7.588
+  type: 'test'
+  ...
+# Subtest: archivos: Debe indicar el tipo de documento: pensum o programa.
+ok 17 - archivos: Debe indicar el tipo de documento: pensum o programa.
+  ---
+  duration_ms: 5.7425
+  type: 'test'
+  ...
+# Subtest: archivos: Falta id_carrera para subir el pensum.
+ok 18 - archivos: Falta id_carrera para subir el pensum.
+  ---
+  duration_ms: 5.5191
+  type: 'test'
+  ...
+# Subtest: archivos: Falta id_materia para subir el programa.
+ok 19 - archivos: Falta id_materia para subir el programa.
+  ---
+  duration_ms: 5.8086
+  type: 'test'
+  ...
+# Subtest: archivos: error de almacenamiento devuelve 500
+ok 20 - archivos: error de almacenamiento devuelve 500
+  ---
+  duration_ms: 6.4318
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 18
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 984.658
