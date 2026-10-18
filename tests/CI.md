@@ -1,3 +1,5 @@
+> Operación actual: consultar [OPERACION-HACHI.md](OPERACION-HACHI.md). PDF ejecutivo máximo 10 páginas; evidencia técnica completa en Markdown/JSON. El calendario requiere instalación y habilitación explícita.
+
 # Hachi en GitHub Actions — preparación local, Paso 13.10
 
 Configuración revisada el 15 de octubre de 2026. Todavía no validada en Ubuntu/GitHub Actions.
