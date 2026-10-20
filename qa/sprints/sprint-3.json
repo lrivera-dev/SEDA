@@ -436,7 +436,7 @@
     }
   ],
   "regression": {
-    "description": "123 pruebas existentes: 51 de regresión original, 29 HU-6, 23 HU-8 y 20 HU-9. Referencias reutilizadas de sprint-2.json; no se copian resultados históricos ni se acredita HU-3/HU-4. HU-6-CA3 continúa sujeto a aprobación del PO en Sprint 2.",
+    "description": "123 pruebas existentes: 51 de regresión original, 29 HU-6, 23 HU-8 y 20 HU-9. Referencias reutilizadas de sprint-2.json; no se copian resultados históricos ni se acredita HU-3/HU-4. HU-6-CA3 continúa sujeto a aprobación del PO en Sprint 2. Se agregan 15 verificaciones de precondiciones implementadas por HU-2; no acreditan IA ni checklist.",
     "testRefs": [
       {
         "id": "UNIT-001",
@@ -1175,6 +1175,96 @@
         "suite": "api",
         "name": "HU9-10 CA3: decisión inválida \"aceptar\" no modifica datos",
         "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "S3-PRE-01",
+        "suite": "api",
+        "name": "S3-PRE-01: registro rechaza documentos incompletos máscara 0 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-02",
+        "suite": "api",
+        "name": "S3-PRE-02: registro rechaza documentos incompletos máscara 1 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-03",
+        "suite": "api",
+        "name": "S3-PRE-03: registro rechaza documentos incompletos máscara 2 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-04",
+        "suite": "api",
+        "name": "S3-PRE-04: registro rechaza documentos incompletos máscara 3 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-05",
+        "suite": "api",
+        "name": "S3-PRE-05: registro rechaza documentos incompletos máscara 4 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-06",
+        "suite": "api",
+        "name": "S3-PRE-06: registro rechaza documentos incompletos máscara 5 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-07",
+        "suite": "api",
+        "name": "S3-PRE-07: registro rechaza documentos incompletos máscara 6 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-08",
+        "suite": "api",
+        "name": "S3-PRE-08: registro rechaza documentos incompletos máscara 7 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-09",
+        "suite": "api",
+        "name": "S3-PRE-09: registro rechaza documentos incompletos máscara 8 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-10",
+        "suite": "api",
+        "name": "S3-PRE-10: registro rechaza documentos incompletos máscara 9 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-11",
+        "suite": "api",
+        "name": "S3-PRE-11: registro rechaza documentos incompletos máscara 10 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-12",
+        "suite": "api",
+        "name": "S3-PRE-12: registro rechaza documentos incompletos máscara 11 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-13",
+        "suite": "api",
+        "name": "S3-PRE-13: registro rechaza documentos incompletos máscara 12 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-14",
+        "suite": "api",
+        "name": "S3-PRE-14: registro rechaza documentos incompletos máscara 13 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-15",
+        "suite": "api",
+        "name": "S3-PRE-15: registro rechaza documentos incompletos máscara 14 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
       }
     ]
   },
@@ -1302,6 +1392,12 @@
     "startsOn": "2026-10-19",
     "status": "PREPARACION_LOCAL_NO_PUBLICADA",
     "goalNote": "Título y objetivo descriptivos de QA derivados de las dos historias; no sustituyen un Sprint Goal aprobado.",
-    "plan": "tests/PLAN-QA-SPRINT-3.md"
+    "plan": "tests/PLAN-QA-SPRINT-3.md",
+    "automationReview": {
+      "reference": "cebb094",
+      "report": "tests/ESTADO-AUTOMATIZACION-SPRINT-3.md",
+      "partialScenario": "PLAN-S3-HU-3-02",
+      "scope": "Solo rechazo del registro HU-2 con documentos incompletos; no entrega de documentos a IA."
+    }
   }
 }
