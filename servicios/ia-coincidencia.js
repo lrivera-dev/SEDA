@@ -45,10 +45,30 @@ function validarDocumentos(documentos) {
   }
 
   for (const campo of CAMPOS_DOCUMENTOS) {
-    if (!Buffer.isBuffer(documentos[campo]) || documentos[campo].length === 0) {
-      throw new TypeError(`Falta el PDF ${campo}`);
+    const documento = documentos[campo];
+    const esPdf = Buffer.isBuffer(documento) && documento.length > 0;
+    const esTexto = typeof documento === 'string' && documento.trim().length > 0;
+
+    if (!esPdf && !esTexto) {
+      throw new TypeError(`Falta el documento ${campo}`);
     }
   }
+}
+
+function crearPartesDocumento(etiqueta, documento) {
+  if (Buffer.isBuffer(documento)) {
+    return [
+      { text: etiqueta },
+      {
+        inlineData: {
+          mimeType: 'application/pdf',
+          data: documento.toString('base64')
+        }
+      }
+    ];
+  }
+
+  return [{ text: `${etiqueta}\n${documento}` }];
 }
 
 function validarRespuesta(texto) {
@@ -127,35 +147,11 @@ async function calcularCoincidencia(documentos) {
   ].join(' ');
 
   const contenido = [
-    { text: 'PROGRAMA DE LA MATERIA DE ORIGEN:' },
-    {
-      inlineData: {
-        mimeType: 'application/pdf',
-        data: documentos.programa_origen.toString('base64')
-      }
-    },
-    { text: 'PROGRAMA DE LA MATERIA DE DESTINO:' },
-    {
-      inlineData: {
-        mimeType: 'application/pdf',
-        data: documentos.programa_destino.toString('base64')
-      }
-    },
-    { text: 'PENSUM DE LA CARRERA DE ORIGEN (solo contexto):' },
-    {
-      inlineData: {
-        mimeType: 'application/pdf',
-        data: documentos.pensum_origen.toString('base64')
-      }
-    },
-    { text: 'PENSUM DE LA CARRERA DE DESTINO (solo contexto):' },
-    {
-      inlineData: {
-        mimeType: 'application/pdf',
-        data: documentos.pensum_destino.toString('base64')
-      }
-    }
-  ];
+    ['PROGRAMA DE LA MATERIA DE ORIGEN:', documentos.programa_origen],
+    ['PROGRAMA DE LA MATERIA DE DESTINO:', documentos.programa_destino],
+    ['PENSUM DE LA CARRERA DE ORIGEN (solo contexto):', documentos.pensum_origen],
+    ['PENSUM DE LA CARRERA DE DESTINO (solo contexto):', documentos.pensum_destino]
+  ].flatMap(([etiqueta, documento]) => crearPartesDocumento(etiqueta, documento));
 
   try {
     const respuesta = await cliente.models.generateContent({
