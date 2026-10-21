@@ -23,7 +23,9 @@
     "@supabase/supabase-js": "^2.117.2",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
-    "multer": "^2.4.0"
+    "mammoth": "^1.13.0",
+    "multer": "^2.4.0",
+    "pdf-parse": "^2.4.5"
   },
   "devDependencies": {
     "pdfkit": "0.17.2",
