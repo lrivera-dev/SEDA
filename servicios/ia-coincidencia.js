@@ -41,12 +41,12 @@ function crearError(codigo) {
 
 function validarDocumentos(documentos) {
   if (!documentos || typeof documentos !== 'object' || Array.isArray(documentos)) {
-    throw new TypeError('documentos debe ser un objeto con los cuatro documentos');
+    throw new TypeError('documentos debe ser un objeto con los cuatro PDF');
   }
 
   for (const campo of CAMPOS_DOCUMENTOS) {
-    if (typeof documentos[campo] !== 'string' || !documentos[campo].trim()) {
-      throw new TypeError(`Falta el documento ${campo}`);
+    if (!Buffer.isBuffer(documentos[campo]) || documentos[campo].length === 0) {
+      throw new TypeError(`Falta el PDF ${campo}`);
     }
   }
 }
@@ -127,15 +127,35 @@ async function calcularCoincidencia(documentos) {
   ].join(' ');
 
   const contenido = [
-    'PROGRAMA DE LA MATERIA DE ORIGEN:',
-    documentos.programa_origen,
-    'PROGRAMA DE LA MATERIA DE DESTINO:',
-    documentos.programa_destino,
-    'PENSUM DE LA CARRERA DE ORIGEN (solo contexto):',
-    documentos.pensum_origen,
-    'PENSUM DE LA CARRERA DE DESTINO (solo contexto):',
-    documentos.pensum_destino
-  ].join('\n\n');
+    { text: 'PROGRAMA DE LA MATERIA DE ORIGEN:' },
+    {
+      inlineData: {
+        mimeType: 'application/pdf',
+        data: documentos.programa_origen.toString('base64')
+      }
+    },
+    { text: 'PROGRAMA DE LA MATERIA DE DESTINO:' },
+    {
+      inlineData: {
+        mimeType: 'application/pdf',
+        data: documentos.programa_destino.toString('base64')
+      }
+    },
+    { text: 'PENSUM DE LA CARRERA DE ORIGEN (solo contexto):' },
+    {
+      inlineData: {
+        mimeType: 'application/pdf',
+        data: documentos.pensum_origen.toString('base64')
+      }
+    },
+    { text: 'PENSUM DE LA CARRERA DE DESTINO (solo contexto):' },
+    {
+      inlineData: {
+        mimeType: 'application/pdf',
+        data: documentos.pensum_destino.toString('base64')
+      }
+    }
+  ];
 
   try {
     const respuesta = await cliente.models.generateContent({
