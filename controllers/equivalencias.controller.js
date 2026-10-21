@@ -1,4 +1,5 @@
 const supabase = require('../supabaseClient');
+const colaEvaluacion = require('../servicios/cola-evaluacion');
 
 const CAMPOS_OBLIGATORIOS = ['id_materia_origen', 'id_materia_destino', 'descripcion', 'id_universidad'];
 
@@ -86,6 +87,14 @@ async function registrarEquivalencias(req, res) {
 
     if (errorInsert) {
         return res.status(500).json({ error: errorInsert.message });
+    }
+
+    // HU-3: la evaluación con IA corre en segundo plano, sin esperar su resultado.
+    // Si encolar falla, el registro de la equivalencia sigue funcionando.
+    try {
+        colaEvaluacion.encolar(equivalencia.id_caso);
+    } catch (error) {
+        console.error(`No se pudo encolar la evaluación del caso ${equivalencia.id_caso}:`, error.message);
     }
 
     return res.status(201).json({
