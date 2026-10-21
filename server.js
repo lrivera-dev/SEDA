@@ -10,6 +10,7 @@ const equivalenciasRoutes = require('./routes/equivalencias.routes');
 const panelRoutes = require('./routes/panel.routes');
 const casosRoutes = require('./routes/casos.routes');
 const authRoutes = require('./routes/auth.routes');
+const colaEvaluacion = require('./servicios/cola-evaluacion');
 
 const app = express();
 
@@ -51,6 +52,10 @@ if (require.main === module) {
     app.listen(PORT, () => {
         console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });
+
+    // HU-3: activa la cola de evaluación y pasa a ERROR los cálculos que un reinicio dejó a medias.
+    // Va aquí (y no al importar) para que las pruebas del CI nunca toquen la base.
+    colaEvaluacion.iniciar();
 }
 
 module.exports = app;
