@@ -77,4 +77,42 @@ async function generarEnlacesDocumentos(caso) {
     return { enlaces, documentos_faltantes: documentosFaltantes };
 }
 
-module.exports = { generarEnlacesDocumentos };
+async function descargarDocumento(ruta) {
+    if (typeof ruta !== 'string' || ruta.trim() === '') {
+        const error = new Error('DOCUMENTO_NO_DISPONIBLE');
+        error.code = 'DOCUMENTO_NO_DISPONIBLE';
+        throw error;
+    }
+
+    const { data, error: errorDescarga } = await supabase.storage
+        .from(BUCKET_DOCUMENTOS)
+        .download(ruta);
+
+    if (errorDescarga || !data) {
+        console.error('No se pudo descargar un documento desde Storage:', errorDescarga?.message);
+
+        const error = new Error('DOCUMENTO_NO_DISPONIBLE');
+        error.code = 'DOCUMENTO_NO_DISPONIBLE';
+        throw error;
+    }
+
+    return Buffer.from(await data.arrayBuffer());
+}
+
+async function descargarDocumentosCaso(caso) {
+    const documentos = {};
+
+    await Promise.all(
+        DOCUMENTOS_CASO.map(async (documento) => {
+            const ruta = documento.obtenerRuta(caso);
+            documentos[documento.clave] = await descargarDocumento(ruta);
+        })
+    );
+
+    return documentos;
+}
+
+module.exports = {
+    generarEnlacesDocumentos,
+    descargarDocumentosCaso
+};
