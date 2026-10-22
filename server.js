@@ -10,6 +10,7 @@ const equivalenciasRoutes = require('./routes/equivalencias.routes');
 const panelRoutes = require('./routes/panel.routes');
 const casosRoutes = require('./routes/casos.routes');
 const authRoutes = require('./routes/auth.routes');
+const coincidenciaRoutes = require('./routes/coincidencia.routes');
 const colaEvaluacion = require('./servicios/cola-evaluacion');
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/equivalencias', equivalenciasRoutes);
 app.use('/panel', panelRoutes);
 app.use('/casos', casosRoutes);
 app.use('/auth', authRoutes);
+app.use('/coincidencia', coincidenciaRoutes);
 
 // Manejador de errores: siempre después de todas las rutas
 app.use((err, req, res, next) => {
