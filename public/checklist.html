@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEDA | Checklist de coincidencia</title>
+    <link rel="stylesheet" href="css/subir-equivalencia.css">
+    <link rel="stylesheet" href="css/checklist.css">
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Checklist de coincidencia</h1>
+        <p class="lead">Revisa el resultado de la evaluación de cada equivalencia y marca las materias que deseas validar.</p>
+
+        <div class="status" id="status-checklist" role="status" aria-live="polite"></div>
+
+        <section class="card" id="contenido" hidden>
+            <h2>Resumen</h2>
+            <p class="resumen" id="resumen" aria-live="polite"></p>
+            <p class="todas-aprobadas" id="mensaje-todas" hidden>Todas las materias están aprobadas</p>
+
+            <h2>Materias</h2>
+            <ul class="lista-casos" id="lista-casos"></ul>
+        </section>
+
+        <div class="status warn show aviso-incompletos" id="aviso-incompletos" role="alert" hidden>
+            <span class="ico">!</span>
+            <div>
+                <b id="texto-incompletos"></b>
+                <ul id="lista-incompletos"></ul>
+            </div>
+        </div>
+
+        <template id="tpl-caso">
+            <li class="caso">
+                <div class="caso-fila">
+                    <input type="checkbox" class="validar">
+                    <label class="materias"></label>
+                    <span class="etiqueta"></span>
+                    <span class="porcentaje"></span>
+                </div>
+                <p class="motivo" hidden></p>
+                <!-- Inicio HU-3 tarea 8: aquí se agregan el estado del cálculo y el reporte de la IA -->
+                <div class="detalle-ia"></div>
+                <!-- Fin HU-3 tarea 8 -->
+            </li>
+        </template>
+    </div>
+
+    <script src="js/checklist.js"></script>
+</body>
+</html>
