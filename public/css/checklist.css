@@ -1,0 +1,77 @@
+.resumen {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--titulo);
+}
+.todas-aprobadas {
+  margin-top: 0.6rem;
+  color: var(--ok);
+  font-weight: 700;
+}
+.lista-casos {
+  list-style: none;
+}
+.caso {
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--borde);
+}
+.caso:last-child {
+  border-bottom: 0;
+}
+.caso-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+}
+.validar {
+  width: 1.2rem;
+  height: 1.2rem;
+  padding: 0;
+  cursor: pointer;
+}
+.materias {
+  flex: 1 1 14rem;
+  cursor: pointer;
+}
+.etiqueta {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.etiqueta--aprobada {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+.etiqueta--pendiente {
+  color: var(--warn);
+  border-color: var(--warn);
+}
+.porcentaje {
+  min-width: 6rem;
+  text-align: right;
+  color: var(--muted);
+  font-weight: 600;
+}
+.motivo {
+  margin: 0.4rem 0 0 2.2rem;
+  color: var(--warn);
+  font-size: 0.92rem;
+}
+.detalle-ia {
+  margin-left: 2.2rem;
+}
+.aviso-incompletos {
+  margin-top: 1.5rem;
+}
+.aviso-incompletos ul {
+  margin: 0.4rem 0 0 1.2rem;
+  color: var(--texto);
+}
+@media (max-width: 640px) {
+  .porcentaje {
+    text-align: left;
+  }
+}
