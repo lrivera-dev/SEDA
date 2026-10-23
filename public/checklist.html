@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SEDA | Checklist de coincidencia</title>
+
+    <!-- Diseño existente de SEDA -->
+    <link rel="stylesheet" href="css/dashboard.css">
+
+    <!-- Estilos de nuestra HU-3 -->
+    <link rel="stylesheet" href="css/estado-calculo.css">
+</head>
+
+<body>
+    <div class="dashboard">
+
+        <!-- Menú lateral -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">↗</div>
+                <div>
+                    <strong>SEDA</strong>
+                    <small>
+                        Sistema de Equivalencias y
+                        Documentación Académica
+                    </small>
+                </div>
+            </div>
+
+            <nav>
+                <a href="universidades.html">
+                    Dashboard
+                </a>
+
+                <a href="subir-archivos.html">
+                    Carreras
+                </a>
+
+                <a href="subir-archivos.html">
+                    Materias
+                </a>
+
+                <a href="subir-equivalencia.html">
+                    Equivalencias
+                </a>
+
+                <a href="checklist.html"
+                   class="active"
+                   aria-current="page">
+                    Checklist de coincidencia
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="content">
+
+            <header>
+                <div>
+                    <p>Gestión académica</p>
+                    <h1>Checklist de coincidencia</h1>
+                </div>
+            </header>
+
+            <section class="welcome">
+                <h2>Evaluación de equivalencias</h2>
+                <p>
+                    Consulta el porcentaje de coincidencia,
+                    el resultado de la IA y el estado de
+                    evaluación de cada materia.
+                </p>
+            </section>
+
+            <!-- Mensajes generales -->
+            <p id="estado-checklist"
+               role="status"
+               aria-live="polite">
+                La lista de equivalencias todavía
+                no está cargada.
+            </p>
+
+            <!-- Aquí aparecerán los casos -->
+            <section
+                id="lista-casos"
+                aria-label="Casos de equivalencia">
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Componente visual HU-3 -->
+    <script src="js/estado-calculo.js"></script>
+    <script src="js/checklist.js"></script>
+
+</body>
+</html>
