@@ -112,7 +112,7 @@ function validarRespuesta(texto) {
   return resultado;
 }
 
-async function calcularCoincidencia(documentos) {
+async function calcularCoincidencia(documentos, { cliente: clienteSimulado } = {}) {
   validarDocumentos(documentos);
 
   const apiKey = process.env.IA_API_KEY;
@@ -122,15 +122,21 @@ async function calcularCoincidencia(documentos) {
     throw crearError('IA_NO_DISPONIBLE');
   }
 
-  let GoogleGenAI;
+  // Permite pruebas aisladas con un cliente simulado. En producción,
+  // sin este argumento, sigue usándose el SDK real como antes.
+  let cliente = clienteSimulado;
 
-  try {
-    ({ GoogleGenAI } = await import('@google/genai'));
-  } catch {
-    throw crearError('IA_NO_DISPONIBLE');
+  if (!cliente) {
+    let GoogleGenAI;
+
+    try {
+      ({ GoogleGenAI } = await import('@google/genai'));
+    } catch {
+      throw crearError('IA_NO_DISPONIBLE');
+    }
+
+    cliente = new GoogleGenAI({ apiKey });
   }
-
-  const cliente = new GoogleGenAI({ apiKey });
   const controlador = new AbortController();
   const temporizador = setTimeout(
     () => controlador.abort(),
