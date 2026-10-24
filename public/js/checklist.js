@@ -11,6 +11,8 @@
     const selecciones = new Map();
     let ultimaRespuesta = null;
     let consultando = false;
+    let temporizador = null;
+    let hayCasosEnEvaluacion = false;
 
     function crearElemento(etiqueta, clase, texto) {
         const elemento = document.createElement(etiqueta);
@@ -56,12 +58,13 @@
 
         const aprobada = caso.estado_checklist === "APROBADA";
 
-        if (!selecciones.has(caso.id_caso)) {
-            selecciones.set(caso.id_caso, aprobada);
-        }
+        // Usar el estado del backend, salvo que el usuario
+        // haya modificado manualmente esta casilla.
+        casilla.checked = selecciones.has(caso.id_caso)
+            ? selecciones.get(caso.id_caso)
+            : aprobada;
 
-        casilla.checked = selecciones.get(caso.id_caso);
-
+        // Guardar únicamente los cambios manuales.
         casilla.addEventListener("change", () => {
             selecciones.set(caso.id_caso, casilla.checked);
         });
@@ -86,7 +89,21 @@
             idUniversidad
         );
 
-        fila.append(titulo, etiqueta, resultado);
+        fila.append(titulo, etiqueta);
+
+        // Mostrar el motivo de las equivalencias pendientes.
+        if (!aprobada) {
+            const motivo = crearElemento(
+                "p",
+                "hu3-motivo-pendiente",
+                caso.motivo || "Pendiente de análisis"
+            );
+
+            fila.appendChild(motivo);
+        }
+
+        // Mantener los estados y reportes de HU-3.
+        fila.appendChild(resultado);
 
         return fila;
     }
@@ -169,6 +186,11 @@
                     datos.error || "No se pudo cargar el checklist."
                 );
             }
+            // Solo continuar consultando mientras haya casos en evaluación.
+            hayCasosEnEvaluacion = Array.isArray(datos.casos) &&
+                datos.casos.some(
+                    caso => caso.estado_calculo === "EN_CALCULO"
+                );
 
             const firma = JSON.stringify(datos);
 
@@ -183,6 +205,15 @@
             mensaje.textContent = error.message;
         } finally {
             consultando = false;
+
+            // Evitar múltiples temporizadores simultáneos.
+            clearTimeout(temporizador);
+            temporizador = null;
+
+            // Consultar de nuevo únicamente si hay casos en evaluación.
+            if (hayCasosEnEvaluacion) {
+                temporizador = setTimeout(cargarChecklist, 5000);
+            }
         }
     }
 
@@ -198,10 +229,15 @@
             "No se pudo cargar el componente de evaluación.";
         return;
     }
+    // Reactivar las consultas cuando HU-3 confirma un reintento.
+    window.addEventListener("seda:reintento-confirmado", () => {
+        hayCasosEnEvaluacion = true;
 
-    // Primera carga.
+        clearTimeout(temporizador);
+
+        temporizador = setTimeout(cargarChecklist, 5000);
+    });
+    // Primera carga. Las siguientes consultas se programan
+    // únicamente cuando existen casos en evaluación.
     cargarChecklist();
-
-    // Actualización automática cada 5 segundos.
-    setInterval(cargarChecklist, 5000);
 })();

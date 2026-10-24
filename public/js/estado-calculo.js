@@ -229,7 +229,10 @@
             },
             idUniversidad
           );
-
+          // Avisar al checklist que debe reanudar las consultas.
+          window.dispatchEvent?.(
+            new Event("seda:reintento-confirmado")
+          );
         } catch (fallo) {
           error.textContent = fallo.message;
           boton.disabled = false;
