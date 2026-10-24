@@ -399,3 +399,16 @@
         transition: none;
     }
 }
+
+/* Motivo de las equivalencias pendientes */
+.hu3-motivo-pendiente {
+    margin: 12px 0 0;
+    padding: 12px 15px;
+    background: #fff8e6;
+    border-left: 4px solid #e9ac38;
+    border-radius: 7px;
+    color: #765b2c;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
