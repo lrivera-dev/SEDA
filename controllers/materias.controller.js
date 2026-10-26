@@ -125,7 +125,47 @@ async function crearMateria(req, res) {
     });
 }
 
+async function listarMateriasCatalogo(req, res) {
+    const { data: materias, error } = await supabase
+        .from('materia')
+        .select(`
+            id_materia,
+            nombre,
+            carrera!inner (
+                nombre,
+                pensum_url,
+                universidad!inner (
+                    nombre,
+                    estado
+                )
+            )
+        `)
+        .not('programa_url', 'is', null)
+        .not('carrera.pensum_url', 'is', null)
+        .eq('carrera.universidad.estado', 'ACTIVA')
+        .order('nombre', { ascending: true });
+
+    if (error) {
+        console.error('No se pudo consultar el catálogo de materias:', error.message);
+        return res.status(500).json({
+            error: 'No se pudo consultar el catálogo de materias.'
+        });
+    }
+
+    const catalogo = (materias || []).map((materia) => ({
+        id_materia: materia.id_materia,
+        nombre: materia.nombre,
+        carrera: materia.carrera?.nombre || 'Carrera',
+        universidad: materia.carrera?.universidad?.nombre || 'Universidad'
+    }));
+
+    return res.status(200).json({
+        materias: catalogo
+    });
+}
+
 module.exports = {
     listarMaterias,
+    listarMateriasCatalogo,
     crearMateria
 };
