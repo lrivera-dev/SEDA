@@ -16,8 +16,8 @@ test('carga controlada de aplicación y routers reales sin escuchar ni contactar
         r.path === '/:id_caso/reintentar' && r.methods.post
     ));
 
-    // SEDA tiene 8 routers registrados.
-    assert.equal(app.router.stack.filter(l => l.handle.stack).length, 8);
+    // SEDA tiene 10 routers registrados.
+    assert.equal(app.router.stack.filter(l => l.handle.stack).length, 10);
 
     assert.equal(e.fabricaciones.length, 3);
     assert.equal(e.llamadas.length, 0);
