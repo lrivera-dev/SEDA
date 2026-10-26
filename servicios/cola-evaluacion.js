@@ -7,12 +7,28 @@ const ESTADO_EN_CALCULO = 'EN_CALCULO';
 const ESTADO_CALCULADO = 'CALCULADO';
 const ESTADO_ERROR = 'ERROR';
 
-// RN7: tope diario de evaluaciones, configurable con MAX_EVALUACIONES_DIARIAS en el .env.
-const MAX_EVALUACIONES_DIARIAS_POR_DEFECTO = 100;
-const ZONA_HORARIA = 'America/El_Salvador';
-
 const PREFIJO_ERROR = 'No se pudo calcular la coincidencia: ';
 const MENSAJE_CALCULO_INTERRUMPIDO = 'El cálculo se interrumpió, intenta de nuevo';
+
+async function reservarEvaluacionDiaria() {
+    const { data, error } = await supabase.rpc(
+        'reservar_evaluacion_diaria'
+    );
+
+    if (error) {
+        throw new Error(
+            `No se pudo consultar el límite diario: ${error.message}`
+        );
+    }
+
+    if (typeof data !== 'boolean') {
+        throw new Error(
+            'El control diario devolvió una respuesta inválida'
+        );
+    }
+
+    return data;
+}
 
 const CAMPOS_CASO = `
     id_caso,
@@ -34,36 +50,6 @@ let estaProcesando = false;
 let casoEnProceso = null;
 let procesoActual = null;
 const casosPendientes = [];
-const evaluacionesDelDia = { dia: null, total: 0 };
-
-function obtenerDiaActual() {
-    return new Date().toLocaleDateString('en-CA', { timeZone: ZONA_HORARIA });
-}
-
-function obtenerTopeDiario() {
-    const configurado = Number.parseInt(process.env.MAX_EVALUACIONES_DIARIAS, 10);
-    return Number.isInteger(configurado) && configurado >= 0
-        ? configurado
-        : MAX_EVALUACIONES_DIARIAS_POR_DEFECTO;
-}
-
-function obtenerEvaluacionesDeHoy() {
-    if (evaluacionesDelDia.dia !== obtenerDiaActual()) {
-        evaluacionesDelDia.dia = obtenerDiaActual();
-        evaluacionesDelDia.total = 0;
-    }
-
-    return evaluacionesDelDia.total;
-}
-
-function haAlcanzadoTopeDiario() {
-    return obtenerEvaluacionesDeHoy() >= obtenerTopeDiario();
-}
-
-function contarEvaluacion() {
-    obtenerEvaluacionesDeHoy();
-    evaluacionesDelDia.total += 1;
-}
 
 function describirError(error) {
     switch (error.code) {
@@ -107,25 +93,29 @@ async function guardarResultado(idCaso, resultado) {
     }
 }
 
-// No toca porcentaje_coincidencia: un caso con error nunca conserva ni guarda un porcentaje.
+// CA3: elimina los resultados anteriores y registra el motivo del error.
+
 async function guardarError(idCaso, motivo) {
     const { error } = await supabase
         .from('caso_equivalencia')
-        .update({ estado_calculo: ESTADO_ERROR, motivo_error_calculo: motivo })
+        .update({
+            estado_calculo: ESTADO_ERROR,
+            porcentaje_coincidencia: null,
+            justificacion_ia: null,
+            fecha_calculo: null,
+            motivo_error_calculo: motivo
+        })
         .eq('id_caso', idCaso);
 
     if (error) {
-        console.error(`No se pudo guardar el error del caso ${idCaso}:`, error.message);
+        console.error(
+            `No se pudo guardar el error del caso ${idCaso}:`,
+            error.message
+        );
     }
 }
 
 async function evaluarCaso(idCaso) {
-    // RN7: al llegar al tope el caso queda como está (SIN_CALCULAR) hasta el día siguiente.
-    if (haAlcanzadoTopeDiario()) {
-        console.warn(`Tope diario de evaluaciones alcanzado (${obtenerTopeDiario()}): el caso ${idCaso} queda sin calcular.`);
-        return;
-    }
-
     const { data: caso, error: errorLectura } = await supabase
         .from('caso_equivalencia')
         .select(CAMPOS_CASO)
@@ -148,6 +138,28 @@ async function evaluarCaso(idCaso) {
         return;
     }
 
+    // RN7: reservar un cupo diario en PostgreSQL.
+    // La reserva se conserva incluso si el servidor se reinicia.
+    let reservaPermitida;
+
+    try {
+        reservaPermitida = await reservarEvaluacionDiaria();
+    } catch (error) {
+        console.error(
+            `No se pudo reservar la evaluación del caso ${idCaso}:`,
+            error.message
+        );
+        return;
+    }
+
+    if (!reservaPermitida) {
+        console.warn(
+            `Tope diario de evaluaciones alcanzado (100): ` +
+            `el caso ${idCaso} conserva el estado ${caso.estado_calculo}.`
+        );
+        return;
+    }
+
     const { error: errorMarcado } = await supabase
         .from('caso_equivalencia')
         .update({ estado_calculo: ESTADO_EN_CALCULO, motivo_error_calculo: null })
@@ -161,7 +173,6 @@ async function evaluarCaso(idCaso) {
     try {
         const documentos = await preparadorDocumentos.prepararDocumentos(caso);
 
-        contarEvaluacion();
         const resultado = await iaCoincidencia.calcularCoincidencia(documentos);
 
         await guardarResultado(idCaso, resultado);
