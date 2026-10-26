@@ -366,15 +366,46 @@
           "id": "HU-8-CA1",
           "sourceRef": "SPRINT2 / HU-8 / CRITERIOS DE ACEPTACIÓN / CA1",
           "text": "Al seleccionar un caso existente, el sistema abre el reporte en un máximo de 5 segundos, mostrando descripción, estado, fecha de registro, materia, carrera y universidad de origen y de destino, y enlaces a los 4 documentos (pensum y programa de cada lado).",
-          "implementation": "No verificado en la referencia evaluada",
-          "testRefs": [],
+          "implementation": "API real inspeccionada y evaluada contra servicios simulados; navegador no verificado.",
+          "testRefs": [
+            {
+              "id": "HU8-01",
+              "suite": "api",
+              "name": "HU8-01 CA1: reporte completo, cuatro enlaces de 3600 segundos y solo lectura",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-04",
+              "suite": "api",
+              "name": "HU8-04 CA1: sin sesión no consulta datos",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-05",
+              "suite": "api",
+              "name": "HU8-05 CA1: otro perfil no accede al reporte",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-06",
+              "suite": "api",
+              "name": "HU8-06 CA1: MINED inactivo no accede al reporte",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-08",
+              "suite": "api",
+              "name": "HU8-08 CA1: error de lectura devuelve 500 sin datos parciales",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            }
+          ],
           "evidence": [],
           "verification": "SIN_EVIDENCIA",
           "coverageComplete": false,
-          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "observations": "Cobertura parcial API. No acredita navegación, presentación visual, tiempos E2E ni persistencia en ambiente compartido.",
           "pending": [
-            "Implementar o verificar la funcionalidad en la referencia autorizada.",
-            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+            "Verificar el criterio completo en navegador, incluida presentación y tiempos cuando correspondan.",
+            "Revisión por pares y validación del Product Owner."
           ],
           "plannedCase": {
             "id": "PLAN-HU-8-CA1",
@@ -394,15 +425,112 @@
           "id": "HU-8-CA2",
           "sourceRef": "SPRINT2 / HU-8 / CRITERIOS DE ACEPTACIÓN / CA2",
           "text": "Si falta alguno de los 4 documentos, el reporte se abre igualmente y muestra **\"Documentos faltantes: [lista exacta de los que faltan]\"**, sin mostrar errores.",
-          "implementation": "No verificado en la referencia evaluada",
-          "testRefs": [],
+          "implementation": "API real inspeccionada y evaluada contra servicios simulados; navegador no verificado.",
+          "testRefs": [
+            {
+              "id": "HU8-07",
+              "suite": "api",
+              "name": "HU8-07 CA2: fallo de Storage mantiene reporte y no expone rutas internas",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F00",
+              "suite": "api",
+              "name": "HU8-F00 CA2: documentos disponibles máscara 0",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F01",
+              "suite": "api",
+              "name": "HU8-F01 CA2: documentos disponibles máscara 1",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F02",
+              "suite": "api",
+              "name": "HU8-F02 CA2: documentos disponibles máscara 2",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F03",
+              "suite": "api",
+              "name": "HU8-F03 CA2: documentos disponibles máscara 3",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F04",
+              "suite": "api",
+              "name": "HU8-F04 CA2: documentos disponibles máscara 4",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F05",
+              "suite": "api",
+              "name": "HU8-F05 CA2: documentos disponibles máscara 5",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F06",
+              "suite": "api",
+              "name": "HU8-F06 CA2: documentos disponibles máscara 6",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F07",
+              "suite": "api",
+              "name": "HU8-F07 CA2: documentos disponibles máscara 7",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F08",
+              "suite": "api",
+              "name": "HU8-F08 CA2: documentos disponibles máscara 8",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F09",
+              "suite": "api",
+              "name": "HU8-F09 CA2: documentos disponibles máscara 9",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F10",
+              "suite": "api",
+              "name": "HU8-F10 CA2: documentos disponibles máscara 10",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F11",
+              "suite": "api",
+              "name": "HU8-F11 CA2: documentos disponibles máscara 11",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F12",
+              "suite": "api",
+              "name": "HU8-F12 CA2: documentos disponibles máscara 12",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F13",
+              "suite": "api",
+              "name": "HU8-F13 CA2: documentos disponibles máscara 13",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-F14",
+              "suite": "api",
+              "name": "HU8-F14 CA2: documentos disponibles máscara 14",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            }
+          ],
           "evidence": [],
           "verification": "SIN_EVIDENCIA",
           "coverageComplete": false,
-          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "observations": "Cobertura parcial API. No acredita navegación, presentación visual, tiempos E2E ni persistencia en ambiente compartido.",
           "pending": [
-            "Implementar o verificar la funcionalidad en la referencia autorizada.",
-            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+            "Verificar el criterio completo en navegador, incluida presentación y tiempos cuando correspondan.",
+            "Revisión por pares y validación del Product Owner."
           ],
           "plannedCase": {
             "id": "PLAN-HU-8-CA2",
@@ -422,15 +550,28 @@
           "id": "HU-8-CA3",
           "sourceRef": "SPRINT2 / HU-8 / CRITERIOS DE ACEPTACIÓN / CA3",
           "text": "Si el identificador del caso no existe, fue eliminado o tiene un formato inválido, el sistema muestra **\"El caso solicitado no existe o fue eliminado\"** (respuesta 404) y no muestra datos parciales.",
-          "implementation": "No verificado en la referencia evaluada",
-          "testRefs": [],
+          "implementation": "API real inspeccionada y evaluada contra servicios simulados; navegador no verificado.",
+          "testRefs": [
+            {
+              "id": "HU8-02",
+              "suite": "api",
+              "name": "HU8-02 CA3: UUID inválido devuelve 404 sin consulta ni datos parciales",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            },
+            {
+              "id": "HU8-03",
+              "suite": "api",
+              "name": "HU8-03 CA3: caso inexistente devuelve 404 sin datos parciales",
+              "file": "tests/api/hu8-reporte.test.cjs"
+            }
+          ],
           "evidence": [],
           "verification": "SIN_EVIDENCIA",
           "coverageComplete": false,
-          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "observations": "Cobertura parcial API. No acredita navegación, presentación visual, tiempos E2E ni persistencia en ambiente compartido.",
           "pending": [
-            "Implementar o verificar la funcionalidad en la referencia autorizada.",
-            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+            "Verificar el criterio completo en navegador, incluida presentación y tiempos cuando correspondan.",
+            "Revisión por pares y validación del Product Owner."
           ],
           "plannedCase": {
             "id": "PLAN-HU-8-CA3",
@@ -488,15 +629,70 @@
           "id": "HU-9-CA1",
           "sourceRef": "SPRINT2 / HU-9 / CRITERIOS DE ACEPTACIÓN / CA1",
           "text": "Al aceptar un caso pendiente, el sistema cambia el estado a `ACEPTADO`, guarda el revisor y la fecha de revisión, y muestra **\"Equivalencia aceptada\"** en un máximo de 3 segundos; el panel muestra el estado actualizado.",
-          "implementation": "No verificado en la referencia evaluada",
-          "testRefs": [],
+          "implementation": "API real inspeccionada y evaluada contra servicios simulados; navegador no verificado.",
+          "testRefs": [
+            {
+              "id": "HU9-01",
+              "suite": "api",
+              "name": "HU9-01 CA1: aceptar persiste estado, revisor autenticado y fecha",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-13",
+              "suite": "api",
+              "name": "HU9-13 CA1: actualización concurrente no sobrescribe revisión ajena",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-14",
+              "suite": "api",
+              "name": "HU9-14 CA1: caso inexistente devuelve 404 sin escritura",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-15",
+              "suite": "api",
+              "name": "HU9-15 CA1: error de lectura devuelve 500 sin escritura",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-16",
+              "suite": "api",
+              "name": "HU9-16 CA1: error de escritura conserva resultado fallido del servicio",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-17",
+              "suite": "api",
+              "name": "HU9-17 CA1: sin sesión no puede revisar",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-18",
+              "suite": "api",
+              "name": "HU9-18 CA1: otro perfil no puede revisar",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-19",
+              "suite": "api",
+              "name": "HU9-19 CA1: MINED inactivo no puede revisar",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-11",
+              "suite": "api",
+              "name": "HU9-11 CA1: caso ACEPTADO rechaza segunda revisión",
+              "file": "tests/api/hu9-revision.test.cjs"
+            }
+          ],
           "evidence": [],
           "verification": "SIN_EVIDENCIA",
           "coverageComplete": false,
-          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "observations": "Cobertura parcial API. No acredita navegación, presentación visual, tiempos E2E ni persistencia en ambiente compartido.",
           "pending": [
-            "Implementar o verificar la funcionalidad en la referencia autorizada.",
-            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+            "Verificar el criterio completo en navegador, incluida presentación y tiempos cuando correspondan.",
+            "Revisión por pares y validación del Product Owner."
           ],
           "plannedCase": {
             "id": "PLAN-HU-9-CA1",
@@ -516,15 +712,52 @@
           "id": "HU-9-CA2",
           "sourceRef": "SPRINT2 / HU-9 / CRITERIOS DE ACEPTACIÓN / CA2",
           "text": "Al emitir una advertencia con observación de al menos 10 caracteres, el sistema cambia el estado a `ADVERTENCIA`, guarda la observación, el revisor y la fecha, y muestra **\"Advertencia emitida\"**. Sin observación, no se envía y muestra **\"Indica el motivo de la advertencia\"**.",
-          "implementation": "No verificado en la referencia evaluada",
-          "testRefs": [],
+          "implementation": "API real inspeccionada y evaluada contra servicios simulados; navegador no verificado.",
+          "testRefs": [
+            {
+              "id": "HU9-02",
+              "suite": "api",
+              "name": "HU9-02 CA2: advertencia de diez caracteres persiste observación y auditoría",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-03",
+              "suite": "api",
+              "name": "HU9-03 CA2: observación inválida \"\" no modifica datos",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-04",
+              "suite": "api",
+              "name": "HU9-04 CA2: observación inválida \"123456789\" no modifica datos",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-05",
+              "suite": "api",
+              "name": "HU9-05 CA2: observación inválida \"          \" no modifica datos",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-06",
+              "suite": "api",
+              "name": "HU9-06 CA2: observación inválida 1234567890 no modifica datos",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-12",
+              "suite": "api",
+              "name": "HU9-12 CA2: caso ADVERTENCIA rechaza segunda revisión",
+              "file": "tests/api/hu9-revision.test.cjs"
+            }
+          ],
           "evidence": [],
           "verification": "SIN_EVIDENCIA",
           "coverageComplete": false,
-          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "observations": "Cobertura parcial API. No acredita navegación, presentación visual, tiempos E2E ni persistencia en ambiente compartido.",
           "pending": [
-            "Implementar o verificar la funcionalidad en la referencia autorizada.",
-            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+            "Verificar el criterio completo en navegador, incluida presentación y tiempos cuando correspondan.",
+            "Revisión por pares y validación del Product Owner."
           ],
           "plannedCase": {
             "id": "PLAN-HU-9-CA2",
@@ -544,15 +777,46 @@
           "id": "HU-9-CA3",
           "sourceRef": "SPRINT2 / HU-9 / CRITERIOS DE ACEPTACIÓN / CA3",
           "text": "Al intentar terminar la revisión sin elegir una decisión, el sistema no modifica el caso y muestra **\"Debe elegir una decisión: Aceptar o emitir advertencia\"** hasta que el MINED decida.",
-          "implementation": "No verificado en la referencia evaluada",
-          "testRefs": [],
+          "implementation": "API real inspeccionada y evaluada contra servicios simulados; navegador no verificado.",
+          "testRefs": [
+            {
+              "id": "HU9-20",
+              "suite": "api",
+              "name": "HU9-20 CA3: decisión heredada constructor se rechaza antes de persistencia",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-07",
+              "suite": "api",
+              "name": "HU9-07 CA3: decisión inválida null no modifica datos",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-08",
+              "suite": "api",
+              "name": "HU9-08 CA3: decisión inválida \"\" no modifica datos",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-09",
+              "suite": "api",
+              "name": "HU9-09 CA3: decisión inválida \"RECHAZAR\" no modifica datos",
+              "file": "tests/api/hu9-revision.test.cjs"
+            },
+            {
+              "id": "HU9-10",
+              "suite": "api",
+              "name": "HU9-10 CA3: decisión inválida \"aceptar\" no modifica datos",
+              "file": "tests/api/hu9-revision.test.cjs"
+            }
+          ],
           "evidence": [],
           "verification": "SIN_EVIDENCIA",
           "coverageComplete": false,
-          "observations": "Las pruebas actuales de regresión no verifican este criterio. No se han inspeccionado otras ramas.",
+          "observations": "Cobertura parcial API. No acredita navegación, presentación visual, tiempos E2E ni persistencia en ambiente compartido.",
           "pending": [
-            "Implementar o verificar la funcionalidad en la referencia autorizada.",
-            "Implementar y ejecutar pruebas específicas del criterio; obtener revisión por pares y aceptación del PO."
+            "Verificar el criterio completo en navegador, incluida presentación y tiempos cuando correspondan.",
+            "Revisión por pares y validación del Product Owner."
           ],
           "plannedCase": {
             "id": "PLAN-HU-9-CA3",

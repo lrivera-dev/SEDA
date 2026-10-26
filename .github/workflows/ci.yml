@@ -57,8 +57,7 @@ jobs:
         if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
         run: npm run test:isolation
 
-      # Adaptar y validar el aislamiento del equipo antes de publicar este CI.
-      - name: Pruebas del equipo (35 casos)
+      - name: Pruebas del equipo
         id: equipo
         if: ${{ !cancelled() && steps.aislamiento.outcome == 'success' }}
         run: npm run test:team
@@ -74,7 +73,7 @@ jobs:
         if: ${{ !cancelled() && steps.entorno.outcome == 'success' && steps.dependencias.outcome == 'success' }}
         run: npm run test:qa-generator
 
-      - name: Regresión y HU-6 de Hachi e informes (80 casos)
+      - name: Regresión y Sprint activo de Hachi e informes
         id: regresion
         if: ${{ !cancelled() && steps.aislamiento.outcome == 'success' && steps.carga.outcome == 'success' }}
         run: npm run test:qa
@@ -86,13 +85,13 @@ jobs:
         with:
           name: hachi-qa-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            qa-output/*/informe.pdf
-            qa-output/*/informe.md
-            qa-output/*/execution.json
-            qa-output/*/results.json
-            qa-output/*/report-error.json
-            qa-output/*/unit.jsonl
-            qa-output/*/api.jsonl
+            ${{ steps.regresion.outputs.report-directory }}/informe.pdf
+            ${{ steps.regresion.outputs.report-directory }}/informe.md
+            ${{ steps.regresion.outputs.report-directory }}/execution.json
+            ${{ steps.regresion.outputs.report-directory }}/results.json
+            ${{ steps.regresion.outputs.report-directory }}/report-error.json
+            ${{ steps.regresion.outputs.report-directory }}/unit.jsonl
+            ${{ steps.regresion.outputs.report-directory }}/api.jsonl
           include-hidden-files: false
           if-no-files-found: error
           retention-days: 14
@@ -119,11 +118,11 @@ jobs:
             echo "- Build: $BUILD"
             echo "- Aislamiento: $AISLAMIENTO"
             echo '## Pruebas del equipo'
-            echo "- Suite explícita (35 casos previstos): $EQUIPO"
+            echo "- Suite explícita del equipo: $EQUIPO"
             echo '## Hachi'
             echo "- Carga controlada: $CARGA"
             echo "- Pruebas del generador: $GENERADOR"
-            echo "- Regresión y HU-6 (80 casos previstos): $REGRESION"
+            echo "- Regresión y Sprint activo: $REGRESION"
             echo "- Publicación de artefactos: $ARTEFACTOS"
             echo 'Los totales previstos no son resultados: consultar cada suite y los informes.'
             echo 'Un paso omitido no equivale a PASS. Un fallo de ejecución no identifica por sí solo un defecto funcional.'

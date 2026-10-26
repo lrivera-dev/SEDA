@@ -12,7 +12,7 @@
     "test:qa-generator": "node --test scripts/qa/generator.test.cjs",
     "test:isolation": "node --test tests/isolation/supabase.test.cjs tests/isolation/equipo.test.cjs",
     "test:load": "npm run test:isolation && node --test tests/isolation/carga.test.cjs",
-    "test:team": "node --require ./tests/helpers/equipo-bootstrap.cjs --test tests/exportaciones.test.js tests/rutas.test.js tests/validar-archivos.test.js",
+    "test:team": "node --require ./tests/helpers/equipo-bootstrap.cjs --test tests/exportaciones.test.js tests/rutas.test.js tests/validar-archivos.test.js tests/coincidencia.test.js",
     "lint": "node scripts/revisar-sintaxis.js"
   },
   "keywords": [],
@@ -20,9 +20,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@google/genai": "^2.30.0",
     "@supabase/supabase-js": "^2.117.2",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
+    "mammoth": "^1.13.0",
     "multer": "^2.4.0"
   },
   "devDependencies": {

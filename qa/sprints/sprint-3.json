@@ -1,0 +1,1403 @@
+{
+  "schemaVersion": 1,
+  "id": "sprint-3",
+  "number": 3,
+  "title": "Cálculo de coincidencia con IA y checklist",
+  "goal": "Preparar y evaluar HU-3 y HU-4 según la fuente refinada, sin atribuir aprobación a funcionalidades futuras.",
+  "sources": [
+    {
+      "id": "ESTRATEGIA",
+      "title": "Estrategia de pruebas-HiGuysP3.pdf",
+      "sha256": "f10fbd56cbff242465fee04ca48314e41d339ea97067d25bc849dafc5a3f6de2",
+      "incorporation": "Extracción revisada de secciones 1 a 5; se omiten nombres y matrículas de la portada."
+    },
+    {
+      "id": "SPRINT3",
+      "title": "Sprint_3_HU3_HU4_refinadas.md",
+      "sha256": "76504ea31b550fbb738ae92d92af24c68074e0de8fa55eff05e265109a2ebdbe",
+      "incorporation": "Seis CA y quince RN literales, incluyendo formato Markdown; secciones y tareas técnicas transcritas como requisitos, no como instrucciones operativas para Hachi."
+    }
+  ],
+  "strategy": {
+    "flows": [
+      {
+        "flow": "Registro de equivalencias",
+        "level": "Integración",
+        "expectation": "Formulario, base de datos y almacenamiento del registro",
+        "sourceRef": "ESTRATEGIA / sección 2 / página 1"
+      },
+      {
+        "flow": "Consulta y visualización",
+        "level": "E2E",
+        "expectation": "Ingreso, consulta y visualización de datos",
+        "sourceRef": "ESTRATEGIA / sección 2 / página 1"
+      },
+      {
+        "flow": "Cálculo de coincidencia",
+        "level": "Unitaria",
+        "expectation": "Funciones de cálculo y porcentajes (aplicable a HU-3 en Sprint 3; sin evidencia todavía).",
+        "sourceRef": "ESTRATEGIA / sección 2 / página 1"
+      }
+    ],
+    "manual": "Pruebas cruzadas por pares con casos negativos; quien desarrolla no debe ser la única persona que prueba y aprueba. Responsabilidades rotativas.",
+    "manualSource": "ESTRATEGIA / sección 3 / página 2",
+    "prevention": [
+      "Conflictos de rutas: pruebas de integración.",
+      "Mensajes en español: comprobación E2E.",
+      "Conflictos entre ramas: integración y regresión.",
+      "Tareas y criterios definidos antes del Sprint: pruebas de aceptación."
+    ],
+    "preventionSource": "ESTRATEGIA / sección 4 / páginas 2-3"
+  },
+  "stories": [
+    {
+      "id": "HU-3",
+      "title": "Cálculo de coincidencia con IA",
+      "functionality": "Cálculo de coincidencia con IA",
+      "sourceRef": "SPRINT3 / HU-3",
+      "userStory": "Yo como universidad quiero que el sistema ejecute la herramienta de la IA para calcular el porcentaje de coincidencia de los programas de las materias.",
+      "description": "El sistema evaluará automáticamente cada equivalencia registrada. Entregará a la IA los cuatro documentos (el pensum de cada carrera y el programa de cada materia) con instrucciones fijas, y la IA analizará qué tanto se parecen los dos programas (contenidos, metodología, evaluación, carga horaria, bibliografía), usando los pensums como contexto. El resultado es un porcentaje de coincidencia y un reporte que explica por qué se parecen y en qué difieren. La universidad no escribe ninguna instrucción: sube sus documentos, registra la equivalencia y ve el resultado en su checklist.",
+      "criteria": [
+        {
+          "id": "HU-3-CA1",
+          "text": "Al registrarse una equivalencia con sus 4 documentos legibles, el sistema inicia la evaluación sin que la universidad escriba ni presione nada, marca el caso como “En evaluación” y, en un máximo de 60 segundos por caso, guarda el porcentaje (de 0 a 100) y el reporte de la IA con sus seis secciones (resumen, contenidos coincidentes, metodología, diferencias, contexto del pensum y conclusión), visibles en el checklist.",
+          "sourceRef": "SPRINT3 / HU-3 / CRITERIOS DE ACEPTACIÓN / CA1",
+          "implementation": "Pendiente de implementación/verificación del Sprint 3; No verificado en la referencia evaluada.",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Plan documental derivado; sin pruebas ejecutables del nuevo alcance. La regresión histórica no acredita este criterio.",
+          "pending": [
+            "Implementación e inspección del código real.",
+            "Pruebas aisladas y navegador/E2E aplicables.",
+            "Resolver aclaraciones, revisión por pares y validación del Product Owner."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-3-CA1",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API/concurrencia",
+              "API/integración",
+              "Integración",
+              "Unitaria",
+              "Unitaria + navegador",
+              "Unitaria/contrato",
+              "Unitaria/contrato + revisión",
+              "Unitaria/integración"
+            ],
+            "steps": [
+              "PLAN-S3-HU-3-01: Inicio automático después de HU-2",
+              "PLAN-S3-HU-3-02: Cuatro documentos obligatorios y roles",
+              "PLAN-S3-HU-3-03: PDF y Word legibles",
+              "PLAN-S3-HU-3-05: Recorte de programas",
+              "PLAN-S3-HU-3-06: Recorte de pensums",
+              "PLAN-S3-HU-3-07: Instrucciones fijas, sin entrada libre",
+              "PLAN-S3-HU-3-08: Programas comparados y pensums de contexto",
+              "PLAN-S3-HU-3-09: Instrucciones maliciosas dentro de documentos",
+              "PLAN-S3-HU-3-10: Porcentaje válido y fuera de rango",
+              "PLAN-S3-HU-3-11: JSON con seis secciones",
+              "PLAN-S3-HU-3-13: Límites de clasificación",
+              "PLAN-S3-HU-3-15: Transiciones de estados",
+              "PLAN-S3-HU-3-16: Un procesamiento a la vez",
+              "PLAN-S3-HU-3-21: Duplicados en cálculo o calculados",
+              "PLAN-S3-HU-3-23: Tope diario y renovación",
+              "PLAN-S3-HU-3-25: Error al encolar no rompe registro"
+            ],
+            "expected": "Al registrarse una equivalencia con sus 4 documentos legibles, el sistema inicia la evaluación sin que la universidad escriba ni presione nada, marca el caso como “En evaluación” y, en un máximo de 60 segundos por caso, guarda el porcentaje (de 0 a 100) y el reporte de la IA con sus seis secciones (resumen, contenidos coincidentes, metodología, diferencias, contexto del pensum y conclusión), visibles en el checklist."
+          }
+        },
+        {
+          "id": "HU-3-CA2",
+          "text": "Si el porcentaje es menor a 60%, el sistema lo muestra junto con el reporte y la advertencia **“Coincidencia baja: se recomienda revisión manual”**, y el resultado queda guardado.",
+          "sourceRef": "SPRINT3 / HU-3 / CRITERIOS DE ACEPTACIÓN / CA2",
+          "implementation": "Pendiente de implementación/verificación del Sprint 3; No verificado en la referencia evaluada.",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Plan documental derivado; sin pruebas ejecutables del nuevo alcance. La regresión histórica no acredita este criterio.",
+          "pending": [
+            "Implementación e inspección del código real.",
+            "Pruebas aisladas y navegador/E2E aplicables.",
+            "Resolver aclaraciones, revisión por pares y validación del Product Owner."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-3-CA2",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API + navegador",
+              "Unitaria"
+            ],
+            "steps": [
+              "PLAN-S3-HU-3-13: Límites de clasificación",
+              "PLAN-S3-HU-3-14: Advertencia por coincidencia baja"
+            ],
+            "expected": "Si el porcentaje es menor a 60%, el sistema lo muestra junto con el reporte y la advertencia **“Coincidencia baja: se recomienda revisión manual”**, y el resultado queda guardado."
+          }
+        },
+        {
+          "id": "HU-3-CA3",
+          "text": "Si no se puede evaluar (documento ilegible, IA sin respuesta en 60 segundos o resultado inválido), el sistema no guarda ningún porcentaje, marca el caso con error, muestra **“No se pudo calcular la coincidencia: [motivo]”** y permite reintentar.",
+          "sourceRef": "SPRINT3 / HU-3 / CRITERIOS DE ACEPTACIÓN / CA3",
+          "implementation": "Pendiente de implementación/verificación del Sprint 3; No verificado en la referencia evaluada.",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Plan documental derivado; sin pruebas ejecutables del nuevo alcance. La regresión histórica no acredita este criterio.",
+          "pending": [
+            "Implementación e inspección del código real.",
+            "Pruebas aisladas y navegador/E2E aplicables.",
+            "Resolver aclaraciones, revisión por pares y validación del Product Owner."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-3-CA3",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API",
+              "API + reloj controlado",
+              "API/concurrencia",
+              "API/seguridad",
+              "Integración",
+              "Integración de ciclo de vida",
+              "Unitaria/contrato",
+              "Unitaria/integración"
+            ],
+            "steps": [
+              "PLAN-S3-HU-3-04: Texto ilegible en cada documento",
+              "PLAN-S3-HU-3-10: Porcentaje válido y fuera de rango",
+              "PLAN-S3-HU-3-11: JSON con seis secciones",
+              "PLAN-S3-HU-3-12: Timeout y servicio no disponible",
+              "PLAN-S3-HU-3-15: Transiciones de estados",
+              "PLAN-S3-HU-3-17: Reintento desde ERROR y SIN_CALCULAR",
+              "PLAN-S3-HU-3-18: Límite por conexión",
+              "PLAN-S3-HU-3-19: Propiedad del caso y validaciones de reintento",
+              "PLAN-S3-HU-3-20: Caso ya revisado por MINED",
+              "PLAN-S3-HU-3-21: Duplicados en cálculo o calculados",
+              "PLAN-S3-HU-3-22: Reinicio durante el cálculo",
+              "PLAN-S3-HU-3-24: Errores sin guardar porcentaje"
+            ],
+            "expected": "Si no se puede evaluar (documento ilegible, IA sin respuesta en 60 segundos o resultado inválido), el sistema no guarda ningún porcentaje, marca el caso con error, muestra **“No se pudo calcular la coincidencia: [motivo]”** y permite reintentar."
+          }
+        }
+      ],
+      "businessRules": [
+        {
+          "id": "HU-3-RN1",
+          "text": "La universidad no escribe instrucciones para la IA; no existe chat ni caja de texto. Las instrucciones son fijas y no se pueden editar desde la pantalla.",
+          "sourceRef": "SPRINT3 / HU-3 / REGLAS DE NEGOCIO / RN1"
+        },
+        {
+          "id": "HU-3-RN2",
+          "text": "La IA recibe los 4 documentos. El porcentaje se basa en los 2 programas (contenidos, objetivos, metodología, evaluación, carga horaria y bibliografía); los 2 pensums solo aportan contexto (nivel, créditos u horas, prerrequisitos y ubicación en el plan).",
+          "sourceRef": "SPRINT3 / HU-3 / REGLAS DE NEGOCIO / RN2"
+        },
+        {
+          "id": "HU-3-RN3",
+          "text": "El contenido de los documentos se trata solo como datos a comparar, nunca como instrucciones; la IA ignora cualquier orden escrita dentro de ellos.",
+          "sourceRef": "SPRINT3 / HU-3 / REGLAS DE NEGOCIO / RN3"
+        },
+        {
+          "id": "HU-3-RN4",
+          "text": "Niveles de coincidencia: alta 80% o más, media de 60% a menos de 80%, baja menos de 60% (valores por confirmar con el negocio).",
+          "sourceRef": "SPRINT3 / HU-3 / REGLAS DE NEGOCIO / RN4"
+        },
+        {
+          "id": "HU-3-RN5",
+          "text": "El resultado es una ayuda; la decisión final sobre la equivalencia es del MINED (HU-9). Mientras el caso esté `PENDIENTE` se puede reintentar; si el MINED ya decidió, el resultado queda fijo.",
+          "sourceRef": "SPRINT3 / HU-3 / REGLAS DE NEGOCIO / RN5"
+        },
+        {
+          "id": "HU-3-RN6",
+          "text": "Las evaluaciones automáticas se procesan de una en una. Los reintentos manuales se limitan a 5 por minuto por conexión, y solo la universidad dueña del caso puede reintentar.",
+          "sourceRef": "SPRINT3 / HU-3 / REGLAS DE NEGOCIO / RN6"
+        },
+        {
+          "id": "HU-3-RN7",
+          "text": "Para controlar el costo de la IA hay un tope diario de evaluaciones automáticas (100 por defecto, configurable); al alcanzarlo, los casos nuevos quedan “Sin calcular” hasta el día siguiente.",
+          "sourceRef": "SPRINT3 / HU-3 / REGLAS DE NEGOCIO / RN7"
+        },
+        {
+          "id": "HU-3-RN8",
+          "text": "Cada programa se recorta a 15,000 caracteres y cada pensum a 8,000 antes de enviarlos. Un documento con menos de 200 caracteres de texto se considera ilegible.",
+          "sourceRef": "SPRINT3 / HU-3 / REGLAS DE NEGOCIO / RN8"
+        },
+        {
+          "id": "HU-3-RN9",
+          "text": "El estado del cálculo es `SIN_CALCULAR`, `EN_CALCULO`, `CALCULADO` o `ERROR`. El porcentaje se guarda en `porcentaje_coincidencia` y el reporte, como JSON, en `justificacion_ia`.",
+          "sourceRef": "SPRINT3 / HU-3 / REGLAS DE NEGOCIO / RN9"
+        }
+      ],
+      "dependencies": [
+        "HU-2 (archivos y equivalencia registrada).",
+        "Cuenta y clave de un proveedor de IA (`IA_API_KEY` e `IA_MODELO` en el `.env`).",
+        "Migración de `caso_equivalencia` (estado y motivo del cálculo).",
+        "Supabase Storage (bucket `documentos-carreras`) y librerías de lectura de PDF y Word."
+      ],
+      "preconditions": [
+        "La equivalencia debe estar registrada (HU-2) con sus 4 documentos cargados, en PDF o Word: pensum de la carrera de origen y de destino, y programa de la materia de origen y de destino.",
+        "El caso debe estar en estado `PENDIENTE`.",
+        "Para reintentar, la universidad debe estar identificada en el navegador (`id_universidad`, mecanismo temporal hasta que exista el login de universidades)."
+      ],
+      "mainFlow": "1. La universidad carga sus documentos y registra la equivalencia (HU-2).\n2. El sistema guarda el caso y lo pone en la cola de evaluación automática, sin que la universidad escriba ni presione nada.\n3. El sistema marca el caso como **“En evaluación”** y lee los 4 documentos.\n4. El sistema entrega los 4 documentos a la IA con instrucciones fijas: comparar los 2 programas y usar los 2 pensums solo como contexto.\n5. La IA devuelve el porcentaje y el reporte.\n6. El sistema guarda el resultado, marca el caso como **“Calculado”** y lo muestra en el checklist.",
+      "exceptions": "- **A1:** Si el porcentaje es menor a 60%, el sistema lo muestra junto con el reporte y la advertencia **“Coincidencia baja: se recomienda revisión manual”**.\n- **E1:** Si algún documento no tiene texto legible (por ejemplo, un PDF escaneado como imagen), el caso queda con error y muestra **“No se pudo calcular la coincidencia: no se pudo leer [documento]”**.\n- **E2:** Si la IA no responde en 60 segundos o devuelve un resultado inválido, el caso queda con error y muestra **“No se pudo calcular la coincidencia: el servicio de IA no está disponible, intenta de nuevo”**.\n- **E3:** Si el servidor se reinicia durante el cálculo, el caso queda con error y muestra **“El cálculo se interrumpió, intenta de nuevo”**.\n- **E4:** Si se intenta reintentar un caso que el MINED ya revisó, muestra **“Este caso ya fue revisado y no se puede recalcular”**.\n- **E5:** Si se superan los 5 reintentos por minuto, muestra **“Demasiados intentos, intenta de nuevo en un minuto”**.",
+      "fields": "**Campo | Tipo | Obligatorio**\n\nEstado del cálculo (Sin calcular / En evaluación / Calculado / Con error) | Etiqueta | No (automático)\n\nPorcentaje de coincidencia | Texto y barra | No (resultado)\n\nReporte de la IA (6 secciones) | Texto desplegable | No (resultado)\n\nAdvertencia de coincidencia baja | Mensaje | No\n\nMotivo del error | Mensaje | No\n\nReintentar | Botón (solo con error o sin calcular) | No",
+      "outOfScope": [
+        "Chat o instrucciones libres a la IA.",
+        "Leer PDF escaneados con OCR (salvo que el proveedor de IA los lea de forma nativa).",
+        "Cambiar los umbrales o el modelo de IA desde la pantalla.",
+        "Mostrar el reporte en la pantalla del MINED (reporte-caso).",
+        "Aceptar o advertir sobre el caso (corresponde a HU-9)."
+      ],
+      "priorityEstimate": "**Alta / 8 puntos**",
+      "technicalTasks": [
+        {
+          "sourceRef": "SPRINT3 / HU-3 / TAREAS TÉCNICAS",
+          "text": "**1. Proveedor de IA, clave y prueba con 4 documentos reales**\\\n&#x20;**Responsable:** Persona 1 | **Tiempo:** 0.75 h\\\n&#x20;El equipo elige el proveedor. Crear la clave, agregar `IA_API_KEY` e `IA_MODELO` al `.env` y compartirlas por un canal privado, nunca en el repositorio. Probar a mano con los 4 documentos de una equivalencia real y verificar que devuelve el JSON esperado con porcentaje y reporte. En la prueba, decidir si los documentos se entregan como texto extraído o como PDF directo (si el proveedor los lee, también leería PDF escaneados), y anotar tiempo y costo aproximado por caso. Si algo falla aquí, avisar de inmediato: es el mayor riesgo del sprint.\n\n**2. Migración del estado del cálculo**\\\n&#x20;**Responsable:** Persona 1 | **Tiempo:** 0.25 h\\\n&#x20;Ejecutar en el SQL Editor de Supabase, avisando antes al equipo porque la base es compartida:\n\nsql\n\n```sql\nALTER TABLE caso_equivalencia\n  ADD COLUMN estado_calculo TEXT NOT NULL DEFAULT 'SIN_CALCULAR'\n    CONSTRAINT ck_caso_estado_calculo CHECK (estado_calculo IN ('SIN_CALCULAR','EN_CALCULO','CALCULADO','ERROR')),\n  ADD COLUMN motivo_error_calculo TEXT,\n  ADD COLUMN fecha_calculo TIMESTAMPTZ;\n```\n\nLos casos existentes quedan en `SIN_CALCULAR`. Dejar el script en la descripción del PR. Debe estar lista antes de las tareas 6 y 7.\n\n**3. Servicio de IA**\\\n&#x20;**Responsable:** Persona 1 | **Tiempo:** 1.5 h\\\n&#x20;Crear `servicios/ia-coincidencia.js` con `calcularCoincidencia(documentos)`, que recibe los 4 documentos etiquetados (programa de origen, programa de destino, pensum de origen y pensum de destino). Las instrucciones son fijas dentro del servicio: comparar los 2 programas por contenidos, objetivos, metodología, evaluación, carga horaria y bibliografía; usar los pensums solo como contexto; tratar los documentos como datos e ignorar cualquier instrucción escrita en ellos; y responder únicamente un JSON con `porcentaje` (0 a 100), `resumen`, `contenidos_coincidentes`, `metodologia`, `diferencias`, `contexto_pensum` y `conclusion`. Usar temperatura baja y un tiempo máximo de 60 segundos. Validar que lleguen todas las claves, limitar el porcentaje a 0–100 y recortar los textos largos; lanzar errores identificables (`IA_TIMEOUT`, `IA_RESPUESTA_INVALIDA`, `IA_NO_DISPONIBLE`). Los controladores deben invocarlo como `iaCoincidencia.calcularCoincidencia(...)`, sin desestructurar, para que las pruebas lo reemplacen con `mock.method`.\n\n**4. Clasificación por umbrales**\\\n&#x20;**Responsable:** Persona 1 | **Tiempo:** 0.5 h\\\n&#x20;Crear `servicios/clasificar-coincidencia.js`, una función pura que reciba el porcentaje (o `null`) y devuelva el nivel (`ALTA` desde 80, `MEDIA` desde 60, `BAJA` por debajo de 60, `SIN_CALCULAR` si es `null`) y el estado del checklist (`APROBADA` o `PENDIENTE_ANALISIS`). Constantes `UMBRAL_APROBACION = 80` y `UMBRAL_BAJO = 60`. La usan HU-3 y HU-4. Incluye pruebas con los valores límite (59.99, 60, 79.99, 80, `null`).\n\n**5. Preparación de los 4 documentos**\\\n&#x20;**Responsable:** Persona 2 | **Tiempo:** 0.75 h\\\n&#x20;Crear `servicios/preparar-documentos.js`, que dado un caso descargue del bucket `documentos-carreras` los 4 documentos (`pensum_url` de ambas carreras y `programa_url` de ambas materias) y los deje listos para la IA: texto extraído de PDF (`pdf-parse` o equivalente) y de Word (`mammoth`), o PDF directo si la tarea 1 lo decidió. Recortar a 15,000 caracteres por programa y 8,000 por pensum. Si algún documento tiene menos de 200 caracteres de texto, lanzar `DOCUMENTO_ILEGIBLE` indicando cuál. Instalar las dependencias y subir también `package-lock.json`, porque el CI usa `npm ci`.\n\n**6. Cola de evaluación automática y disparo al registrar**\\\n&#x20;**Responsable:** Persona 2 | **Tiempo:** 1.25 h\\\n&#x20;Crear `servicios/cola-evaluacion.js`, una cola en memoria que procesa un caso a la vez: marca `EN_CALCULO`, usa las tareas 5 y 3, y guarda `porcentaje_coincidencia`, el reporte en `justificacion_ia`, `estado_calculo = 'CALCULADO'` y `fecha_calculo`; si falla, guarda `ERROR` con `motivo_error_calculo` y no guarda porcentaje. Llevar un contador diario con el tope configurable (`MAX_EVALUACIONES_DIARIAS`, 100 por defecto). Invocarla desde `registrarEquivalencias` justo después de insertar el caso, sin esperar el resultado: si encolar falla, el registro sigue funcionando. Al arrancar el servidor, los casos que quedaron en `EN_CALCULO` pasan a `ERROR` con “El cálculo se interrumpió, intenta de nuevo”. Ese arranque va dentro del bloque `if (require.main === module)` de `server.js`, para que las pruebas del CI nunca toquen la base.\n\n**7. Endpoint POST /coincidencia/:id_caso/reintentar**\\\n&#x20;**Responsable:** Persona 2 | **Tiempo:** 0.5 h\\\n&#x20;Crear `routes/coincidencia.routes.js` y su controlador. Recibe `id_universidad` en el cuerpo. Sin universidad, 400; caso inexistente, 404; el caso no es de esa universidad, 403; caso que no está `PENDIENTE`, 409 con “Este caso ya fue revisado y no se puede recalcular”; caso ya `CALCULADO` o `EN_CALCULO`, 409. Si es válido, lo pone en la cola y responde 202. Límite de 5 reintentos por minuto por conexión, con 429. Solo Persona 2 edita `server.js` en este sprint para registrar las rutas `/coincidencia` y `/checklist`.\n\n**8. Estado, resultado y reporte en pantalla**\\\n&#x20;**Responsable:** Persona 3 | **Tiempo:** 1 h\\\n&#x20;En la fila de cada caso del checklist, mostrar la etiqueta de estado del cálculo. Con “Calculado”, mostrar el porcentaje con su barra, el reporte en secciones desplegables y, si es menor a 60%, la advertencia. Con error, mostrar el motivo y el botón **Reintentar**, que llama a `POST /coincidencia/:id_caso/reintentar` y vuelve a “En evaluación”. Todo texto de la IA se escribe con `textContent`, nunca con `innerHTML`.\n\n**9. Pruebas automáticas con IA simulada**\\\n&#x20;**Responsable:** Persona 4 | **Tiempo:** 0.75 h\\\n&#x20;Crear `tests/coincidencia.test.js`, siguiendo el patrón de `tests/rutas.test.js`. Probar sin base de datos ni IA real: las validaciones de reintentar, el límite de 5 por minuto, el manejo de la respuesta de la IA (válida, con claves faltantes, con porcentaje fuera de rango) con un cliente simulado y la clasificación por umbrales. Deben pasar en el CI.\n\n---"
+        }
+      ]
+    },
+    {
+      "id": "HU-4",
+      "title": "Checklist de coincidencia",
+      "functionality": "Checklist de coincidencia",
+      "sourceRef": "SPRINT3 / HU-4",
+      "userStory": "Yo como universidad quiero visualizar un checklist de coincidencia aprobada para revisar y validar los resultados del sistema.",
+      "description": "El sistema permitirá que la universidad vea un checklist con todas sus equivalencias (materia de origen y de destino), el estado de su evaluación con IA, el porcentaje y el reporte de cada una, clasificadas como aprobadas y pendientes de análisis. La universidad decide cuáles validar antes de confirmarlas formalmente (HU-5).",
+      "criteria": [
+        {
+          "id": "HU-4-CA1",
+          "text": "Al abrir el checklist de una universidad cuyos casos están calculados y todos tienen 80% o más de coincidencia, el sistema lo muestra en un máximo de 5 segundos, con todas las materias marcadas como aprobadas y el mensaje **“Todas las materias están aprobadas”**.",
+          "sourceRef": "SPRINT3 / HU-4 / CRITERIOS DE ACEPTACIÓN / CA1",
+          "implementation": "Pendiente de implementación/verificación del Sprint 3; No verificado en la referencia evaluada.",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Plan documental derivado; sin pruebas ejecutables del nuevo alcance. La regresión histórica no acredita este criterio.",
+          "pending": [
+            "Implementación e inspección del código real.",
+            "Pruebas aisladas y navegador/E2E aplicables.",
+            "Resolver aclaraciones, revisión por pares y validación del Product Owner."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-4-CA1",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API + navegador",
+              "API/seguridad",
+              "E2E",
+              "E2E/rendimiento",
+              "Navegador",
+              "Navegador/seguridad + revisión"
+            ],
+            "steps": [
+              "PLAN-S3-HU-4-01: GET checklist solo de universidad indicada",
+              "PLAN-S3-HU-4-02: Todos calculados >=80",
+              "PLAN-S3-HU-4-09: Universidad sin casos",
+              "PLAN-S3-HU-4-10: Identificador ausente",
+              "PLAN-S3-HU-4-12: Presentación del reporte IA",
+              "PLAN-S3-HU-4-13: Textos seguros con textContent",
+              "PLAN-S3-HU-4-14: Visualización máximo cinco segundos",
+              "PLAN-S3-HU-4-15: Flujo HU-2 → HU-3 → HU-4"
+            ],
+            "expected": "Al abrir el checklist de una universidad cuyos casos están calculados y todos tienen 80% o más de coincidencia, el sistema lo muestra en un máximo de 5 segundos, con todas las materias marcadas como aprobadas y el mensaje **“Todas las materias están aprobadas”**."
+          }
+        },
+        {
+          "id": "HU-4-CA2",
+          "text": "Si hay materias aprobadas y otras pendientes de análisis (menos de 80%, sin calcular, en evaluación o con error), el sistema muestra el resumen **“[N] aprobadas y [M] pendientes de análisis”**; las aprobadas aparecen marcadas, las pendientes sin marcar con su motivo, y la universidad puede marcar o desmarcar cada una.",
+          "sourceRef": "SPRINT3 / HU-4 / CRITERIOS DE ACEPTACIÓN / CA2",
+          "implementation": "Pendiente de implementación/verificación del Sprint 3; No verificado en la referencia evaluada.",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Plan documental derivado; sin pruebas ejecutables del nuevo alcance. La regresión histórica no acredita este criterio.",
+          "pending": [
+            "Implementación e inspección del código real.",
+            "Pruebas aisladas y navegador/E2E aplicables.",
+            "Resolver aclaraciones, revisión por pares y validación del Product Owner."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-4-CA2",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API + navegador",
+              "E2E",
+              "Navegador",
+              "Navegador + reloj simulado",
+              "Navegador/red simulada",
+              "Navegador/seguridad + revisión"
+            ],
+            "steps": [
+              "PLAN-S3-HU-4-03: Calculados menores de80",
+              "PLAN-S3-HU-4-04: Estados no calculados",
+              "PLAN-S3-HU-4-05: Resumen mixto",
+              "PLAN-S3-HU-4-06: Selección y deselección manual",
+              "PLAN-S3-HU-4-07: Selección no persistente",
+              "PLAN-S3-HU-4-11: Actualización cada cinco segundos",
+              "PLAN-S3-HU-4-12: Presentación del reporte IA",
+              "PLAN-S3-HU-4-13: Textos seguros con textContent",
+              "PLAN-S3-HU-4-15: Flujo HU-2 → HU-3 → HU-4",
+              "PLAN-S3-HU-4-16: Selección durante refresco"
+            ],
+            "expected": "Si hay materias aprobadas y otras pendientes de análisis (menos de 80%, sin calcular, en evaluación o con error), el sistema muestra el resumen **“[N] aprobadas y [M] pendientes de análisis”**; las aprobadas aparecen marcadas, las pendientes sin marcar con su motivo, y la universidad puede marcar o desmarcar cada una."
+          }
+        },
+        {
+          "id": "HU-4-CA3",
+          "text": "Si algún caso no tiene sus 4 documentos, el sistema no lo incluye en la selección y muestra **“No se puede generar el checklist completo: faltan materias o datos necesarios: [lista]”**.",
+          "sourceRef": "SPRINT3 / HU-4 / CRITERIOS DE ACEPTACIÓN / CA3",
+          "implementation": "Pendiente de implementación/verificación del Sprint 3; No verificado en la referencia evaluada.",
+          "testRefs": [],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Plan documental derivado; sin pruebas ejecutables del nuevo alcance. La regresión histórica no acredita este criterio.",
+          "pending": [
+            "Implementación e inspección del código real.",
+            "Pruebas aisladas y navegador/E2E aplicables.",
+            "Resolver aclaraciones, revisión por pares y validación del Product Owner."
+          ],
+          "plannedCase": {
+            "id": "PLAN-HU-4-CA3",
+            "status": "PROPUESTO_NO_EJECUTADO",
+            "levels": [
+              "API + navegador",
+              "E2E"
+            ],
+            "steps": [
+              "PLAN-S3-HU-4-08: Documentos faltantes",
+              "PLAN-S3-HU-4-15: Flujo HU-2 → HU-3 → HU-4"
+            ],
+            "expected": "Si algún caso no tiene sus 4 documentos, el sistema no lo incluye en la selección y muestra **“No se puede generar el checklist completo: faltan materias o datos necesarios: [lista]”**."
+          }
+        }
+      ],
+      "businessRules": [
+        {
+          "id": "HU-4-RN1",
+          "text": "Una materia está aprobada si su evaluación está calculada y su coincidencia es de 80% o más; con menos de 80%, sin calcular, en evaluación o con error queda pendiente de análisis (umbral por confirmar con el negocio).",
+          "sourceRef": "SPRINT3 / HU-4 / REGLAS DE NEGOCIO / RN1"
+        },
+        {
+          "id": "HU-4-RN2",
+          "text": "El checklist solo muestra los casos de la universidad indicada.",
+          "sourceRef": "SPRINT3 / HU-4 / REGLAS DE NEGOCIO / RN2"
+        },
+        {
+          "id": "HU-4-RN3",
+          "text": "La marca de “validar” vive en la pantalla; el registro formal de las seleccionadas corresponde a HU-5.",
+          "sourceRef": "SPRINT3 / HU-4 / REGLAS DE NEGOCIO / RN3"
+        },
+        {
+          "id": "HU-4-RN4",
+          "text": "Las aprobadas vienen marcadas por defecto y las pendientes sin marcar.",
+          "sourceRef": "SPRINT3 / HU-4 / REGLAS DE NEGOCIO / RN4"
+        },
+        {
+          "id": "HU-4-RN5",
+          "text": "Un caso sin sus 4 documentos no puede seleccionarse.",
+          "sourceRef": "SPRINT3 / HU-4 / REGLAS DE NEGOCIO / RN5"
+        },
+        {
+          "id": "HU-4-RN6",
+          "text": "Mientras haya casos en evaluación, la pantalla se actualiza sola cada 5 segundos.",
+          "sourceRef": "SPRINT3 / HU-4 / REGLAS DE NEGOCIO / RN6"
+        }
+      ],
+      "dependencies": [
+        "HU-3 (evaluación automática con IA) y la función de clasificación por umbrales.",
+        "HU-2 (casos y archivos registrados).",
+        "El `id_universidad` temporal del navegador (`TODO(login)`)."
+      ],
+      "preconditions": [
+        "La universidad debe estar identificada en el navegador (`id_universidad`).",
+        "Deben existir casos de equivalencia de la universidad (HU-2); los porcentajes y reportes los genera HU-3."
+      ],
+      "mainFlow": "1. La universidad abre la pantalla del checklist.\n2. El sistema consulta sus casos de equivalencia.\n3. El sistema clasifica cada caso como aprobado (80% o más) o pendiente de análisis.\n4. El sistema muestra el checklist con un resumen de aprobadas y pendientes.\n5. La universidad abre el reporte de cada caso y marca o desmarca las materias que desea validar.",
+      "exceptions": "- **A1:** Si hay materias aprobadas y otras pendientes, muestra ambos grupos con el motivo de cada pendiente y deja que la universidad decida cuáles validar.\n- **A2:** Si hay casos “En evaluación”, los muestra con ese estado y la pantalla se actualiza sola cada 5 segundos hasta que terminen.\n- **E1:** Si algún caso no tiene sus 4 documentos, no lo incluye en la selección y muestra **“No se puede generar el checklist completo: faltan materias o datos necesarios: [lista]”**.\n- **E2:** Si la universidad no tiene casos, muestra **“Aún no tienes equivalencias registradas”**.\n- **E3:** Si no hay universidad identificada, muestra un mensaje que pide identificarla.",
+      "fields": "**Campo | Tipo | Obligatorio**\n\nLista de materias (origen → destino) | Lista con casilla | No\n\nEstado del cálculo | Etiqueta | No (solo lectura)\n\nPorcentaje de coincidencia | Texto | No (solo lectura)\n\nReporte de la IA | Texto desplegable | No (solo lectura)\n\nEstado (Aprobada / Pendiente de análisis) | Etiqueta | No\n\nMotivo de pendiente | Texto | No\n\nResumen de aprobadas y pendientes | Texto | No\n\nCasilla “Validar” | Casilla | No\n\nAviso de datos incompletos | Mensaje | No",
+      "outOfScope": [
+        "Confirmar y registrar formalmente las equivalencias (corresponde a HU-5).",
+        "Guardar la selección entre visitas.",
+        "Búsqueda, filtros, paginación o exportación.",
+        "Inicio de sesión de la universidad."
+      ],
+      "priorityEstimate": "**Alta / 5 puntos**",
+      "technicalTasks": [
+        {
+          "sourceRef": "SPRINT3 / HU-4 / TAREAS TÉCNICAS",
+          "text": "**1. Endpoint GET /checklist**\\\n&#x20;**Responsable:** Persona 2 | **Tiempo:** 1 h\\\n&#x20;Crear `routes/checklist.routes.js` y su controlador. Recibe `id_universidad` por la URL. Devuelve los casos de esa universidad (los que tienen su materia de origen) con id, nombres de materia de origen y destino, estado del cálculo, porcentaje, reporte, estado del checklist (`APROBADA` o `PENDIENTE_ANALISIS`, con la función de clasificación de HU-3), motivo y documentos faltantes, más un resumen de aprobadas y pendientes. Los casos sin sus 4 documentos se separan en una lista `datos_incompletos`. Sin `id_universidad`, 400; sin casos, lista vacía. Registrar la ruta en `server.js` junto con las de HU-3.\n\n**2. Pantalla checklist.html**\\\n&#x20;**Responsable:** Persona 3 | **Tiempo:** 1 h\\\n&#x20;Crear `public/checklist.html` con su CSS y JS, reutilizando los estilos existentes. Lee el `id_universidad` del navegador con el mismo mecanismo de `subir-equivalencia.js` y llama a `GET /checklist`. Muestra el resumen, la lista con casillas (aprobadas marcadas, pendientes sin marcar con su motivo), el mensaje de todas aprobadas, el aviso de datos incompletos y el mensaje de que no hay equivalencias. Mientras haya casos en evaluación, vuelve a consultar cada 5 segundos. Todo dato se escribe con `textContent`. Deja el lugar donde la tarea 8 de HU-3 agrega el estado y el reporte.\n\n**3. Datos de prueba y casos de prueba**\\\n&#x20;**Responsable:** Persona 4 | **Tiempo:** 0.5 h\\\n&#x20;Preparar en Supabase, con “Prueba” en el nombre, casos calculados con 85%, 70% y 40%, uno sin calcular, uno con error y uno al que le falte un documento, más un documento escaneado como imagen para el caso ilegible. Escribir los casos de prueba de HU-3 y HU-4, uno por criterio de aceptación. Al cerrar el sprint, limpiar estos datos junto con los anteriores.\n\n**4. Pruebas end-to-end**\\\n&#x20;**Responsable:** Persona 4, con apoyo de todo el equipo | **Tiempo:** 0.75 h (grupal)\\\n&#x20;Validar el flujo completo: registrar una equivalencia con sus 4 documentos, ver que pasa a “En evaluación” y luego a “Calculado” con su porcentaje y reporte, y revisar el checklist y sus advertencias. Probar todos los criterios de aceptación de HU-3 y HU-4 (éxito, advertencia y error), incluido el reintento. No cerrar el sprint hasta que pasen."
+        }
+      ]
+    }
+  ],
+  "regression": {
+    "description": "123 pruebas existentes: 51 de regresión original, 29 HU-6, 23 HU-8 y 20 HU-9. Referencias reutilizadas de sprint-2.json; no se copian resultados históricos ni se acredita HU-3/HU-4. HU-6-CA3 continúa sujeto a aprobación del PO en Sprint 2. Se agregan 15 verificaciones de precondiciones implementadas por HU-2; no acreditan IA ni checklist.",
+    "testRefs": [
+      {
+        "id": "UNIT-001",
+        "suite": "unit",
+        "name": "universidad: nombre vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-002",
+        "suite": "unit",
+        "name": "universidad: ubicacion vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-003",
+        "suite": "unit",
+        "name": "universidad: correo_contacto vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-004",
+        "suite": "unit",
+        "name": "universidad: telefono_contacto vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-005",
+        "suite": "unit",
+        "name": "universidad: correo vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-006",
+        "suite": "unit",
+        "name": "universidad: contrasena vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-007",
+        "suite": "unit",
+        "name": "universidad: tipo 123 debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-008",
+        "suite": "unit",
+        "name": "universidad: tipo true debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-009",
+        "suite": "unit",
+        "name": "universidad: tipo {} debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-010",
+        "suite": "unit",
+        "name": "universidad: tipo [] debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-011",
+        "suite": "unit",
+        "name": "universidad: datos válidos crean usuario y universidad",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-012",
+        "suite": "unit",
+        "name": "universidad: duplicada",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-013",
+        "suite": "unit",
+        "name": "universidad: error de búsqueda",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-014",
+        "suite": "unit",
+        "name": "universidad: error de Auth",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-015",
+        "suite": "unit",
+        "name": "equivalencia: falta id_materia_origen",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-016",
+        "suite": "unit",
+        "name": "equivalencia: falta id_materia_destino",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-017",
+        "suite": "unit",
+        "name": "equivalencia: falta descripcion",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-018",
+        "suite": "unit",
+        "name": "equivalencia: falta id_universidad",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-019",
+        "suite": "unit",
+        "name": "equivalencia: materias iguales deben devolver HTTP 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-020",
+        "suite": "unit",
+        "name": "equivalencia: origen inexistente",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-021",
+        "suite": "unit",
+        "name": "equivalencia: destino inexistente",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-022",
+        "suite": "unit",
+        "name": "equivalencia: identificador rechazado por persistencia",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-023",
+        "suite": "unit",
+        "name": "equivalencia: universidad sin permiso",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-024",
+        "suite": "unit",
+        "name": "equivalencia: archivos faltantes impiden insertar",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-025",
+        "suite": "unit",
+        "name": "equivalencia: datos válidos quedan PENDIENTE",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-026",
+        "suite": "unit",
+        "name": "archivo: vacío",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-027",
+        "suite": "unit",
+        "name": "archivo: formato incompatible",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-028",
+        "suite": "unit",
+        "name": "archivo: PDF truncado",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-029",
+        "suite": "unit",
+        "name": "archivo: DOCX truncado",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-030",
+        "suite": "unit",
+        "name": "archivo: PDF válido",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-031",
+        "suite": "unit",
+        "name": "archivo: DOCX válido",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "API-001",
+        "suite": "api",
+        "name": "/universidades: campos ausentes, 400 JSON en español",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-002",
+        "suite": "api",
+        "name": "/equivalencias: campos ausentes, 400 JSON en español",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-003",
+        "suite": "api",
+        "name": "universidades: tipo incorrecto debe devolver 400 JSON",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-004",
+        "suite": "api",
+        "name": "universidades: duplicada devuelve 409",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-005",
+        "suite": "api",
+        "name": "universidades: registro válido devuelve 201 y universidad",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-006",
+        "suite": "api",
+        "name": "equivalencias: materias iguales deben devolver 400 y mensaje en español",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-007",
+        "suite": "api",
+        "name": "equivalencias: origen inexistente devuelve 400",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-008",
+        "suite": "api",
+        "name": "equivalencias: error del servicio se propaga como 500",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-009",
+        "suite": "api",
+        "name": "equivalencias: registro válido devuelve 201",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-010",
+        "suite": "api",
+        "name": "archivos: solicitud sin archivo devuelve 400",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-011",
+        "suite": "api",
+        "name": "archivos: vacío",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-012",
+        "suite": "api",
+        "name": "archivos: MIME incompatible",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-013",
+        "suite": "api",
+        "name": "archivos: contenido incompatible",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-014",
+        "suite": "api",
+        "name": "archivos: más de 20 MB",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-015",
+        "suite": "api",
+        "name": "archivos: PDF válido devuelve 201",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-016",
+        "suite": "api",
+        "name": "archivos: DOCX válido devuelve 201",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-017",
+        "suite": "api",
+        "name": "archivos: Debe indicar el tipo de documento: pensum o programa.",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-018",
+        "suite": "api",
+        "name": "archivos: Falta id_carrera para subir el pensum.",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-019",
+        "suite": "api",
+        "name": "archivos: Falta id_materia para subir el programa.",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-020",
+        "suite": "api",
+        "name": "archivos: error de almacenamiento devuelve 500",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "HU6-01",
+        "suite": "api",
+        "name": "HU6-01 CA1: MINED ACTIVO obtiene HTTP 200 y token ficticio",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-02",
+        "suite": "api",
+        "name": "HU6-02: credenciales incompletas {} devuelven 400 sin consultar Auth",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-03",
+        "suite": "api",
+        "name": "HU6-03: credenciales incompletas {\"correo\":\"qa@example.test\"} devuelven 400 sin consultar Auth",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-04",
+        "suite": "api",
+        "name": "HU6-04: credenciales incompletas {\"contrasena\":\"clave-ficticia\"} devuelven 400 sin consultar Auth",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-05",
+        "suite": "api",
+        "name": "HU6-05: credenciales incompletas {\"correo\":\" \",\"contrasena\":\"clave-ficticia\"} devuelven 400 sin consultar Auth",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-06",
+        "suite": "api",
+        "name": "HU6-06: credenciales incompletas {\"correo\":\"qa@example.test\",\"contrasena\":\"\"} devuelven 400 sin consultar Auth",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-15",
+        "suite": "api",
+        "name": "HU6-15 RN1: MINED INACTIVO no obtiene token",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-17",
+        "suite": "api",
+        "name": "HU6-17 RN4: GET /panel rechaza sin sesión",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-18",
+        "suite": "api",
+        "name": "HU6-18 RN4: GET /panel rechaza token inválido",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-19",
+        "suite": "api",
+        "name": "HU6-19 RN4: GET /panel rechaza rol incorrecto",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-20",
+        "suite": "api",
+        "name": "HU6-20 RN4: GET /panel rechaza cuenta inactiva",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-21",
+        "suite": "api",
+        "name": "HU6-21 RN4: GET /casos/1 rechaza sin sesión",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-22",
+        "suite": "api",
+        "name": "HU6-22 RN4: GET /casos/1 rechaza token inválido",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-23",
+        "suite": "api",
+        "name": "HU6-23 RN4: GET /casos/1 rechaza rol incorrecto",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-24",
+        "suite": "api",
+        "name": "HU6-24 RN4: GET /casos/1 rechaza cuenta inactiva",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-25",
+        "suite": "api",
+        "name": "HU6-25 RN4: PATCH /casos/1/revision rechaza sin sesión",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-26",
+        "suite": "api",
+        "name": "HU6-26 RN4: PATCH /casos/1/revision rechaza token inválido",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-27",
+        "suite": "api",
+        "name": "HU6-27 RN4: PATCH /casos/1/revision rechaza rol incorrecto",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-28",
+        "suite": "api",
+        "name": "HU6-28 RN4: PATCH /casos/1/revision rechaza cuenta inactiva",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-29",
+        "suite": "api",
+        "name": "HU6-29 RN1: middleware permite MINED ACTIVO y propaga identidad verificada",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-07",
+        "suite": "api",
+        "name": "HU6-07 CA2: intento fallido 1, mensaje y estado HTTP",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-08",
+        "suite": "api",
+        "name": "HU6-08 CA2: intento fallido 2, mensaje y estado HTTP",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-09",
+        "suite": "api",
+        "name": "HU6-09 CA2: intento fallido 3, mensaje y estado HTTP",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-10",
+        "suite": "api",
+        "name": "HU6-10 CA2: bloqueo hasta 299999 ms, sin llamadas a Auth; acceso a 300000 ms",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-11",
+        "suite": "api",
+        "name": "HU6-11 RN2: después del bloqueo un nuevo fallo reinicia el contador",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-12",
+        "suite": "api",
+        "name": "HU6-12 RN2: acceso exitoso interrumpe la secuencia de fallos",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-13",
+        "suite": "api",
+        "name": "HU6-13 CA3 propuesto: correo inexistente rechaza sin revelar cuenta ni rol",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-14",
+        "suite": "api",
+        "name": "HU6-14 CA3 propuesto: rol UNIVERSIDAD rechaza sin revelar cuenta ni rol",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-16",
+        "suite": "api",
+        "name": "HU6-16 RN3: inexistente y rol incorrecto no revelan cuál dato fue rechazado",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU8-01",
+        "suite": "api",
+        "name": "HU8-01 CA1: reporte completo, cuatro enlaces de 3600 segundos y solo lectura",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-04",
+        "suite": "api",
+        "name": "HU8-04 CA1: sin sesión no consulta datos",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-05",
+        "suite": "api",
+        "name": "HU8-05 CA1: otro perfil no accede al reporte",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-06",
+        "suite": "api",
+        "name": "HU8-06 CA1: MINED inactivo no accede al reporte",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-08",
+        "suite": "api",
+        "name": "HU8-08 CA1: error de lectura devuelve 500 sin datos parciales",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-07",
+        "suite": "api",
+        "name": "HU8-07 CA2: fallo de Storage mantiene reporte y no expone rutas internas",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F00",
+        "suite": "api",
+        "name": "HU8-F00 CA2: documentos disponibles máscara 0",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F01",
+        "suite": "api",
+        "name": "HU8-F01 CA2: documentos disponibles máscara 1",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F02",
+        "suite": "api",
+        "name": "HU8-F02 CA2: documentos disponibles máscara 2",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F03",
+        "suite": "api",
+        "name": "HU8-F03 CA2: documentos disponibles máscara 3",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F04",
+        "suite": "api",
+        "name": "HU8-F04 CA2: documentos disponibles máscara 4",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F05",
+        "suite": "api",
+        "name": "HU8-F05 CA2: documentos disponibles máscara 5",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F06",
+        "suite": "api",
+        "name": "HU8-F06 CA2: documentos disponibles máscara 6",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F07",
+        "suite": "api",
+        "name": "HU8-F07 CA2: documentos disponibles máscara 7",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F08",
+        "suite": "api",
+        "name": "HU8-F08 CA2: documentos disponibles máscara 8",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F09",
+        "suite": "api",
+        "name": "HU8-F09 CA2: documentos disponibles máscara 9",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F10",
+        "suite": "api",
+        "name": "HU8-F10 CA2: documentos disponibles máscara 10",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F11",
+        "suite": "api",
+        "name": "HU8-F11 CA2: documentos disponibles máscara 11",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F12",
+        "suite": "api",
+        "name": "HU8-F12 CA2: documentos disponibles máscara 12",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F13",
+        "suite": "api",
+        "name": "HU8-F13 CA2: documentos disponibles máscara 13",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F14",
+        "suite": "api",
+        "name": "HU8-F14 CA2: documentos disponibles máscara 14",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-02",
+        "suite": "api",
+        "name": "HU8-02 CA3: UUID inválido devuelve 404 sin consulta ni datos parciales",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-03",
+        "suite": "api",
+        "name": "HU8-03 CA3: caso inexistente devuelve 404 sin datos parciales",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU9-01",
+        "suite": "api",
+        "name": "HU9-01 CA1: aceptar persiste estado, revisor autenticado y fecha",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-13",
+        "suite": "api",
+        "name": "HU9-13 CA1: actualización concurrente no sobrescribe revisión ajena",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-14",
+        "suite": "api",
+        "name": "HU9-14 CA1: caso inexistente devuelve 404 sin escritura",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-15",
+        "suite": "api",
+        "name": "HU9-15 CA1: error de lectura devuelve 500 sin escritura",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-16",
+        "suite": "api",
+        "name": "HU9-16 CA1: error de escritura conserva resultado fallido del servicio",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-17",
+        "suite": "api",
+        "name": "HU9-17 CA1: sin sesión no puede revisar",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-18",
+        "suite": "api",
+        "name": "HU9-18 CA1: otro perfil no puede revisar",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-19",
+        "suite": "api",
+        "name": "HU9-19 CA1: MINED inactivo no puede revisar",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-11",
+        "suite": "api",
+        "name": "HU9-11 CA1: caso ACEPTADO rechaza segunda revisión",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-02",
+        "suite": "api",
+        "name": "HU9-02 CA2: advertencia de diez caracteres persiste observación y auditoría",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-03",
+        "suite": "api",
+        "name": "HU9-03 CA2: observación inválida \"\" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-04",
+        "suite": "api",
+        "name": "HU9-04 CA2: observación inválida \"123456789\" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-05",
+        "suite": "api",
+        "name": "HU9-05 CA2: observación inválida \"          \" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-06",
+        "suite": "api",
+        "name": "HU9-06 CA2: observación inválida 1234567890 no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-12",
+        "suite": "api",
+        "name": "HU9-12 CA2: caso ADVERTENCIA rechaza segunda revisión",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-20",
+        "suite": "api",
+        "name": "HU9-20 CA3: decisión heredada constructor se rechaza antes de persistencia",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-07",
+        "suite": "api",
+        "name": "HU9-07 CA3: decisión inválida null no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-08",
+        "suite": "api",
+        "name": "HU9-08 CA3: decisión inválida \"\" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-09",
+        "suite": "api",
+        "name": "HU9-09 CA3: decisión inválida \"RECHAZAR\" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-10",
+        "suite": "api",
+        "name": "HU9-10 CA3: decisión inválida \"aceptar\" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "S3-PRE-01",
+        "suite": "api",
+        "name": "S3-PRE-01: registro rechaza documentos incompletos máscara 0 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-02",
+        "suite": "api",
+        "name": "S3-PRE-02: registro rechaza documentos incompletos máscara 1 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-03",
+        "suite": "api",
+        "name": "S3-PRE-03: registro rechaza documentos incompletos máscara 2 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-04",
+        "suite": "api",
+        "name": "S3-PRE-04: registro rechaza documentos incompletos máscara 3 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-05",
+        "suite": "api",
+        "name": "S3-PRE-05: registro rechaza documentos incompletos máscara 4 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-06",
+        "suite": "api",
+        "name": "S3-PRE-06: registro rechaza documentos incompletos máscara 5 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-07",
+        "suite": "api",
+        "name": "S3-PRE-07: registro rechaza documentos incompletos máscara 6 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-08",
+        "suite": "api",
+        "name": "S3-PRE-08: registro rechaza documentos incompletos máscara 7 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-09",
+        "suite": "api",
+        "name": "S3-PRE-09: registro rechaza documentos incompletos máscara 8 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-10",
+        "suite": "api",
+        "name": "S3-PRE-10: registro rechaza documentos incompletos máscara 9 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-11",
+        "suite": "api",
+        "name": "S3-PRE-11: registro rechaza documentos incompletos máscara 10 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-12",
+        "suite": "api",
+        "name": "S3-PRE-12: registro rechaza documentos incompletos máscara 11 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-13",
+        "suite": "api",
+        "name": "S3-PRE-13: registro rechaza documentos incompletos máscara 12 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-14",
+        "suite": "api",
+        "name": "S3-PRE-14: registro rechaza documentos incompletos máscara 13 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-15",
+        "suite": "api",
+        "name": "S3-PRE-15: registro rechaza documentos incompletos máscara 14 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      }
+    ]
+  },
+  "dod": [
+    {
+      "id": "DOD-1",
+      "kind": "applicable",
+      "text": "Hemos realizado las pruebas unitarias, de integración o de extremo a extremo que correspondan a las funcionalidades desarrolladas.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-2",
+      "kind": "peers",
+      "text": "Cada funcionalidad ha sido probada manualmente por al menos un integrante diferente de quien la desarrolló, aplicando pruebas cruzadas y casos negativos.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-3",
+      "kind": "regression",
+      "text": "Al finalizar cada Sprint, hemos ejecutado pruebas automatizadas con apoyo de Skills de inteligencia artificial para verificar las funcionalidades implementadas y detectar posibles regresiones.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-4",
+      "kind": "defects",
+      "text": "Hemos revisado los resultados de las pruebas, documentado los defectos encontrados y corregido los errores críticos que impidan cumplir los criterios de aceptación.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-5",
+      "kind": "shared",
+      "text": "Hemos comprobado que las funcionalidades principales operan correctamente en el ambiente compartido y no únicamente en el entorno local.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-6",
+      "kind": "po",
+      "text": "Hemos validado el cumplimiento de los criterios de aceptación con nuestro Product Owner antes de considerar terminado el incremento.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-7",
+      "kind": "branches",
+      "text": "Hemos integrado las funcionalidades desarrolladas en la rama developer, donde realizamos las pruebas unitarias, de integración, de extremo a extremo y las pruebas automatizadas con Skills de IA que correspondan. Una vez que todas las pruebas requeridas sean satisfactorias y los criterios de aceptación estén validados, fusionamos los cambios con la rama main, garantizando que esta contenga únicamente versiones estables del sistema.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 4",
+      "evidence": []
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "S3-ACL-01",
+      "sourceRef": "SPRINT3 / HU-3 RN4; HU-4 RN1",
+      "text": "Confirmar con negocio los umbrales 60 y 80; se planifican literalmente como referencia provisional, no se cambian."
+    },
+    {
+      "id": "S3-ACL-02",
+      "sourceRef": "SPRINT3 / HU-3 RN5; HU-4 RN1",
+      "text": "Confirmar lenguaje de APROBADA en checklist: es preclasificación y nunca sustituye decisión final del MINED."
+    },
+    {
+      "id": "S3-ACL-03",
+      "sourceRef": "SPRINT3 / HU-3 precondiciones/tarea7; HU-4 RN2",
+      "text": "id_universidad del navegador es temporal y manipulable; no es autenticación segura. Acordar controles de identidad/propiedad y riesgo aceptado sin inventar login fuera de alcance."
+    },
+    {
+      "id": "S3-ACL-04",
+      "sourceRef": "SPRINT3 / HU-3 CA1/RN6",
+      "text": "¿El máximo de 60 segundos incluye espera en cola o solo ejecución? Definir inicio/fin del SLA con una evaluación a la vez."
+    },
+    {
+      "id": "S3-ACL-05",
+      "sourceRef": "SPRINT3 / HU-3 E3/tarea6",
+      "text": "Cola en memoria pierde trabajos pendientes al reiniciar. Acordar recuperación de SIN_CALCULAR y reconciliación de EN_CALCULO sin afirmar persistencia inexistente."
+    },
+    {
+      "id": "S3-ACL-06",
+      "sourceRef": "SPRINT3 / HU-3 tarea1/dependencias",
+      "text": "Proveedor, formato texto o PDF directo, soporte de escaneados, tiempo y costo requieren validación técnica del equipo. Hachi no ejecutará esa tarea con servicios reales ni credenciales."
+    },
+    {
+      "id": "S3-ACL-07",
+      "sourceRef": "SPRINT3 / HU-3 RN7/tarea6",
+      "text": "¿Cómo persistir y coordinar límite diario tras reinicios o múltiples instancias? Acordar zona horaria, qué cuenta, reintentos y reanudación de casos al día siguiente."
+    },
+    {
+      "id": "S3-ACL-08",
+      "sourceRef": "SPRINT3 / HU-3 CA3/tarea3/tarea9",
+      "text": "Aclarar rechazo de porcentaje fuera de rango frente a limitarlo a 0–100; definir tipos del JSON, claves vacías, valores no finitos y textos largos sin reinterpretar requisitos."
+    },
+    {
+      "id": "S3-ACL-09",
+      "sourceRef": "SPRINT3 / HU-3 RN5/tarea7/campos UI",
+      "text": "RN5 permite reintento mientras PENDIENTE, pero tarea7 rechaza CALCULADO/EN_CALCULO y UI solo permite ERROR/SIN_CALCULAR. Confirmar elegibilidad y tratamiento de valores previos."
+    },
+    {
+      "id": "S3-ACL-10",
+      "sourceRef": "SPRINT3 / HU-4 CA1/RN6/tarea2",
+      "text": "Acordar condiciones para medir 5 segundos, selección durante refresco y conteos de datos incompletos. No inventar umbrales de carga ni persistencia de selección."
+    },
+    {
+      "id": "S3-ACL-11",
+      "sourceRef": "ESTRATEGIA / DOD-7",
+      "text": "La estrategia literal dice developer; la rama efectiva es development. Mantener texto original y confirmar equivalencia con el equipo."
+    }
+  ],
+  "outOfScope": [
+    "HU-3: Chat o instrucciones libres a la IA.",
+    "HU-3: Leer PDF escaneados con OCR (salvo que el proveedor de IA los lea de forma nativa).",
+    "HU-3: Cambiar los umbrales o el modelo de IA desde la pantalla.",
+    "HU-3: Mostrar el reporte en la pantalla del MINED (reporte-caso).",
+    "HU-3: Aceptar o advertir sobre el caso (corresponde a HU-9).",
+    "HU-4: Confirmar y registrar formalmente las equivalencias (corresponde a HU-5).",
+    "HU-4: Guardar la selección entre visitas.",
+    "HU-4: Búsqueda, filtros, paginación o exportación.",
+    "HU-4: Inicio de sesión de la universidad."
+  ],
+  "planning": {
+    "plannedOn": "2026-10-18",
+    "startsOn": "2026-10-19",
+    "status": "PREPARACION_LOCAL_NO_PUBLICADA",
+    "goalNote": "Título y objetivo descriptivos de QA derivados de las dos historias; no sustituyen un Sprint Goal aprobado.",
+    "plan": "tests/PLAN-QA-SPRINT-3.md",
+    "automationReview": {
+      "reference": "cebb094",
+      "report": "tests/ESTADO-AUTOMATIZACION-SPRINT-3.md",
+      "partialScenario": "PLAN-S3-HU-3-02",
+      "scope": "Solo rechazo del registro HU-2 con documentos incompletos; no entrega de documentos a IA."
+    }
+  }
+}

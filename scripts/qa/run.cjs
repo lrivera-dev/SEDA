@@ -51,6 +51,8 @@ async function main() {
     const id = started.replace(/[:.]/g, '-') + '-' + crypto.randomBytes(3).toString('hex');
     const directory = path.join(root, 'qa-output', id);
     fs.mkdirSync(directory, { recursive: true });
+    if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT,
+        `report-directory=${path.relative(root, directory).replaceAll('\\', '/')}\n`);
     const metadata = { id, started, branch: process.env.GITHUB_HEAD_REF || git(['branch', '--show-current']),
         commit: git(['rev-parse', 'HEAD']), dirty: git(['status', '--porcelain']).length > 0,
         node: process.version, platform: `${process.platform}/${process.arch}`,

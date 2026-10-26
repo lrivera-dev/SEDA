@@ -19,7 +19,7 @@ async function revisarCaso(req, res) {
   const { decision, observacion } = req.body || {};
 
   // E1 / RN3: Validar que la decisión sea ACEPTAR o ADVERTENCIA
-  if (!decision || !DECISIONES_VALIDAS[decision]) {
+  if (typeof decision !== "string" || !Object.hasOwn(DECISIONES_VALIDAS, decision)) {
     return res.status(400).json({
       error: "Debe elegir una decisión: Aceptar o emitir advertencia",
     });

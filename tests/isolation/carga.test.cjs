@@ -11,8 +11,15 @@ test('carga controlada de aplicación y routers reales sin escuchar ni contactar
     assert.ok(routes.some(r => r.path === '/login' && r.methods.post));
     assert.ok(routes.some(r => r.path === '/:id_caso/revision' && r.methods.patch));
     assert.ok(routes.some(r => r.path === '/:id_caso' && r.methods.get));
-    assert.equal(app.router.stack.filter(l => l.handle.stack).length, 6);
-    assert.equal(e.fabricaciones.length, 2);
+    // Verificar los endpoints agregados en HU-3 y HU-4.
+    assert.ok(routes.some(r =>
+        r.path === '/:id_caso/reintentar' && r.methods.post
+    ));
+
+    // SEDA tiene 8 routers registrados.
+    assert.equal(app.router.stack.filter(l => l.handle.stack).length, 8);
+
+    assert.equal(e.fabricaciones.length, 3);
     assert.equal(e.llamadas.length, 0);
     assert.deepEqual(e.seguridad.bloqueos, []);
     assert.deepEqual(process.getActiveResourcesInfo().sort(), before.sort());
