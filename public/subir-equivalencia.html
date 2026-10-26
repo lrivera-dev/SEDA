@@ -29,23 +29,46 @@
 
         <template id="tpl-fila">
             <div class="fila">
+                <div class="fila-cabecera">
+                    <strong>Equivalencia</strong>
+                    <button type="button" class="btn-quitar">Eliminar</button>
+                </div>
+
                 <div class="field">
                     <label>Materia cursada en nuestra universidad <span class="req">*</span></label>
                     <select class="f-origen" required>
                         <option value="">Cargando materias...</option>
                     </select>
                 </div>
-                <div class="field">
-                    <label>Materia equivalente de otra universidad <span class="req">*</span></label>
-                    <select class="f-destino" required>
-                        <option value="">Cargando catálogo...</option>
-                    </select>
+
+                <div class="fila-destino">
+                    <div class="field">
+                        <label>Universidad destino <span class="req">*</span></label>
+                        <select class="f-universidad-destino" required>
+                            <option value="">Selecciona una universidad</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Carrera destino <span class="req">*</span></label>
+                        <select class="f-carrera-destino" required disabled>
+                            <option value="">Primero selecciona una universidad</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Materia destino <span class="req">*</span></label>
+                        <select class="f-destino" required disabled>
+                            <option value="">Primero selecciona una carrera</option>
+                        </select>
+                    </div>
                 </div>
-                <button type="button" class="btn-quitar">Quitar</button>
+
                 <div class="field f-desc">
                     <label>Descripción de la equivalencia <span class="req">*</span></label>
                     <textarea class="f-descripcion" rows="2" maxlength="500"></textarea>
                 </div>
+
                 <small class="error fila-error"></small>
             </div>
         </template>

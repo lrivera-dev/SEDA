@@ -107,47 +107,102 @@
         select.append(opcion);
     }
 
-    function llenarSelect(select, elementos, textoVacio, obtenerTexto) {
+    function llenarSelect(
+        select,
+        elementos,
+        textoVacio,
+        obtenerValor,
+        obtenerTexto
+    ) {
         const valorSeleccionado = select.value;
 
         select.replaceChildren();
         agregarOpcion(select, '', textoVacio);
 
         elementos.forEach((elemento) => {
-            agregarOpcion(select, elemento.id_materia, obtenerTexto(elemento));
+            agregarOpcion(
+                select,
+                obtenerValor(elemento),
+                obtenerTexto(elemento)
+            );
         });
 
         select.disabled = elementos.length === 0;
         select.value = elementos.some(
-            (elemento) => elemento.id_materia === valorSeleccionado
+            (elemento) => obtenerValor(elemento) === valorSeleccionado
         ) ? valorSeleccionado : '';
     }
+
 
     function filas() {
         return [...contFilas.querySelectorAll('.fila')];
     }
 
-    function actualizarOpciones() {
-        filas().forEach((fila) => {
-            llenarSelect(
-                fila.querySelector('.f-origen'),
-                materiasOrigen,
-                materiasOrigen.length
-                    ? 'Selecciona una materia'
-                    : 'No hay materias propias con documentos completos',
-                (materia) => `${materia.nombre} — ${materia.carrera}`
-            );
+    function actualizarOpcionesFila(fila) {
+        const selectUniversidad = fila.querySelector('.f-universidad-destino');
+        const selectCarrera = fila.querySelector('.f-carrera-destino');
+        const selectMateria = fila.querySelector('.f-destino');
 
-            llenarSelect(
-                fila.querySelector('.f-destino'),
-                materiasDestino,
-                materiasDestino.length
-                    ? 'Selecciona una materia del catálogo'
-                    : 'No hay materias disponibles con documentos completos',
-                (materia) =>
-                    `${materia.nombre} — ${materia.carrera}, ${materia.universidad}`
-            );
-        });
+        llenarSelect(
+            fila.querySelector('.f-origen'),
+            materiasOrigen,
+            materiasOrigen.length
+                ? 'Selecciona una materia'
+                : 'No hay materias propias con documentos completos',
+            (materia) => materia.id_materia,
+            (materia) => `${materia.nombre} — ${materia.carrera}`
+        );
+
+        const universidades = [...new Set(
+            materiasDestino.map((materia) => materia.universidad)
+        )].sort((a, b) => a.localeCompare(b));
+
+        llenarSelect(
+            selectUniversidad,
+            universidades,
+            universidades.length
+                ? 'Selecciona una universidad'
+                : 'No hay universidades disponibles con documentos completos',
+            (universidad) => universidad,
+            (universidad) => universidad
+        );
+
+        const universidadElegida = selectUniversidad.value;
+        const carreras = [...new Set(
+            materiasDestino
+                .filter((materia) => materia.universidad === universidadElegida)
+                .map((materia) => materia.carrera)
+        )].sort((a, b) => a.localeCompare(b));
+
+        llenarSelect(
+            selectCarrera,
+            carreras,
+            universidadElegida
+                ? 'Selecciona una carrera'
+                : 'Primero selecciona una universidad',
+            (carrera) => carrera,
+            (carrera) => carrera
+        );
+
+        const carreraElegida = selectCarrera.value;
+        const materias = materiasDestino.filter((materia) =>
+            materia.universidad === universidadElegida &&
+            materia.carrera === carreraElegida
+        );
+
+        llenarSelect(
+            selectMateria,
+            materias,
+            carreraElegida
+                ? 'Selecciona una materia'
+                : 'Primero selecciona una carrera',
+            (materia) => materia.id_materia,
+            (materia) => materia.nombre
+        );
+    }
+
+    function actualizarOpciones() {
+        filas().forEach(actualizarOpcionesFila);
     }
 
     function refrescarBotonesQuitar() {
@@ -174,8 +229,23 @@
             refrescarBotonesQuitar();
         });
 
+        const selectUniversidad = fila.querySelector('.f-universidad-destino');
+        const selectCarrera = fila.querySelector('.f-carrera-destino');
+        const selectMateria = fila.querySelector('.f-destino');
+
+        selectUniversidad.addEventListener('change', () => {
+            selectCarrera.value = '';
+            selectMateria.value = '';
+            actualizarOpcionesFila(fila);
+        });
+
+        selectCarrera.addEventListener('change', () => {
+            selectMateria.value = '';
+            actualizarOpcionesFila(fila);
+        });
+
         contFilas.append(fila);
-        actualizarOpciones();
+        actualizarOpcionesFila(fila);
         refrescarBotonesQuitar();
     }
 
@@ -185,12 +255,14 @@
 
         filas().forEach((fila) => {
             const origen = fila.querySelector('.f-origen').value;
+            const universidad = fila.querySelector('.f-universidad-destino').value;
+            const carrera = fila.querySelector('.f-carrera-destino').value;
             const destino = fila.querySelector('.f-destino').value;
             const descripcion = fila.querySelector('.f-descripcion').value.trim();
             let mensaje = '';
 
-            if (!origen || !destino) {
-                mensaje = 'Selecciona las dos materias.';
+            if (!origen || !universidad || !carrera || !destino) {
+                mensaje = 'Selecciona la materia de origen, universidad, carrera y materia destino.';
             } else if (origen === destino) {
                 mensaje = 'La materia cursada y la equivalente no pueden ser la misma.';
             } else if (!descripcion) {
@@ -207,7 +279,6 @@
 
         return valido;
     }
-
     function construirCuerpo(fila) {
         return {
             id_materia_origen: fila.querySelector('.f-origen').value,
