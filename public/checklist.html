@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>SEDA | Checklist de coincidencia</title>
 
@@ -13,6 +12,7 @@
 
     <!-- Estilos de nuestra HU-3 -->
     <link rel="stylesheet" href="css/estado-calculo.css">
+    <script src="/js/proteger-universidad.js"></script>
 </head>
 
 <body>
@@ -48,9 +48,7 @@
                     Equivalencias
                 </a>
 
-                <a href="checklist.html"
-                   class="active"
-                   aria-current="page">
+                <a href="checklist.html" class="active" aria-current="page">
                     Checklist de coincidencia
                 </a>
             </nav>
@@ -76,17 +74,13 @@
             </section>
 
             <!-- Mensajes generales -->
-            <p id="estado-checklist"
-               role="status"
-               aria-live="polite">
+            <p id="estado-checklist" role="status" aria-live="polite">
                 La lista de equivalencias todavía
                 no está cargada.
             </p>
 
             <!-- Aquí aparecerán los casos -->
-            <section
-                id="lista-casos"
-                aria-label="Casos de equivalencia">
+            <section id="lista-casos" aria-label="Casos de equivalencia">
             </section>
 
         </main>
@@ -97,4 +91,5 @@
     <script src="js/checklist.js"></script>
 
 </body>
+
 </html>
