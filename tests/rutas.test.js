@@ -7,10 +7,7 @@ const app = require('../server');
 
 const ID_CASO = '00000000-0000-0000-0000-000000000000';
 const MENSAJE_NO_AUTORIZADO = 'No autorizado.';
-const MENSAJE_NO_COMPATIBLE = 'El archivo no es compatible, formatos aceptados: PDF o Word';
 const TIEMPO_MAXIMO_MS = 5000;
-
-const PDF_VALIDO = Buffer.from('%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF\n');
 
 let servidor;
 let urlBase;
@@ -50,18 +47,6 @@ async function pedir(metodo, ruta, { cuerpo, token, formulario } = {}) {
     }
 
     return { estado: respuesta.status, datos, texto };
-}
-
-function crearFormulario(contenido, tipoMime, campos = {}) {
-    const formulario = new FormData();
-
-    for (const [clave, valor] of Object.entries(campos)) {
-        formulario.append(clave, valor);
-    }
-
-    formulario.append('archivo', new Blob([contenido], { type: tipoMime }), 'documento');
-
-    return formulario;
 }
 
 describe('Rutas de la API (sin base de datos real)', () => {
@@ -121,6 +106,22 @@ describe('Rutas de la API (sin base de datos real)', () => {
         }
     });
 
+    describe('Rutas protegidas de universidad', () => {
+        for (const [metodo, ruta] of [['POST', '/equivalencias'], ['POST', '/archivos']]) {
+            it(`${metodo} ${ruta} sin token responde 401 antes de validar el cuerpo`, async () => {
+                const { estado, datos } = await pedir(metodo, ruta, { cuerpo: {} });
+                assert.equal(estado, 401);
+                assert.deepEqual(datos, { error: MENSAJE_NO_AUTORIZADO });
+            });
+
+            it(`${metodo} ${ruta} con token inválido responde 401`, async () => {
+                const { estado, datos } = await pedir(metodo, ruta, { cuerpo: {}, token: 'token-falso' });
+                assert.equal(estado, 401);
+                assert.deepEqual(datos, { error: MENSAJE_NO_AUTORIZADO });
+            });
+        }
+    });
+
     describe('Inicio de sesión', () => {
         it('sin datos responde 400', async () => {
             const { estado, datos } = await pedir('POST', '/auth/login', { cuerpo: {} });
@@ -137,7 +138,7 @@ describe('Rutas de la API (sin base de datos real)', () => {
         });
     });
 
-    describe('Validación de datos obligatorios', () => {
+    describe('Registro público de universidades', () => {
         it('POST /universidades sin datos lista los campos faltantes', async () => {
             const { estado, datos } = await pedir('POST', '/universidades', { cuerpo: {} });
 
@@ -148,56 +149,5 @@ describe('Rutas de la API (sin base de datos real)', () => {
             );
         });
 
-        it('POST /equivalencias sin datos lista los campos faltantes', async () => {
-            const { estado, datos } = await pedir('POST', '/equivalencias', { cuerpo: {} });
-
-            assert.equal(estado, 400);
-            assert.deepEqual(
-                datos.campos,
-                ['id_materia_origen', 'id_materia_destino', 'descripcion', 'id_universidad']
-            );
-        });
-    });
-
-    describe('Subida de archivos', () => {
-        it('sin archivo responde 400', async () => {
-            const { estado, datos } = await pedir('POST', '/archivos', { cuerpo: {} });
-
-            assert.equal(estado, 400);
-            assert.match(datos.error, /No se recibió ningún archivo/);
-        });
-
-        it('rechaza una imagen con el mensaje de formato no compatible', async () => {
-            const formulario = crearFormulario(PDF_VALIDO, 'image/png', { tipo: 'pensum' });
-            const { estado, datos } = await pedir('POST', '/archivos', { formulario });
-
-            assert.equal(estado, 400);
-            assert.equal(datos.error, MENSAJE_NO_COMPATIBLE);
-        });
-
-        it('rechaza un PDF dañado antes de subirlo', async () => {
-            const formulario = crearFormulario('esto no es un pdf', 'application/pdf', { tipo: 'pensum' });
-            const { estado, datos } = await pedir('POST', '/archivos', { formulario });
-
-            assert.equal(estado, 400);
-            assert.equal(datos.error, MENSAJE_NO_COMPATIBLE);
-        });
-
-        it('rechaza un archivo de más de 20 MB', async () => {
-            const archivoGrande = Buffer.alloc(21 * 1024 * 1024);
-            const formulario = crearFormulario(archivoGrande, 'application/pdf', { tipo: 'pensum' });
-            const { estado, datos } = await pedir('POST', '/archivos', { formulario });
-
-            assert.equal(estado, 400);
-            assert.match(datos.error, /supera el tamaño máximo/);
-        });
-
-        it('un PDF válido sin tipo de documento llega al controlador y pide el tipo', async () => {
-            const formulario = crearFormulario(PDF_VALIDO, 'application/pdf');
-            const { estado, datos } = await pedir('POST', '/archivos', { formulario });
-
-            assert.equal(estado, 400);
-            assert.match(datos.error, /tipo de documento/);
-        });
     });
 });

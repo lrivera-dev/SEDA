@@ -8,6 +8,13 @@ const validarArchivo = require('../../middlewares/validarArchivo');
 beforeEach(() => entorno.preparar());
 afterEach(() => entorno.verificarConsumo());
 
+function registrarEquivalencia(body, res) {
+    return registrarEquivalencias({
+        body,
+        usuario: { id_universidad: 10 }
+    }, res);
+}
+
 for (const campo of Object.keys(d.universidad)) {
     test(`universidad: ${campo} vacío devuelve 400`, async () => {
         const res = entorno.respuesta();
@@ -46,17 +53,17 @@ for (const [nombre, pasos, codigo, mensaje] of [
         assert.equal(res.statusCode, codigo); assert.deepEqual(res.body, { error: mensaje });
     });
 }
-for (const campo of Object.keys(d.equivalencia)) {
+for (const campo of ['id_materia_origen', 'id_materia_destino', 'descripcion']) {
     test(`equivalencia: falta ${campo}`, async () => {
         const body = { ...d.equivalencia }; delete body[campo];
-        const res = entorno.respuesta(); await registrarEquivalencias({ body }, res);
+        const res = entorno.respuesta(); await registrarEquivalencia(body, res);
         assert.equal(res.statusCode, 400); assert.deepEqual(res.body.campos, [campo]);
         assert.equal(entorno.llamadas.length, 0);
     });
 }
 test('equivalencia: materias iguales deben devolver HTTP 400', async () => {
     const res = entorno.respuesta();
-    await registrarEquivalencias({ body: { ...d.equivalencia, id_materia_destino: 1 } }, res);
+    await registrarEquivalencia({ ...d.equivalencia, id_materia_destino: 1 }, res);
     assert.equal(res.statusCode, 400);
     assert.equal(res.body.error, 'La materia de origen y destino no pueden ser la misma.');
 });
@@ -64,17 +71,17 @@ for (const [nombre, pasos, codigo, mensaje] of [
     ['origen inexistente', [d.consulta()], 400, 'La materia de origen indicada no existe.'],
     ['destino inexistente', [d.consulta(d.materia), d.consulta()], 400, 'La materia de destino indicada no existe.'],
     ['identificador rechazado por persistencia', [d.consulta(null, { message: 'Identificador inválido simulado' })], 500, 'Identificador inválido simulado'],
-    ['universidad sin permiso', [d.consulta({ ...d.materia, carrera: { ...d.materia.carrera, id_universidad: 99 } }), d.consulta(d.materia)], 403, 'La universidad indicada no tiene permiso sobre la materia de origen. ']
+        ['universidad sin permiso', [d.consulta({ ...d.materia, carrera: { ...d.materia.carrera, id_universidad: 99 } }), d.consulta(d.materia)], 403, 'La universidad no tiene permiso sobre la materia de origen.']
 ]) {
     test(`equivalencia: ${nombre}`, async () => {
         entorno.preparar(pasos); const res = entorno.respuesta();
-        await registrarEquivalencias({ body: { ...d.equivalencia, ...(nombre.startsWith('identificador') ? { id_materia_origen: 'invalido' } : {}) } }, res);
+        await registrarEquivalencia({ ...d.equivalencia, ...(nombre.startsWith('identificador') ? { id_materia_origen: 'invalido' } : {}) }, res);
         assert.equal(res.statusCode, codigo); assert.deepEqual(res.body, { error: mensaje });
     });
 }
 test('equivalencia: archivos faltantes impiden insertar', async () => {
     entorno.preparar([d.consulta({ ...d.materia, programa_url: null }), d.consulta(d.materia)]);
-    const res = entorno.respuesta(); await registrarEquivalencias({ body: d.equivalencia }, res);
+    const res = entorno.respuesta(); await registrarEquivalencia(d.equivalencia, res);
     assert.equal(res.statusCode, 400); assert.deepEqual(res.body.archivos_faltantes, ['programa de la materia de origen']);
 });
 test('equivalencia: datos válidos quedan PENDIENTE', async () => {
@@ -83,7 +90,7 @@ test('equivalencia: datos válidos quedan PENDIENTE', async () => {
             id_materia_origen: 1, id_materia_destino: 2, descripcion: d.equivalencia.descripcion, estado: 'PENDIENTE'
         });
     })]);
-    const res = entorno.respuesta(); await registrarEquivalencias({ body: d.equivalencia }, res);
+    const res = entorno.respuesta(); await registrarEquivalencia(d.equivalencia, res);
     assert.equal(res.statusCode, 201); assert.deepEqual(res.body.equivalencia, { id_caso: 1 });
 });
 for (const [nombre, buffer, mimetype, valido] of [

@@ -5,8 +5,28 @@ const e = require('../helpers/entorno.cjs');
 const d = require('../helpers/datos.cjs');
 const request = require('supertest');
 const app = e.cargarApp();
+const TOKEN_UNIVERSIDAD = 'token-universidad-sprint3-qa';
+const ID_USUARIO = 'usuario-universidad-sprint3-qa';
 beforeEach(() => e.preparar());
 afterEach(() => e.verificarConsumo());
+
+function pasosSesionUniversidad() {
+    return [
+        {
+            operacion: 'getUser',
+            resultado: { data: { user: { id: ID_USUARIO } }, error: null },
+            verificar: args => assert.equal(args.token, TOKEN_UNIVERSIDAD)
+        },
+        d.consulta({
+            id_usuario: ID_USUARIO,
+            correo: 'qa@example.test',
+            rol: 'UNIVERSIDAD',
+            estado: 'ACTIVO'
+        }, null, args => assert.equal(args.tabla, 'usuario')),
+        d.consulta({ id_universidad: 10, estado: 'ACTIVA' }, null,
+            args => assert.equal(args.tabla, 'universidad'))
+    ];
+}
 
 // Precondición de HU-3, implementada por HU-2. No evalúa IA ni checklist.
 // Bits presentes: pensum origen, programa origen, pensum destino, programa destino.
@@ -26,14 +46,20 @@ for (let mask = 0; mask < 15; mask++) {
             assert.equal(a.insert, undefined);
             assert.equal(a.update, undefined);
         });
-        e.preparar([lectura(origen, d.equivalencia.id_materia_origen), lectura(destino, d.equivalencia.id_materia_destino)]);
-        const r = await request(app).post('/equivalencias').send(d.equivalencia).expect(400).expect('Content-Type', /json/);
+        e.preparar([
+            ...pasosSesionUniversidad(),
+            lectura(origen, d.equivalencia.id_materia_origen),
+            lectura(destino, d.equivalencia.id_materia_destino)
+        ]);
+        const r = await request(app).post('/equivalencias')
+            .set('Authorization', `Bearer ${TOKEN_UNIVERSIDAD}`)
+            .send(d.equivalencia).expect(400).expect('Content-Type', /json/);
         assert.equal(r.body.error, 'No se puede registrar la equivalencia: faltan archivos por cargar.');
         assert.ok(Array.isArray(r.body.archivos_faltantes));
         assert.equal(r.body.archivos_faltantes.length, 4 - [1, 2, 4, 8].filter(bit => mask & bit).length);
         assert.ok(r.body.archivos_faltantes.every(x => typeof x === 'string' && x.length > 0));
         assert.equal(r.body.equivalencia, undefined);
-        assert.equal(e.llamadas.length, 2, 'Solo se consultan las dos materias; no hay persistencia ni servicios adicionales');
-        assert.ok(e.llamadas.every(x => x.operacion === 'consulta' && x.argumentos.tabla === 'materia'));
+        assert.equal(e.llamadas.length, 5, 'Auth valida la sesión y solo se consultan las dos materias');
+        assert.ok(e.llamadas.slice(3).every(x => x.operacion === 'consulta' && x.argumentos.tabla === 'materia'));
     });
 }

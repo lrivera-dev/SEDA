@@ -82,7 +82,18 @@ class ElementoSimulado {
 }
 
 function prepararCaso(caso, opciones = {}) {
-    const ventana = {};
+    const ventana = { location: { href: "" } };
+    const almacenamiento = new Map();
+    if (opciones.tokenUniversidad !== "") {
+        almacenamiento.set(
+            "seda_access_token",
+            opciones.tokenUniversidad || "token-universidad-prueba"
+        );
+    }
+    const sessionStorage = {
+        getItem: clave => almacenamiento.get(clave) ?? null,
+        removeItem: clave => almacenamiento.delete(clave)
+    };
 
     const documento = {
         createElement: (etiqueta) =>
@@ -93,6 +104,7 @@ function prepararCaso(caso, opciones = {}) {
     vm.runInNewContext(codigo, {
         window: ventana,
         document: documento,
+        sessionStorage,
         fetch: opciones.fetch || (async () => {
             throw new Error("Solicitud no simulada");
         }),
@@ -100,12 +112,9 @@ function prepararCaso(caso, opciones = {}) {
     });
 
     const contenedor = new ElementoSimulado("div");
+    contenedor.ventana = ventana;
 
-    ventana.SEDAEstadoCalculo.renderizar(
-        contenedor,
-        caso,
-        opciones.idUniversidad ?? "universidad-prueba"
-    );
+    ventana.SEDAEstadoCalculo.renderizar(contenedor, caso);
 
     return contenedor;
 }
@@ -249,7 +258,6 @@ test("Reintentar envía POST y cambia a EN_CALCULO", async () => {
         }),
         {
             fetch: fetchSimulado,
-            idUniversidad: "universidad-456"
         }
     );
 
@@ -262,10 +270,8 @@ test("Reintentar envía POST y cambia a EN_CALCULO", async () => {
 
     assert.equal(solicitud.opciones.method, "POST");
 
-    assert.deepEqual(
-        JSON.parse(solicitud.opciones.body),
-        { id_universidad: "universidad-456" }
-    );
+    assert.equal(solicitud.opciones.headers.Authorization, "Bearer token-universidad-prueba");
+    assert.equal(solicitud.opciones.body, undefined);
 
     assert.equal(
         vista.querySelector(".hu3-estado").textContent,
@@ -309,7 +315,7 @@ test("Un error del servidor mantiene Reintentar", async () => {
 });
 
 // PRUEBA 10
-test("Sin universidad no se envía el reintento", async () => {
+test("Sin token de sesión redirige al login y no envía el reintento", async () => {
     let llamadas = 0;
 
     const vista = prepararCaso(
@@ -317,7 +323,7 @@ test("Sin universidad no se envía el reintento", async () => {
             motivo: "Error de IA"
         }),
         {
-            idUniversidad: "",
+            tokenUniversidad: "",
             fetch: async () => {
                 llamadas++;
             }
@@ -328,8 +334,5 @@ test("Sin universidad no se envía el reintento", async () => {
 
     assert.equal(llamadas, 0);
 
-    assert.match(
-        vista.querySelector(".hu3-error").textContent,
-        /No se identificó la universidad/
-    );
+    assert.equal(vista.ventana.location.href, "/index.html");
 });
