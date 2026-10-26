@@ -286,6 +286,12 @@ small.error {
   margin-bottom: 0;
 }
 
+.fila-origen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
 .fila-destino {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -336,6 +342,7 @@ small.error {
 }
 
 @media (max-width: 760px) {
+  .fila-origen,
   .fila-destino {
     grid-template-columns: 1fr;
   }

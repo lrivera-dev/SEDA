@@ -34,11 +34,20 @@
                     <button type="button" class="btn-quitar">Eliminar</button>
                 </div>
 
-                <div class="field">
-                    <label>Materia cursada en nuestra universidad <span class="req">*</span></label>
-                    <select class="f-origen" required>
-                        <option value="">Cargando materias...</option>
-                    </select>
+                <div class="fila-origen">
+                    <div class="field">
+                        <label>Carrera de nuestra universidad <span class="req">*</span></label>
+                        <select class="f-carrera-origen" required>
+                            <option value="">Cargando carreras...</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Materia cursada <span class="req">*</span></label>
+                        <select class="f-origen" required disabled>
+                            <option value="">Primero selecciona una carrera</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="fila-destino">

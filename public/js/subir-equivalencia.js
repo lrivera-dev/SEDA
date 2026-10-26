@@ -85,9 +85,11 @@
 
                 return {
                     id_materia: materia.id_materia,
+                    id_carrera: materia.id_carrera,
                     nombre: materia.nombre,
                     carrera: carrera?.nombre || 'Carrera'
                 };
+
             });
 
         const idsMateriasPropias = new Set(
@@ -143,14 +145,42 @@
         const selectCarrera = fila.querySelector('.f-carrera-destino');
         const selectMateria = fila.querySelector('.f-destino');
 
+        const selectCarreraOrigen = fila.querySelector('.f-carrera-origen');
+        const selectMateriaOrigen = fila.querySelector('.f-origen');
+
+        const carrerasOrigen = [...new Map(
+            materiasOrigen.map((materia) => [
+                materia.id_carrera,
+                {
+                    id_carrera: materia.id_carrera,
+                    nombre: materia.carrera
+                }
+            ])
+        ).values()].sort((a, b) => a.nombre.localeCompare(b.nombre));
+
         llenarSelect(
-            fila.querySelector('.f-origen'),
-            materiasOrigen,
-            materiasOrigen.length
+            selectCarreraOrigen,
+            carrerasOrigen,
+            carrerasOrigen.length
+                ? 'Selecciona una carrera'
+                : 'No hay carreras con documentos completos',
+            (carrera) => carrera.id_carrera,
+            (carrera) => carrera.nombre
+        );
+
+        const carreraOrigenElegida = selectCarreraOrigen.value;
+        const materiasDeCarreraOrigen = materiasOrigen.filter(
+            (materia) => materia.id_carrera === carreraOrigenElegida
+        );
+
+        llenarSelect(
+            selectMateriaOrigen,
+            materiasDeCarreraOrigen,
+            carreraOrigenElegida
                 ? 'Selecciona una materia'
-                : 'No hay materias propias con documentos completos',
+                : 'Primero selecciona una carrera',
             (materia) => materia.id_materia,
-            (materia) => `${materia.nombre} — ${materia.carrera}`
+            (materia) => materia.nombre
         );
 
         const universidades = [...new Set(
@@ -232,6 +262,13 @@
         const selectUniversidad = fila.querySelector('.f-universidad-destino');
         const selectCarrera = fila.querySelector('.f-carrera-destino');
         const selectMateria = fila.querySelector('.f-destino');
+        const selectCarreraOrigen = fila.querySelector('.f-carrera-origen');
+        const selectMateriaOrigen = fila.querySelector('.f-origen');
+
+        selectCarreraOrigen.addEventListener('change', () => {
+            selectMateriaOrigen.value = '';
+            actualizarOpcionesFila(fila);
+        });
 
         selectUniversidad.addEventListener('change', () => {
             selectCarrera.value = '';
@@ -259,10 +296,11 @@
             const carrera = fila.querySelector('.f-carrera-destino').value;
             const destino = fila.querySelector('.f-destino').value;
             const descripcion = fila.querySelector('.f-descripcion').value.trim();
+            const carreraOrigen = fila.querySelector('.f-carrera-origen').value;
             let mensaje = '';
 
-            if (!origen || !universidad || !carrera || !destino) {
-                mensaje = 'Selecciona la materia de origen, universidad, carrera y materia destino.';
+            if (!carreraOrigen || !origen || !universidad || !carrera || !destino) {
+                mensaje = 'Selecciona carrera y materia de origen, universidad, carrera y materia destino.';
             } else if (origen === destino) {
                 mensaje = 'La materia cursada y la equivalente no pueden ser la misma.';
             } else if (!descripcion) {
