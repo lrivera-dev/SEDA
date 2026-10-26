@@ -15,6 +15,10 @@ const consulta = data => ({ operacion: 'consulta', resultado: { data, error: nul
     assert.equal(a.tabla, 'usuario');
     assert.deepEqual(a.eq, [['id_usuario', 'qa-hu6']]);
 } });
+const consultaUniversidad = estado => ({ operacion: 'consulta', resultado: { data: { estado }, error: null }, verificar: a => {
+    assert.equal(a.tabla, 'universidad');
+    assert.deepEqual(a.eq, [['id_usuario', 'qa-hu6']]);
+} });
 const auth = (ok, correo) => ({ operacion: 'signInWithPassword', verificar: a => {
     assert.deepEqual(a, { email: correo, password: 'clave-ficticia' });
 }, resultado: ok
@@ -26,7 +30,7 @@ const getUser = ok => ({ operacion: 'getUser', verificar: a => assert.equal(a.to
 describe('HU-6: autenticación y autorización aisladas', { concurrency: false }, () => {
     let correo, secuencia = 0;
     before(() => {
-        assert.equal(e.fabricaciones.length, 2, 'Auth y validarMined usan fábricas ficticias');
+        assert.equal(e.fabricaciones.length, 3, 'Auth y ambos middlewares usan fábricas ficticias');
         assert.ok(!Object.keys(require.cache).some(f => /[/\\](?:@supabase|dotenv)[/\\]/.test(f)));
         assert.equal(process.env.SUPABASE_URL, 'https://supabase.invalid');
     });
@@ -54,7 +58,7 @@ describe('HU-6: autenticación y autorización aisladas', { concurrency: false }
         e.preparar([auth(true, correo), consulta(usuario)]);
         const r = await login();
         assert.equal(r.status, 200);
-        assert.deepEqual(r.body, { access_token: TOKEN });
+        assert.deepEqual(r.body, { access_token: TOKEN, rol: 'MINED' });
     });
     for (const [id, body] of [
         ['02', {}], ['03', { correo: 'qa@example.test' }],
@@ -88,7 +92,7 @@ describe('HU-6: autenticación y autorización aisladas', { concurrency: false }
         e.preparar([auth(true, correo), consulta(usuario)]);
         const r = await login();
         assert.equal(r.status, 200);
-        assert.deepEqual(r.body, { access_token: TOKEN });
+        assert.deepEqual(r.body, { access_token: TOKEN, rol: 'MINED' });
     });
     test('HU6-11 RN2: después del bloqueo un nuevo fallo reinicia el contador', async t => {
         let ahora = 1800000000000;
@@ -104,36 +108,50 @@ describe('HU-6: autenticación y autorización aisladas', { concurrency: false }
         e.verificarConsumo();
         await fallo(1);
     });
-    for (const [id, nombre, perfil] of [['13', 'correo inexistente', null], ['14', 'rol UNIVERSIDAD', { ...usuario, rol: 'UNIVERSIDAD' }]]) {
-        test(`HU6-${id} CA3 propuesto: ${nombre} rechaza sin revelar cuenta ni rol`, async () => {
-            e.preparar(perfil ? [auth(true, correo), consulta(perfil)] : [auth(false, correo)]);
-            const r = await login();
-            assert.equal(r.status, 401);
-            assert.equal(r.body.access_token, undefined);
-            // Propuesta pendiente del PO: lista cerrada, no admite datos de cuenta/rol.
-            assert.deepEqual(Object.keys(r.body), ['error']);
-            assert.ok([GENERICO, `${GENERICO}. Te quedan 2 intentos`].includes(r.body.error),
-                `Mensaje fuera del contrato genérico propuesto: ${r.body.error}`);
-        });
-    }
+    test('HU6-13 CA3: correo inexistente no revela si la cuenta existe', async () => {
+        e.preparar([auth(false, correo)]);
+        const r = await login();
+        assert.equal(r.status, 401);
+        assert.deepEqual(r.body, { error: `${GENERICO}. Te quedan 2 intentos` });
+    });
+    test('HU6-14: UNIVERSIDAD activa obtiene token y rol', async () => {
+        e.preparar([
+            auth(true, correo),
+            consulta({ ...usuario, rol: 'UNIVERSIDAD' }),
+            consultaUniversidad('ACTIVA')
+        ]);
+        const r = await login();
+        assert.equal(r.status, 200);
+        assert.deepEqual(r.body, { access_token: TOKEN, rol: 'UNIVERSIDAD' });
+    });
     test('HU6-15 RN1: MINED INACTIVO no obtiene token', async () => {
         e.preparar([auth(true, correo), consulta({ ...usuario, estado: 'INACTIVO' })]);
         const r = await login();
         assert.equal(r.status, 401);
         assert.deepEqual(r.body, { error: `${GENERICO}. Te quedan 2 intentos` });
     });
-    test('HU6-16 RN3: inexistente y rol incorrecto no revelan cuál dato fue rechazado', async () => {
+    test('HU6-16: UNIVERSIDAD inactiva no recibe token', async () => {
+        e.preparar([
+            auth(true, correo),
+            consulta({ ...usuario, rol: 'UNIVERSIDAD' }),
+            consultaUniversidad('INACTIVA')
+        ]);
+        const r = await login();
+        assert.equal(r.status, 401);
+        assert.deepEqual(r.body, { error: `${GENERICO}. Te quedan 2 intentos` });
+    });
+    test('HU6-17 RN3: cuenta inexistente y rol no admitido reciben la misma respuesta', async () => {
         e.preparar([auth(false, correo)]);
         const inexistente = await login();
         e.verificarConsumo();
         correo = `otro-${correo}`;
-        e.preparar([auth(true, correo), consulta({ ...usuario, rol: 'UNIVERSIDAD' })]);
+        e.preparar([auth(true, correo), consulta({ ...usuario, rol: 'OTRO' })]);
         const rol = await login();
         assert.equal(rol.status, inexistente.status);
         assert.deepEqual(rol.body, inexistente.body);
         assert.deepEqual(Object.keys(rol.body), ['error']);
     });
-    let id = 17;
+    let id = 18;
     // Solo autorización HU-6; los controladores de HU-8/HU-9 no deben alcanzarse.
     for (const [metodo, ruta] of [['get', '/panel'], ['get', '/casos/1'], ['patch', '/casos/1/revision']]) {
         for (const modo of ['sin sesión', 'token inválido', 'rol incorrecto', 'cuenta inactiva']) {

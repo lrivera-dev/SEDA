@@ -22,7 +22,7 @@ test('Equipo: carga exportación real con fábrica simulada y caché estable, si
     assert.equal(e.cargarApp(), app);
     assert.equal(require('@supabase/supabase-js').createClient, e.createClient);
     assert.equal(require('../../supabaseClient'), e.cliente);
-    assert.equal(e.fabricaciones.length, 2);
+    assert.equal(e.fabricaciones.length, 3);
     const resultado = await e.cliente.auth.getUser('token-falso');
     assert.equal(resultado.data.user, null);
     assert.ok(resultado.error);

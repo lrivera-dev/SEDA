@@ -136,12 +136,7 @@ function aplanarCasos(materias) {
 }
 
 async function obtenerChecklist(req, res) {
-    // TODO(login): hoy la universidad se identifica con el id_universidad que guarda el navegador.
-    const { id_universidad: idUniversidadRuta } = req.params;
-    const { id_universidad: idUniversidadConsulta } = req.query;
-    const idUniversidad = [idUniversidadRuta, idUniversidadConsulta]
-        .find((valor) => typeof valor === 'string' && valor.trim() !== '')
-        ?.trim();
+    const idUniversidad = req.usuario.id_universidad;
 
     // E3: sin universidad identificada no hay checklist.
     if (!idUniversidad) {

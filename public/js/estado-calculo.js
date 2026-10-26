@@ -5,6 +5,16 @@
 // Todos los datos recibidos de la IA se escriben con textContent.
 
 (() => {
+  function obtenerTokenUniversidad() {
+    return sessionStorage.getItem("seda_access_token");
+  }
+
+  function cerrarSesionUniversidad() {
+    sessionStorage.removeItem("seda_access_token");
+    sessionStorage.removeItem("seda_rol");
+    window.location.href = "/index.html";
+  }
+
   const SECCIONES = [
     ["resumen", "Resumen"],
     ["contenidos_coincidentes", "Contenidos coincidentes"],
@@ -22,6 +32,9 @@
   };
 
   function crearElemento(etiqueta, clase, texto) {
+
+
+
     const elemento = document.createElement(etiqueta);
 
     if (clase) elemento.className = clase;
@@ -35,7 +48,7 @@
 
   function leerReporte(reporte) {
     if (reporte && typeof reporte === "object"
-        && !Array.isArray(reporte)) {
+      && !Array.isArray(reporte)) {
       return reporte;
     }
 
@@ -52,7 +65,7 @@
     return null;
   }
 
-  function renderizar(contenedor, caso, idUniversidad) {
+  function renderizar(contenedor, caso) {
     contenedor.replaceChildren();
 
     const estado = caso.estado_calculo || "SIN_CALCULAR";
@@ -79,8 +92,8 @@
       const porcentaje = Number(caso.porcentaje_coincidencia);
 
       if (!Number.isFinite(porcentaje) ||
-          porcentaje < 0 || porcentaje > 100 ||
-          caso.porcentaje_coincidencia == null) {
+        porcentaje < 0 || porcentaje > 100 ||
+        caso.porcentaje_coincidencia == null) {
         contenedor.appendChild(
           crearElemento("p", "hu3-error",
             "El porcentaje calculado no está disponible.")
@@ -185,10 +198,11 @@
         boton.textContent = "Reintentando...";
 
         try {
-          if (!idUniversidad) {
-            throw new Error(
-              "No se identificó la universidad."
-            );
+          const token = obtenerTokenUniversidad();
+
+          if (!token) {
+            cerrarSesionUniversidad();
+            return;
           }
 
           const respuesta = await fetch(
@@ -196,15 +210,17 @@
             {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                id_universidad: idUniversidad
-              })
+                Authorization: `Bearer ${token}`
+              }
             }
           );
 
           const datos = await respuesta.json().catch(() => ({}));
+
+          if (respuesta.status === 401) {
+            cerrarSesionUniversidad();
+            return;
+          }
 
           if (!respuesta.ok) {
             throw new Error(
@@ -218,17 +234,13 @@
             );
           }
 
-          renderizar(
-            contenedor,
-            {
-              ...caso,
-              estado_calculo: "EN_CALCULO",
-              motivo: null,
-              porcentaje_coincidencia: null,
-              reporte: null
-            },
-            idUniversidad
-          );
+          renderizar(contenedor, {
+            ...caso,
+            estado_calculo: "EN_CALCULO",
+            motivo: null,
+            porcentaje_coincidencia: null,
+            reporte: null
+          });
           // Avisar al checklist que debe reanudar las consultas.
           window.dispatchEvent?.(
             new Event("seda:reintento-confirmado")

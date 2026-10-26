@@ -29,7 +29,7 @@ test('login real consume Auth y consulta ficticios', async () => {
     ]);
     const res = e.respuesta();
     await require('../../controllers/auth.controller').iniciarSesion({ body: { correo: 'mined@example.test', contrasena: 'ficticia' } }, res);
-    assert.deepEqual(res.body, { access_token: 'token-ficticio' });
+    assert.deepEqual(res.body, { access_token: 'token-ficticio', rol: 'MINED' });
 });
 test('middleware real utiliza getUser ficticio', async () => {
     e.preparar([{ operacion: 'getUser', resultado: { data: { user: { id: 'qa' } }, error: null },

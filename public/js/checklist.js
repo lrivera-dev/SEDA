@@ -28,15 +28,17 @@
         return elemento;
     }
 
-    function obtenerUniversidad() {
-        try {
-            return localStorage.getItem("id_universidad");
-        } catch {
-            return null;
-        }
+    function obtenerTokenUniversidad() {
+        return sessionStorage.getItem('seda_access_token');
     }
 
-    const idUniversidad = obtenerUniversidad();
+    function cerrarSesionUniversidad() {
+        sessionStorage.removeItem('seda_access_token');
+        sessionStorage.removeItem('seda_rol');
+        window.location.href = '/index.html';
+    }
+
+    const token = obtenerTokenUniversidad();
 
     function crearFila(caso) {
         const fila = crearElemento("article", "hu3-caso");
@@ -83,11 +85,7 @@
             "hu3-resultado"
         );
 
-        window.SEDAEstadoCalculo.renderizar(
-            resultado,
-            caso,
-            idUniversidad
-        );
+        window.SEDAEstadoCalculo.renderizar(resultado, caso);
 
         fila.append(titulo, etiqueta);
 
@@ -175,11 +173,19 @@
         consultando = true;
 
         try {
-            const respuesta = await fetch(
-                `/checklist/${encodeURIComponent(idUniversidad)}`
-            );
+            const respuesta = await fetch('/checklist', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             const datos = await respuesta.json().catch(() => ({}));
+
+            if (respuesta.status === 401) {
+                hayCasosEnEvaluacion = false;
+                cerrarSesionUniversidad();
+                return;
+            }
 
             if (!respuesta.ok) {
                 throw new Error(
@@ -217,10 +223,8 @@
         }
     }
 
-    if (!idUniversidad) {
-        mensaje.textContent =
-            "No se encontró la universidad. Debes identificar " +
-            "tu universidad para consultar el checklist.";
+    if (!token) {
+        cerrarSesionUniversidad();
         return;
     }
 

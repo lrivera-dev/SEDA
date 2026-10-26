@@ -10,12 +10,7 @@ const MENSAJE_EN_PROCESO = 'Este caso ya está calculado o en evaluación';
 
 async function reintentarCoincidencia(req, res) {
     const { id_caso } = req.params;
-    const { id_universidad } = req.body || {};
-
-    // Sin universidad: 400
-    if (id_universidad === undefined || id_universidad === null || id_universidad === '') {
-        return res.status(400).json({ error: 'Debe indicar la universidad.' });
-    }
+    const idUniversidad = req.usuario.id_universidad;
 
     // Un id que no tiene formato de caso no puede existir: 404
     if (!REGEX_UUID.test(id_caso)) {
@@ -48,9 +43,9 @@ async function reintentarCoincidencia(req, res) {
 
     // El caso no es de esa universidad: 403
     const universidadDelCaso = caso.materia_origen?.carrera?.id_universidad;
-    if (String(universidadDelCaso) !== String(id_universidad)) {
+    if (String(universidadDelCaso) !== String(idUniversidad)) {
         return res.status(403).json({
-            error: 'La universidad indicada no tiene permiso sobre este caso.'
+            error: 'La universidad no tiene permiso sobre este caso.'
         });
     }
 
