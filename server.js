@@ -14,6 +14,7 @@ const coincidenciaRoutes = require('./routes/coincidencia.routes');
 const colaEvaluacion = require('./servicios/cola-evaluacion');
 const checklistRoutes = require('./routes/checklist.routes');
 const carrerasRoutes = require('./routes/carreras.routes');
+const materiasRoutes = require('./routes/materias.routes');
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/auth', authRoutes);
 app.use('/coincidencia', coincidenciaRoutes);
 app.use('/checklist', checklistRoutes);
 app.use('/carreras', carrerasRoutes);
+app.use('/materias', materiasRoutes);
 
 // Manejador de errores: siempre después de todas las rutas
 app.use((err, req, res, next) => {
