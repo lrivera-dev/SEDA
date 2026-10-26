@@ -234,8 +234,6 @@
             );
           }
 
-
-
           renderizar(contenedor, {
             ...caso,
             estado_calculo: "EN_CALCULO",
