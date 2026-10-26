@@ -12,6 +12,11 @@ const campoNombreMateria = document.getElementById('nombre-materia');
 const botonCrearMateria = document.getElementById('boton-crear-materia');
 const estadoMateria = document.getElementById('estado-materia');
 const listaMaterias = document.getElementById('lista-materias');
+const campoArchivoPensum = document.getElementById('archivo-pensum');
+const campoArchivoPrograma = document.getElementById('archivo-programa');
+
+let carreraPendientePensum = null;
+let materiaPendientePrograma = null;
 
 function cerrarSesion() {
     if (window.SEDAAuthUniversidad) {
@@ -53,6 +58,35 @@ async function solicitar(url, opciones = {}) {
 
     return datos;
 }
+
+function validarArchivo(archivo, tipoDocumento) {
+    if (!archivo) {
+        throw new Error(`Selecciona el archivo ${tipoDocumento}.`);
+    }
+
+    const extension = archivo.name.split('.').pop().toLowerCase();
+
+    if (!['pdf', 'docx'].includes(extension)) {
+        throw new Error('El archivo debe ser PDF o DOCX.');
+    }
+
+    if (archivo.size > 20 * 1024 * 1024) {
+        throw new Error('El archivo no puede superar los 20 MB.');
+    }
+}
+
+async function subirDocumento(tipo, idRegistro, archivo) {
+    const datos = new FormData();
+    datos.append('tipo', tipo);
+    datos.append(tipo === 'pensum' ? 'id_carrera' : 'id_materia', idRegistro);
+    datos.append('archivo', archivo);
+
+    return solicitar('/archivos', {
+        method: 'POST',
+        body: datos
+    });
+}
+
 
 function mostrarElementoVacio(lista, texto) {
     const elemento = document.createElement('li');
@@ -134,23 +168,59 @@ formularioCarrera.addEventListener('submit', async (evento) => {
     botonCrearCarrera.disabled = true;
 
     try {
-        await solicitar('/carreras', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                nombre: campoNombreCarrera.value.trim()
-            })
-        });
+        const archivo = campoArchivoPensum.files[0];
+        validarArchivo(archivo, 'del pensum');
 
+        if (!carreraPendientePensum) {
+            const resultado = await solicitar('/carreras', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombre: campoNombreCarrera.value.trim()
+                })
+            });
+
+            if (!resultado.carrera?.id_carrera) {
+                throw new Error('La carrera se registró, pero no se recibió su identificador.');
+            }
+
+            carreraPendientePensum = resultado.carrera;
+            campoNombreCarrera.disabled = true;
+        }
+
+        const carrera = carreraPendientePensum;
+        estadoCarrera.textContent = `Carrera registrada. Subiendo el pensum de ${carrera.nombre}…`;
+
+        try {
+            await subirDocumento('pensum', carrera.id_carrera, archivo);
+        } catch (error) {
+            estadoCarrera.textContent =
+                `La carrera "${carrera.nombre}" se creó, pero no se pudo subir el pensum. ` +
+                `${error.message} Selecciona el archivo e inténtalo de nuevo; no se creará otra carrera.`;
+            return;
+        }
+
+        carreraPendientePensum = null;
+        campoNombreCarrera.disabled = false;
         formularioCarrera.reset();
-        estadoCarrera.textContent = 'Carrera registrada.';
-        await cargarCarreras();
+
+        try {
+            await cargarCarreras();
+            estadoCarrera.textContent = 'Carrera y pensum registrados correctamente.';
+        } catch (error) {
+            estadoCarrera.textContent =
+                `La carrera y el pensum se guardaron, pero no se pudo actualizar la lista. ${error.message}`;
+        }
     } catch (error) {
         estadoCarrera.textContent = error.message;
     } finally {
         botonCrearCarrera.disabled = false;
+        botonCrearCarrera.textContent = carreraPendientePensum
+            ? 'Reintentar subida del pensum'
+            : 'Registrar carrera';
     }
 });
+
 
 formularioMateria.addEventListener('submit', async (evento) => {
     evento.preventDefault();
@@ -158,22 +228,67 @@ formularioMateria.addEventListener('submit', async (evento) => {
     botonCrearMateria.disabled = true;
 
     try {
-        await solicitar('/materias', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                id_carrera: selectorCarrera.value,
-                nombre: campoNombreMateria.value.trim()
-            })
-        });
+        const archivo = campoArchivoPrograma.files[0];
+        validarArchivo(archivo, 'del programa de la materia');
 
+        if (!materiaPendientePrograma) {
+            const idCarrera = selectorCarrera.value;
+
+            const resultado = await solicitar('/materias', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_carrera: idCarrera,
+                    nombre: campoNombreMateria.value.trim()
+                })
+            });
+
+            if (!resultado.materia?.id_materia) {
+                throw new Error('La materia se registró, pero no se recibió su identificador.');
+            }
+
+            materiaPendientePrograma = resultado.materia;
+            selectorCarrera.disabled = true;
+            campoNombreMateria.disabled = true;
+        }
+
+        const materia = materiaPendientePrograma;
+        estadoMateria.textContent =
+            `Materia registrada. Subiendo su programa…`;
+
+        try {
+            await subirDocumento('programa', materia.id_materia, archivo);
+        } catch (error) {
+            estadoMateria.textContent =
+                `La materia "${materia.nombre}" se creó, pero no se pudo subir su programa. ` +
+                `${error.message} Selecciona el archivo e inténtalo de nuevo; no se creará otra materia.`;
+            return;
+        }
+
+        materiaPendientePrograma = null;
+        selectorCarrera.disabled = false;
+        campoNombreMateria.disabled = false;
         formularioMateria.reset();
-        estadoMateria.textContent = 'Materia registrada.';
-        await cargarMaterias();
+
+        try {
+            await cargarCarreras();
+            await cargarMaterias();
+            estadoMateria.textContent = 'Materia y programa registrados correctamente.';
+        } catch (error) {
+            estadoMateria.textContent =
+                `La materia y su programa se guardaron, pero no se pudo actualizar la lista. ${error.message}`;
+        }
     } catch (error) {
         estadoMateria.textContent = error.message;
     } finally {
-        botonCrearMateria.disabled = selectorCarrera.options.length <= 1;
+        botonCrearMateria.disabled = false;
+        botonCrearMateria.textContent = materiaPendientePrograma
+            ? 'Reintentar subida del programa'
+            : 'Registrar materia';
+
+        if (!materiaPendientePrograma) {
+            botonCrearMateria.disabled = selectorCarrera.options.length <= 1;
+        }
     }
 });
 

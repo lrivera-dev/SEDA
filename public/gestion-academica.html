@@ -47,6 +47,10 @@
                     <form id="form-carrera">
                         <label for="nombre-carrera">Nombre de la carrera</label>
                         <input id="nombre-carrera" name="nombre" type="text" required>
+                        <label for="archivo-pensum">Pensum de la carrera (PDF o DOCX, máximo 20 MB)</label>
+                        <input id="archivo-pensum" type="file"
+                            accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            required>
                         <button type="submit" id="boton-crear-carrera">Registrar carrera</button>
                         <p id="estado-carrera" class="estado-formulario" role="status" aria-live="polite"></p>
                     </form>
@@ -67,7 +71,10 @@
 
                         <label for="nombre-materia">Nombre de la materia</label>
                         <input id="nombre-materia" name="nombre" type="text" required>
-
+                        <label for="archivo-programa">Programa de la materia (PDF o DOCX, máximo 20 MB)</label>
+                        <input id="archivo-programa" type="file"
+                            accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            required>
                         <button type="submit" id="boton-crear-materia">Registrar materia</button>
                         <p id="estado-materia" class="estado-formulario" role="status" aria-live="polite"></p>
                     </form>
