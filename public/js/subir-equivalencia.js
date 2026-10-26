@@ -116,10 +116,6 @@
             errorEq.textContent = 'Revise los campos marcados antes de guardar.';
             return;
         }
-        const idUniversidad = obtenerIdUniversidad();
-        if (!idUniversidad) {
-            return mostrarEq('err', 'Sin sesión de universidad', 'No se encontró la universidad que inició sesión. Inicie sesión de nuevo.');
-        }
 
         const lista = filas();
         let guardadas = 0;
