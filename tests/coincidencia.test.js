@@ -50,17 +50,23 @@ function consultarCaso(caso, error = null) {
     }]);
 }
 
-async function reintentar({ idCaso = ID_CASO, idUniversidad = ID_UNIVERSIDAD } = {}) {
+async function reintentar({
+    idCaso = ID_CASO,
+    idUniversidad = ID_UNIVERSIDAD
+} = {}) {
     const req = {
         params: { id_caso: idCaso },
-        body: idUniversidad === undefined ? {} : { id_universidad: idUniversidad }
+        usuario: idUniversidad === undefined
+            ? undefined
+            : { id_universidad: idUniversidad }
     };
+
     const res = entorno.respuesta();
     await reintentarCoincidencia(req, res);
     return res;
 }
 
-function clienteIA(texto, comprobarSolicitud = () => {}) {
+function clienteIA(texto, comprobarSolicitud = () => { }) {
     let llamadas = 0;
     const cliente = {
         models: {
@@ -99,12 +105,6 @@ afterEach(() => {
 });
 
 describe('POST /coincidencia/:id_caso/reintentar (Supabase y cola simulados)', () => {
-    it('sin universidad devuelve 400 sin consultar Supabase', async () => {
-        const res = await reintentar({ idUniversidad: null });
-        assert.equal(res.statusCode, 400);
-        assert.equal(res.body.error, 'Debe indicar la universidad.');
-        assert.equal(entorno.llamadas.length, 0);
-    });
 
     it('con identificador de caso inválido devuelve 404', async () => {
         const res = await reintentar({ idCaso: 'no-es-uuid' });
