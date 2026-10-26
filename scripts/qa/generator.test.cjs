@@ -130,12 +130,12 @@ test('Sprint proporcionado conserva 9 CA, 15 RN y 7 criterios DoD, sin atribuir 
     assert.equal(config.stories.flatMap(s => s.criteria).length, 9);
     assert.equal(config.stories.flatMap(s => s.businessRules).length, 15);
     assert.equal(config.dod.length, 7);
-    assert.ok(config.stories.slice(1).flatMap(s => s.criteria).every(c => c.testRefs.length === 0));
+    assert.ok(config.stories.slice(1).flatMap(s => s.criteria).every(c => c.testRefs.length > 0 && !c.coverageComplete));
     assert.equal(config.stories[0].criteria.flatMap(c => c.testRefs).length, 29);
     const m = applyTraceability(model([event('archivo: PDF válido')]), config);
-    assert.equal(m.traceability.totals.SIN_EVIDENCIA, 6);
-    assert.equal(m.traceability.totals.NOT_RUN, 3);
-    assert.ok(m.traceability.stories.slice(1).every(s => s.status === 'SIN_EVIDENCIA'));
+    assert.equal(m.traceability.totals.SIN_EVIDENCIA, 0);
+    assert.equal(m.traceability.totals.NOT_RUN, 9);
+    assert.ok(m.traceability.stories.slice(1).every(s => s.status === 'NOT_RUN'));
     assert.equal(m.totals.PASS, 1);
 });
 function linked(status = 'PASS', complete = true) {
@@ -208,7 +208,7 @@ test('HU-6: 29 resultados simulados vinculados sin aprobar CA3 pendiente ni HU-8
     assert.ok(m.cases.every(c => c.functionality.startsWith('HU-6')));
     assert.ok(m.cases.every(c => !c.expected.includes('HTTP 400')));
     assert.ok(m.traceability.rows.slice(0, 3).every(r => r.testResult === 'PASS' && r.status === 'SIN_EVIDENCIA'));
-    assert.ok(m.traceability.rows.slice(3).every(r => r.links.length === 0 && r.status === 'SIN_EVIDENCIA'));
+    assert.ok(m.traceability.rows.slice(3).every(r => r.links.length > 0 && r.status === 'NOT_RUN'));
     const md = markdown(documentBlocks(m));
     assert.match(md, /PENDIENTE_PO/);
     assert.match(md, /27 PASS y 2 FAIL/);
@@ -247,3 +247,28 @@ test('PASS de HU-6 no cambia los FAIL de regresión QA-001 y QA-002', t => {
     assert.equal(m.traceability.sprintCases.totals.PASS, 1);
     assert.deepEqual(m.findings.map(f => f.id), ['QA-001', 'QA-002']);
 });
+
+
+for (const [label, passes, failures] of [['sin fallos', 123, 0], ['un defecto', 12, 1], ['muchos defectos', 10, 25], ['muchos PASS', 2000, 0]]) {
+    test(`PDF ejecutivo: ${label}, cifras fieles y máximo diez páginas reales`, async () => {
+        const fs = require('node:fs'), path = require('node:path');
+        const { executiveBlocks, countPdfPages } = require('./executive.cjs');
+        const events = [...Array.from({ length: passes }, (_, i) => event(`PASS ficticio ${i}`)),
+            ...Array.from({ length: failures }, (_, i) => event(`Fallo ficticio ${i}`, { details: { error: { actual: 500, expected: 400 } } }, 'test:fail'))];
+        const m = applyTraceability(model(events, failures ? 1 : 0), sprint());
+        const folder = path.join(root, 'qa-output', `generator-validation-pdf-${label.replaceAll(' ', '-')}-${Date.now()}`);
+        fs.mkdirSync(folder, { recursive: true });
+        await require('./render.cjs').generate(m, folder);
+        const pages = countPdfPages(path.join(folder, 'informe.pdf'));
+        assert.ok(pages >= 1 && pages <= 10, `Páginas reales: ${pages}`);
+        const executive = markdown(executiveBlocks(m));
+        assert.ok(executive.includes(`${passes} PASS, ${failures} FAIL`));
+        assert.match(executive, /PENDIENTE_PO/);
+        assert.match(executive, /Definition of Done/);
+        assert.match(executive, /Cobertura parcial/);
+        assert.match(executive, /NO ACREDITADO/);
+        if (failures > 3) assert.ok(executive.includes(`${failures - 3} quedan fuera`));
+        assert.equal(m.cases.length, passes + failures);
+        assert.ok(fs.readFileSync(path.join(folder, 'informe.md'), 'utf8').includes(`PASS ficticio ${passes - 1}`));
+    });
+}

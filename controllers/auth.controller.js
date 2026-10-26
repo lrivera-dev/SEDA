@@ -67,16 +67,33 @@ async function iniciarSesion(req, res) {
     if (
         errorUsuario ||
         !usuario ||
-        usuario.rol !== 'MINED' ||
-        usuario.estado !== 'ACTIVO'
+        usuario.estado !== 'ACTIVO' ||
+        !['MINED', 'UNIVERSIDAD'].includes(usuario.rol)
     ) {
         return registrarFallo(res, correo);
+    }
+
+    if (usuario.rol === 'UNIVERSIDAD') {
+        const { data: universidad, error: errorUniversidad } = await supabaseAdmin
+            .from('universidad')
+            .select('estado')
+            .eq('id_usuario', usuario.id_usuario)
+            .maybeSingle();
+
+        if (
+            errorUniversidad ||
+            !universidad ||
+            universidad.estado !== 'ACTIVA'
+        ) {
+            return registrarFallo(res, correo);
+        }
     }
 
     intentosPorCorreo.delete(correo);
 
     return res.status(200).json({
-        access_token: authData.session.access_token
+        access_token: authData.session.access_token,
+        rol: usuario.rol
     });
 }
 

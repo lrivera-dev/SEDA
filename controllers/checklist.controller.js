@@ -1,0 +1,196 @@
+const supabase = require('../supabaseClient');
+const { clasificarCoincidencia, UMBRAL_APROBACION } = require('../servicios/clasificar-coincidencia');
+
+const MENSAJE_SIN_CASOS = 'Aún no tienes equivalencias registradas';
+const MENSAJE_SIN_UNIVERSIDAD = 'Debes identificar a tu universidad para ver el checklist';
+const MENSAJE_UNIVERSIDAD_INVALIDA = 'El identificador de universidad no es válido';
+
+// Código de Postgres cuando el id no tiene el formato de la columna (por ejemplo, un UUID mal escrito).
+const CODIGO_FORMATO_INVALIDO = '22P02';
+
+const ESTADO_CALCULADO = 'CALCULADO';
+const ESTADO_EN_CALCULO = 'EN_CALCULO';
+const ESTADO_ERROR = 'ERROR';
+
+// RN5: los 4 documentos de un caso, con los mismos nombres que usa servicios/documentos-caso.js.
+const DOCUMENTOS_REQUERIDOS = [
+    {
+        nombre: 'Pensum de la carrera de origen',
+        obtenerRuta: (caso) => caso.materia_origen?.carrera?.pensum_url
+    },
+    {
+        nombre: 'Programa de la materia de origen',
+        obtenerRuta: (caso) => caso.materia_origen?.programa_url
+    },
+    {
+        nombre: 'Pensum de la carrera de destino',
+        obtenerRuta: (caso) => caso.materia_destino?.carrera?.pensum_url
+    },
+    {
+        nombre: 'Programa de la materia de destino',
+        obtenerRuta: (caso) => caso.materia_destino?.programa_url
+    }
+];
+
+// Se parte de la materia de origen para quedarse solo con los casos de la universidad (RN2).
+const CAMPOS_MATERIA_ORIGEN = `
+    id_materia,
+    nombre,
+    programa_url,
+    carrera!inner ( pensum_url, id_universidad ),
+    casos:caso_equivalencia!caso_equivalencia_id_materia_origen_fkey!inner (
+        id_caso,
+        estado_calculo,
+        porcentaje_coincidencia,
+        justificacion_ia,
+        motivo_error_calculo,
+        fecha_registro,
+        materia_destino:materia!caso_equivalencia_id_materia_destino_fkey (
+            nombre,
+            programa_url,
+            carrera ( pensum_url )
+        )
+    )
+`;
+
+function tieneRuta(ruta) {
+    return typeof ruta === 'string' && ruta.trim() !== '';
+}
+
+function obtenerDocumentosFaltantes(caso) {
+    return DOCUMENTOS_REQUERIDOS
+        .filter((documento) => !tieneRuta(documento.obtenerRuta(caso)))
+        .map((documento) => documento.nombre);
+}
+
+// RN1: solo un caso CALCULADO tiene un porcentaje que cuente; en cualquier otro estado es null.
+function leerPorcentaje(caso) {
+    if (caso.estado_calculo !== ESTADO_CALCULADO || caso.porcentaje_coincidencia === null || caso.porcentaje_coincidencia === undefined) {
+        return null;
+    }
+
+    const porcentaje = Number(caso.porcentaje_coincidencia);
+
+    return Number.isFinite(porcentaje) && porcentaje >= 0 && porcentaje <= 100 ? porcentaje : null;
+}
+
+// El reporte se guarda como JSON; si la columna es de texto llega como string y se convierte.
+function leerReporte(valor) {
+    if (typeof valor !== 'string') {
+        return valor ?? null;
+    }
+
+    try {
+        return JSON.parse(valor);
+    } catch (error) {
+        return valor;
+    }
+}
+
+function describirMotivo(caso, clasificacion) {
+    if (clasificacion.estado_checklist === 'APROBADA') {
+        return null;
+    }
+
+    if (caso.estado_calculo === ESTADO_ERROR) {
+        return caso.motivo_error_calculo || 'No se pudo calcular la coincidencia';
+    }
+
+    if (caso.estado_calculo === ESTADO_EN_CALCULO) {
+        return 'La evaluación con IA está en curso';
+    }
+
+    if (caso.estado_calculo !== ESTADO_CALCULADO || clasificacion.nivel === 'SIN_CALCULAR') {
+        return 'Aún no se ha calculado la coincidencia';
+    }
+
+    if (clasificacion.nivel === 'BAJA') {
+        return 'Coincidencia baja: se recomienda revisión manual';
+    }
+
+    return `Coincidencia media: menor al ${UMBRAL_APROBACION}% requerido para aprobar`;
+}
+
+function armarCaso(caso) {
+    const porcentaje = leerPorcentaje(caso);
+    const clasificacion = clasificarCoincidencia(porcentaje);
+
+    return {
+        id_caso: caso.id_caso,
+        materia_origen: caso.materia_origen?.nombre ?? null,
+        materia_destino: caso.materia_destino?.nombre ?? null,
+        estado_calculo: caso.estado_calculo,
+        porcentaje_coincidencia: porcentaje,
+        reporte: leerReporte(caso.justificacion_ia),
+        estado_checklist: clasificacion.estado_checklist,
+        motivo: describirMotivo(caso, clasificacion),
+        documentos_faltantes: obtenerDocumentosFaltantes(caso)
+    };
+}
+
+// Une cada caso con su materia de origen y los ordena del más reciente al más antiguo.
+function aplanarCasos(materias) {
+    return materias
+        .flatMap((materia) => (materia.casos || []).map((caso) => ({ ...caso, materia_origen: materia })))
+        .sort((a, b) => String(b.fecha_registro).localeCompare(String(a.fecha_registro)));
+}
+
+async function obtenerChecklist(req, res) {
+    const idUniversidad = req.usuario.id_universidad;
+
+    // E3: sin universidad identificada no hay checklist.
+    if (!idUniversidad) {
+        return res.status(400).json({ error: MENSAJE_SIN_UNIVERSIDAD });
+    }
+
+    const { data: materias, error } = await supabase
+        .from('materia')
+        .select(CAMPOS_MATERIA_ORIGEN)
+        .eq('carrera.id_universidad', idUniversidad);
+
+    if (error) {
+        const estado = error.code === CODIGO_FORMATO_INVALIDO ? 400 : 500;
+        const mensaje = estado === 400 ? MENSAJE_UNIVERSIDAD_INVALIDA : error.message;
+
+        return res.status(estado).json({ error: mensaje });
+    }
+
+    const casos = aplanarCasos(materias || []).map(armarCaso);
+
+    // E2: la universidad no tiene casos.
+    if (casos.length === 0) {
+        return res.status(200).json({
+            mensaje: MENSAJE_SIN_CASOS,
+            id_universidad: idUniversidad,
+            resumen: { total: 0, aprobadas: 0, pendientes: 0 },
+            casos: [],
+            datos_incompletos: []
+        });
+    }
+
+    // RN5 / CA3: los casos sin sus 4 documentos no se pueden seleccionar.
+    const casosCompletos = casos.filter((caso) => caso.documentos_faltantes.length === 0);
+    const datosIncompletos = casos
+        .filter((caso) => caso.documentos_faltantes.length > 0)
+        .map(({ id_caso, materia_origen, materia_destino, documentos_faltantes }) => ({
+            id_caso,
+            materia_origen,
+            materia_destino,
+            documentos_faltantes
+        }));
+
+    const aprobadas = casosCompletos.filter((caso) => caso.estado_checklist === 'APROBADA').length;
+
+    return res.status(200).json({
+        id_universidad: idUniversidad,
+        resumen: {
+            total: casosCompletos.length,
+            aprobadas,
+            pendientes: casosCompletos.length - aprobadas
+        },
+        casos: casosCompletos,
+        datos_incompletos: datosIncompletos
+    });
+}
+
+module.exports = { obtenerChecklist };

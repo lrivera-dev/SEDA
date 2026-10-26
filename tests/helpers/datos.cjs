@@ -3,7 +3,7 @@ const universidad = {
     correo_contacto: 'contacto@example.test', telefono_contacto: '00000000',
     correo: 'qa@example.test', contrasena: 'solo-dato-ficticio-QA'
 };
-const equivalencia = { id_materia_origen: 1, id_materia_destino: 2, descripcion: 'Caso ficticio', id_universidad: 10 };
+const equivalencia = { id_materia_origen: 1, id_materia_destino: 2, descripcion: 'Caso ficticio' };
 const materia = { programa_url: 'qa/programa.pdf', carrera: { id_universidad: 10, pensum_url: 'qa/pensum.pdf' } };
 const consulta = (data = null, error = null, verificar) => ({ operacion: 'consulta', resultado: { data, error }, verificar });
 const MIME_PDF = 'application/pdf';

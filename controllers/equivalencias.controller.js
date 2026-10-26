@@ -1,6 +1,11 @@
 const supabase = require('../supabaseClient');
+const colaEvaluacion = require('../servicios/cola-evaluacion');
 
-const CAMPOS_OBLIGATORIOS = ['id_materia_origen', 'id_materia_destino', 'descripcion', 'id_universidad'];
+const CAMPOS_OBLIGATORIOS = [
+    'id_materia_origen',
+    'id_materia_destino',
+    'descripcion'
+];
 
 async function registrarEquivalencias(req, res) {
     const datos = req.body;
@@ -15,7 +20,11 @@ async function registrarEquivalencias(req, res) {
         });
     }
 
-    const { id_materia_origen, id_materia_destino, descripcion, id_universidad } = datos;
+    const {
+        id_materia_origen,
+        id_materia_destino,
+        descripcion
+    } = datos;
 
     // Materias no pueden ser la misma
     if (id_materia_origen === id_materia_destino) {
@@ -52,15 +61,19 @@ async function registrarEquivalencias(req, res) {
         return res.status(400).json({ error: 'La materia de destino indicada no existe.' })
     }
 
-    // Validar que la universidad asociada sea dueña de la materia de origen
-    if (materiaOrigen.carrera.id_universidad !== id_universidad) {
-        return res.status(403).json({ error: 'La universidad indicada no tiene permiso sobre la materia de origen. ' })
+    if (
+        String(materiaOrigen.carrera.id_universidad) !==
+        String(req.usuario.id_universidad)
+    ) {
+        return res.status(403).json({
+            error: 'La universidad no tiene permiso sobre la materia de origen.'
+        });
     }
 
     // Valida que existen archivos cargados (pensum y programa) para ambas materias
     const faltanArchivos = [];
 
-    if (!materiaOrigen.carrera.pensum_url) faltanArchivos.push('pensum de la carrera de orifen');
+    if (!materiaOrigen.carrera.pensum_url) faltanArchivos.push('pensum de la carrera de origen');
     if (!materiaOrigen.programa_url) faltanArchivos.push('programa de la materia de origen');
     if (!materiaDestino.carrera.pensum_url) faltanArchivos.push('pensum de la carrera de destino');
     if (!materiaDestino.programa_url) faltanArchivos.push('programa de la materia de destino');
@@ -86,6 +99,14 @@ async function registrarEquivalencias(req, res) {
 
     if (errorInsert) {
         return res.status(500).json({ error: errorInsert.message });
+    }
+
+    // HU-3: la evaluación con IA corre en segundo plano, sin esperar su resultado.
+    // Si encolar falla, el registro de la equivalencia sigue funcionando.
+    try {
+        colaEvaluacion.encolar(equivalencia.id_caso);
+    } catch (error) {
+        console.error(`No se pudo encolar la evaluación del caso ${equivalencia.id_caso}:`, error.message);
     }
 
     return res.status(201).json({

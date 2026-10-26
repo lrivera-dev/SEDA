@@ -22,10 +22,14 @@
     // El backend compara ids con ===: solo dígitos -> número; otro texto (uuid) -> texto.
     const idValor = (v) => (/^\d+$/.test(v) ? Number(v) : v);
 
-    // TODO(login): devolver el id de la universidad autenticada.
-    // Mientras tanto: en la consola del navegador -> localStorage.setItem('id_universidad', '...')
-    function obtenerIdUniversidad() {
-        try { return localStorage.getItem('id_universidad'); } catch { return null; }
+    function obtenerTokenUniversidad() {
+        return sessionStorage.getItem('seda_access_token');
+    }
+
+    function cerrarSesionUniversidad() {
+        sessionStorage.removeItem('seda_access_token');
+        sessionStorage.removeItem('seda_rol');
+        window.location.href = '/index.html';
     }
 
     // ---------- Filas de materias ----------
@@ -74,12 +78,11 @@
 
     // ---------- Envío ----------
     // Un POST por materia: el endpoint actual recibe un solo par de materias.
-    function construirCuerpo(fila, idUniversidad) {
+    function construirCuerpo(fila) {
         return {
             id_materia_origen: idValor(fila.querySelector('.f-origen').value.trim()),
             id_materia_destino: idValor(fila.querySelector('.f-destino').value.trim()),
-            descripcion: fila.querySelector('.f-descripcion').value.trim(),
-            id_universidad: idValor(idUniversidad)
+            descripcion: fila.querySelector('.f-descripcion').value.trim()
         };
     }
 
@@ -98,16 +101,20 @@
 
     formEq.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        const token = obtenerTokenUniversidad();
+
+        if (!token) {
+            cerrarSesionUniversidad();
+            return;
+        }
+
         errorEq.textContent = '';
         statusEq.className = 'status';
 
         if (!validar()) {
             errorEq.textContent = 'Revise los campos marcados antes de guardar.';
             return;
-        }
-        const idUniversidad = obtenerIdUniversidad();
-        if (!idUniversidad) {
-            return mostrarEq('err', 'Sin sesión de universidad', 'No se encontró la universidad que inició sesión. Inicie sesión de nuevo.');
         }
 
         const lista = filas();
@@ -120,8 +127,11 @@
                 mostrarEq('loading', 'Guardando…', `Registrando equivalencia (${guardadas + 1} de ${lista.length}).`);
                 const resp = await fetch(API_EQUIVALENCIAS, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(construirCuerpo(fila, idUniversidad))
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify(construirCuerpo(fila))
                 });
                 const json = await resp.json().catch(() => null);
 
@@ -129,6 +139,11 @@
                     guardadas++;
                     fila.remove(); // ya guardada: un reintento no la duplica
                     continue;
+                }
+
+                if (resp.status === 401) {
+                    cerrarSesionUniversidad();
+                    return;
                 }
                 const msg = mensajeError(resp, json);
                 fila.querySelector('.fila-error').textContent = msg;

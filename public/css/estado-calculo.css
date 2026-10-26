@@ -1,0 +1,414 @@
+
+/* ==========================================
+   SEDA - HU-3
+   Estados y resultados de coincidencia
+   ========================================== */
+
+/* Etiquetas de estado */
+
+.hu3-estado {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.hu3-estado--sin_calcular {
+    background: #eef0f4;
+    color: #555f70;
+}
+
+.hu3-estado--en_calculo {
+    background: #e8f0ff;
+    color: #245bc4;
+}
+
+.hu3-estado--calculado {
+    background: #e5f5eb;
+    color: #237a47;
+}
+
+.hu3-estado--error {
+    background: #fdeaea;
+    color: #b42332;
+}
+
+/* Mensaje mientras la IA evalúa */
+
+.hu3-mensaje {
+    margin: 5px 0 16px;
+    padding: 12px 15px;
+    background: #f0f5ff;
+    border-left: 3px solid #2867df;
+    border-radius: 6px;
+    color: #425b83;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* Porcentaje calculado */
+
+.hu3-porcentaje {
+    display: block;
+    font-size: 21px;
+    font-weight: 700;
+    color: #17233b;
+    margin: 8px 0 13px;
+}
+
+/* Barra de coincidencia */
+
+.hu3-barra {
+    display: block;
+    width: 100%;
+    height: 13px;
+    overflow: hidden;
+    border: none;
+    border-radius: 20px;
+    background: #e7ecf5;
+    appearance: none;
+    -webkit-appearance: none;
+    margin-bottom: 20px;
+}
+
+.hu3-barra::-webkit-progress-bar {
+    background: #e7ecf5;
+    border-radius: 20px;
+}
+
+.hu3-barra::-webkit-progress-value {
+    background: #2867df;
+    border-radius: 20px;
+}
+
+.hu3-barra::-moz-progress-bar {
+    background: #2867df;
+    border-radius: 20px;
+}
+
+/* Advertencia cuando la coincidencia es baja */
+
+.hu3-advertencia {
+    padding: 13px 16px;
+    margin: 14px 0;
+    background: #fff8e6;
+    color: #865c11;
+    border-left: 4px solid #e9ac38;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+/* Reporte de IA */
+
+.hu3-titulo-reporte {
+    font-size: 16px;
+    font-weight: 700;
+    color: #17233b;
+    margin: 24px 0 15px;
+}
+
+/* Secciones desplegables */
+
+.hu3-seccion {
+    background: #ffffff;
+    border: 1px solid #e1e6ef;
+    border-radius: 9px;
+    margin-bottom: 9px;
+    overflow: hidden;
+}
+
+.hu3-seccion summary {
+    padding: 15px 17px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #293a56;
+    background: #f8faff;
+    transition: background 0.2s ease;
+}
+
+.hu3-seccion summary:hover {
+    background: #eef3ff;
+}
+
+.hu3-seccion summary:focus-visible {
+    outline: 2px solid #2867df;
+    outline-offset: -3px;
+}
+
+.hu3-seccion[open] summary {
+    background: #edf3ff;
+    color: #245bc4;
+    border-bottom: 1px solid #e1e6ef;
+}
+
+/* Contenido generado por IA */
+
+.hu3-texto-ia {
+    padding: 16px 18px;
+    margin: 0;
+    color: #4c5668;
+    font-size: 13px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* Errores de evaluación */
+
+.hu3-error {
+    padding: 14px 16px;
+    background: #fff0f0;
+    border-left: 4px solid #d74350;
+    border-radius: 7px;
+    color: #a52b37;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 12px 0;
+    overflow-wrap: anywhere;
+}
+
+/* Botón para reintentar */
+
+.hu3-btn-reintentar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 19px;
+    background: #2867df;
+    color: #ffffff;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.hu3-btn-reintentar:hover:not(:disabled) {
+    background: #1c52b8;
+}
+
+.hu3-btn-reintentar:focus-visible {
+    outline: 3px solid #94b8ff;
+    outline-offset: 3px;
+}
+
+.hu3-btn-reintentar:disabled {
+    background: #9db5df;
+    cursor: not-allowed;
+}
+
+/* Diseño responsivo */
+
+@media (max-width: 600px) {
+    .hu3-porcentaje {
+        font-size: 18px;
+    }
+
+    .hu3-seccion summary {
+        padding: 13px 14px;
+    }
+
+    .hu3-texto-ia {
+        padding: 13px 14px;
+        font-size: 12px;
+    }
+
+    .hu3-btn-reintentar {
+        width: 100%;
+        min-height: 44px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hu3-seccion summary,
+    .hu3-btn-reintentar {
+        transition: none;
+    }
+}
+
+
+/* ==========================================
+   HU-3 - PRESENTACIÓN DE CASOS DEL CHECKLIST
+   ========================================== */
+
+#lista-casos {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 24px;
+}
+
+#estado-checklist {
+    padding: 15px 18px;
+    background: #ffffff;
+    border: 1px solid #e1e6ef;
+    border-radius: 10px;
+    color: #42536e;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Tarjeta de cada equivalencia */
+
+.hu3-caso {
+    width: 100%;
+    padding: 25px;
+    background: #ffffff;
+    border: 1px solid #e1e6ef;
+    border-radius: 13px;
+    box-shadow: 0 4px 15px rgba(23, 35, 59, 0.04);
+    transition: border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.hu3-caso:hover {
+    border-color: #b7cbf0;
+    box-shadow: 0 6px 20px rgba(23, 35, 59, 0.07);
+}
+
+.hu3-nombre-caso {
+    margin: 0 0 18px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #17233b;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* Casilla de selección del checklist */
+
+.hu3-seleccion {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #56637a;
+}
+
+.hu3-seleccion input {
+    width: 17px;
+    height: 17px;
+    accent-color: #2867df;
+    cursor: pointer;
+}
+
+.hu3-seleccion input:focus-visible {
+    outline: 2px solid #2867df;
+    outline-offset: 3px;
+}
+
+/* Resultado de la evaluación */
+
+.hu3-resultado {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #edf0f5;
+}
+
+.hu3-resultado .hu3-barra {
+    max-width: 100%;
+}
+
+/* Aviso de casos incompletos */
+
+.hu3-documentos-incompletos {
+    padding: 20px 24px;
+    border: 1px solid #f0dba8;
+    border-radius: 12px;
+    background: #fffbf2;
+}
+
+.hu3-documentos-incompletos h3 {
+    margin: 0 0 12px;
+    color: #805712;
+    font-size: 16px;
+}
+
+.hu3-documentos-incompletos p {
+    margin: 8px 0;
+    color: #765b2c;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+/* Adaptación a tablet y celular */
+
+@media (max-width: 860px) {
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 18px;
+        border-right: none;
+        border-bottom: 1px solid #e8ebf2;
+    }
+
+    .sidebar .logo {
+        margin-bottom: 15px;
+    }
+
+    .sidebar nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .content {
+        width: 100%;
+        padding: 25px 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .hu3-caso {
+        padding: 18px;
+    }
+
+    .hu3-nombre-caso {
+        font-size: 16px;
+    }
+
+    .hu3-resultado {
+        margin-top: 16px;
+        padding-top: 16px;
+    }
+
+    .hu3-documentos-incompletos {
+        padding: 16px;
+    }
+
+    #estado-checklist {
+        font-size: 13px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hu3-caso {
+        transition: none;
+    }
+}
+
+/* Motivo de las equivalencias pendientes */
+.hu3-motivo-pendiente {
+    margin: 12px 0 0;
+    padding: 12px 15px;
+    background: #fff8e6;
+    border-left: 4px solid #e9ac38;
+    border-radius: 7px;
+    color: #765b2c;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}

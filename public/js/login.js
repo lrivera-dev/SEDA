@@ -8,15 +8,6 @@ form.addEventListener('submit', async (event) => {
     errorElement.hidden = true;
     errorElement.textContent = '';
 
-    const perfil = document.querySelector('input[name="perfil"]:checked');
-
-    if (!perfil || perfil.value !== 'ministerio') {
-        errorElement.textContent =
-            'El inicio de sesión para universidades todavía no está disponible.';
-        errorElement.hidden = false;
-        return;
-    }
-
     const correo = document.getElementById('email').value.trim();
     const contrasena = document.getElementById('password').value;
 
@@ -41,12 +32,17 @@ form.addEventListener('submit', async (event) => {
             return;
         }
 
-        if (!data.access_token) {
-            throw new Error('El servidor no devolvió el token de acceso.');
+        if (!data.access_token || !['MINED', 'UNIVERSIDAD'].includes(data.rol)) {
+            throw new Error('El servidor no devolvió una sesión válida.');
         }
 
         sessionStorage.setItem('seda_access_token', data.access_token);
-        window.location.href = '/mined.html';
+        sessionStorage.setItem('seda_rol', data.rol);
+
+        window.location.href =
+            data.rol === 'UNIVERSIDAD'
+                ? '/universidades.html'
+                : '/mined.html';
     } catch (error) {
         errorElement.textContent =
             'No se pudo conectar con el servidor. Intenta de nuevo.';
