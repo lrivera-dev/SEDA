@@ -13,6 +13,12 @@ const status = document.getElementById('status');
 
 const ICONOS = { loading: '<span class="spin" aria-hidden="true"></span>', ok: '✓', warn: '!', err: '✕' };
 
+function cerrarSesionUniversidad() {
+    sessionStorage.removeItem('seda_access_token');
+    sessionStorage.removeItem('seda_rol');
+    window.location.href = '/index.html';
+}
+
 function mostrar(tipoEstado, titulo, mensaje) {
     status.className = 'status show ' + tipoEstado;
     status.innerHTML = `<span class="ico">${ICONOS[tipoEstado]}</span><div><b></b><p></p></div>`;
@@ -39,6 +45,12 @@ function limpiarFormulario() {
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const token = sessionStorage.getItem('seda_access_token');
+
+    if (!token) {
+        cerrarSesionUniversidad();
+        return;
+    }
     errorForm.textContent = '';
     status.className = 'status';
 
@@ -70,10 +82,21 @@ form.addEventListener('submit', async (e) => {
     mostrar('loading', 'Cargando…', 'Estamos subiendo su archivo, por favor espere.');
 
     try {
-        const resp = await fetch('/archivos', { method: 'POST', body: datos });
+        const resp = await fetch('/archivos', {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            body: datos
+        });
         const json = await resp.json().catch(() => ({}));
+        
+        if (resp.status === 401) {
+            cerrarSesionUniversidad();
+            return;
+        }
 
-                if (resp.ok && json.advertencia) {
+        if (resp.ok && json.advertencia) {
             mostrar('warn', 'Aceptado con advertencia', json.advertencia);
             limpiarFormulario();
         } else if (resp.ok) {
