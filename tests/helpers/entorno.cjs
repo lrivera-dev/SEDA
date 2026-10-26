@@ -30,6 +30,9 @@ const cliente = {
         consulta.then = (ok, error) => resolver('consulta', argumentos).then(ok, error);
         return consulta;
     },
+    rpc(nombre, parametros = {}) {
+        return resolver('rpc', { nombre, parametros });
+    },
     auth: {
         admin: { createUser: datos => resolver('auth', datos) },
         signInWithPassword: datos => resolver('signInWithPassword', datos),

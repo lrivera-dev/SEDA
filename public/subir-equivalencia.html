@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,12 @@
     <link rel="stylesheet" href="css/subir-equivalencia.css">
     <script src="/js/proteger-universidad.js"></script>
 </head>
+
 <body>
     <div class="contenedor">
         <h1>Registro de equivalencia</h1>
-        <p class="lead">Registra las materias que se reconocen como equivalentes. Los campos con <span class="req">*</span> son obligatorios.</p>
+        <p class="lead">Registra las materias que se reconocen como equivalentes. Los campos con <span
+                class="req">*</span> son obligatorios.</p>
 
         <!--Inicio de equivalencia manual-->
         <form id="form-equivalencia" class="card" novalidate>
@@ -26,19 +29,55 @@
 
         <template id="tpl-fila">
             <div class="fila">
-                <div class="field">
-                    <label>ID de la materia cursada <span class="req">*</span></label>
-                    <input type="text" class="f-origen">
+                <div class="fila-cabecera">
+                    <strong>Equivalencia</strong>
+                    <button type="button" class="btn-quitar">Eliminar</button>
                 </div>
-                <div class="field">
-                    <label>ID de la materia equivalente <span class="req">*</span></label>
-                    <input type="text" class="f-destino">
+
+                <div class="fila-origen">
+                    <div class="field">
+                        <label>Carrera de nuestra universidad <span class="req">*</span></label>
+                        <select class="f-carrera-origen" required>
+                            <option value="">Cargando carreras...</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Materia cursada <span class="req">*</span></label>
+                        <select class="f-origen" required disabled>
+                            <option value="">Primero selecciona una carrera</option>
+                        </select>
+                    </div>
                 </div>
-                <button type="button" class="btn-quitar">Quitar</button>
+
+                <div class="fila-destino">
+                    <div class="field">
+                        <label>Universidad destino <span class="req">*</span></label>
+                        <select class="f-universidad-destino" required>
+                            <option value="">Selecciona una universidad</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Carrera destino <span class="req">*</span></label>
+                        <select class="f-carrera-destino" required disabled>
+                            <option value="">Primero selecciona una universidad</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Materia destino <span class="req">*</span></label>
+                        <select class="f-destino" required disabled>
+                            <option value="">Primero selecciona una carrera</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="field f-desc">
                     <label>Descripción de la equivalencia <span class="req">*</span></label>
                     <textarea class="f-descripcion" rows="2" maxlength="500"></textarea>
                 </div>
+
                 <small class="error fila-error"></small>
             </div>
         </template>
@@ -47,4 +86,5 @@
 
     <script src="js/subir-equivalencia.js"></script>
 </body>
+
 </html>

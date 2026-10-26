@@ -336,3 +336,57 @@ test("Sin token de sesión redirige al login y no envía el reintento", async ()
 
     assert.equal(vista.ventana.location.href, "/index.html");
 });
+
+
+test("SIN_CALCULAR muestra Reintentar sin error ficticio", () => {
+    const vista = prepararCaso(caso("SIN_CALCULAR"));
+
+    assert.ok(
+        vista.querySelector(".hu3-btn-reintentar")
+    );
+
+    assert.equal(
+        vista.querySelector(".hu3-error"),
+        null
+    );
+});
+
+test("SIN_CALCULAR permite reintentar y cambia a EN_CALCULO", async () => {
+    let llamadas = 0;
+
+    const vista = prepararCaso(
+        caso("SIN_CALCULAR"),
+        {
+            fetch: async (url, opciones) => {
+                llamadas++;
+
+                assert.equal(
+                    url,
+                    "/coincidencia/caso-prueba/reintentar"
+                );
+
+                assert.equal(opciones.method, "POST");
+
+                return {
+                    ok: true,
+                    status: 202,
+                    json: async () => ({})
+                };
+            }
+        }
+    );
+
+    await vista.querySelector(".hu3-btn-reintentar").click();
+
+    assert.equal(llamadas, 1);
+
+    assert.equal(
+        vista.querySelector(".hu3-estado").textContent,
+        "En evaluación"
+    );
+
+    assert.equal(
+        vista.querySelector(".hu3-btn-reintentar"),
+        null
+    );
+});
