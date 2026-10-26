@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,12 @@
     <link rel="stylesheet" href="css/subir-archivos.css">
     <script src="/js/proteger-universidad.js"></script>
 </head>
+
 <body>
     <div class="contenedor">
         <h1>Subir documentos</h1>
-        <p class="lead">Sube el pensum de una carrera o el programa de una materia. Los campos con <span class="req">*</span> son obligatorios.</p>
+        <p class="lead">Sube el pensum de una carrera o el programa de una materia. Los campos con <span
+                class="req">*</span> son obligatorios.</p>
 
         <form id="form-archivo" class="card" novalidate>
             <h2>Datos del documento</h2>
@@ -26,14 +29,22 @@
 
                 <div class="field" id="campo-carrera" hidden>
                     <label for="id_carrera">ID de la carrera <span class="req">*</span></label>
-                    <input type="text" id="id_carrera">
+                    <select id="id_carrera">
+                        <option value="">Cargando carreras...</option>
+                    </select>
                 </div>
 
                 <div class="field" id="campo-materia" hidden>
                     <label for="id_materia">ID de la materia <span class="req">*</span></label>
-                    <input type="text" id="id_materia">
+                    <select id="id_materia">
+                        <option value="">Cargando materias...</option>
+                    </select>
                 </div>
             </div>
+            <p>
+                ¿Aún no registraste una carrera o materia?
+                <a href="/gestion-academica.html">Gestionar carreras y materias</a>
+            </p>
 
             <h2>Archivo</h2>
             <div class="field">
@@ -51,4 +62,5 @@
 
     <script src="js/subir-archivos.js"></script>
 </body>
+
 </html>
