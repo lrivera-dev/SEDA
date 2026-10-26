@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,12 @@
     <link rel="stylesheet" href="css/subir-equivalencia.css">
     <script src="/js/proteger-universidad.js"></script>
 </head>
+
 <body>
     <div class="contenedor">
         <h1>Registro de equivalencia</h1>
-        <p class="lead">Registra las materias que se reconocen como equivalentes. Los campos con <span class="req">*</span> son obligatorios.</p>
+        <p class="lead">Registra las materias que se reconocen como equivalentes. Los campos con <span
+                class="req">*</span> son obligatorios.</p>
 
         <!--Inicio de equivalencia manual-->
         <form id="form-equivalencia" class="card" novalidate>
@@ -27,12 +30,16 @@
         <template id="tpl-fila">
             <div class="fila">
                 <div class="field">
-                    <label>ID de la materia cursada <span class="req">*</span></label>
-                    <input type="text" class="f-origen">
+                    <label>Materia cursada en nuestra universidad <span class="req">*</span></label>
+                    <select class="f-origen" required>
+                        <option value="">Cargando materias...</option>
+                    </select>
                 </div>
                 <div class="field">
-                    <label>ID de la materia equivalente <span class="req">*</span></label>
-                    <input type="text" class="f-destino">
+                    <label>Materia equivalente de otra universidad <span class="req">*</span></label>
+                    <select class="f-destino" required>
+                        <option value="">Cargando catálogo...</option>
+                    </select>
                 </div>
                 <button type="button" class="btn-quitar">Quitar</button>
                 <div class="field f-desc">
@@ -47,4 +54,5 @@
 
     <script src="js/subir-equivalencia.js"></script>
 </body>
+
 </html>
