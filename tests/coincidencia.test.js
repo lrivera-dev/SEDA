@@ -10,6 +10,7 @@ const limitarReintentos = require('../middlewares/limitarReintentos');
 const colaEvaluacion = require('../servicios/cola-evaluacion');
 const { calcularCoincidencia } = require('../servicios/ia-coincidencia');
 const { clasificarCoincidencia } = require('../servicios/clasificar-coincidencia');
+const preparadorDocumentos = require('../servicios/preparar-documentos');
 
 const ID_CASO = '00000000-0000-4000-8000-000000000001';
 const ID_UNIVERSIDAD = 'universidad-prueba';
@@ -20,6 +21,8 @@ const DOCUMENTOS = {
     pensum_destino: 'Pensum de destino'
 };
 const REPORTE_VALIDO = {
+    evaluacion_posible: true,
+    documento_ilegible: 'NINGUNO',
     porcentaje: 80,
     resumen: '  Equivalencia favorable  ',
     contenidos_coincidentes: 'Coinciden los contenidos principales',
@@ -218,13 +221,50 @@ describe('Respuestas de Gemini mediante cliente simulado', () => {
         const simulado = clienteIA(JSON.stringify(REPORTE_VALIDO), solicitud => {
             assert.equal(solicitud.model, 'modelo-de-prueba-sin-acceso');
             assert.equal(solicitud.config.responseMimeType, 'application/json');
-            assert.equal(solicitud.config.responseJsonSchema.required.length, 7);
+            assert.equal(solicitud.config.responseJsonSchema.required.length, 9);
             assert.equal(solicitud.contents.length, 4);
         });
         const resultado = await ejecutarIA(simulado.cliente);
         assert.equal(resultado.porcentaje, 80);
         assert.equal(resultado.resumen, 'Equivalencia favorable');
         assert.equal(simulado.cantidad(), 1);
+    });
+
+    it('acepta 0% cuando la evaluación fue válida', async () => {
+        const simulado = clienteIA(JSON.stringify({
+            ...REPORTE_VALIDO,
+            porcentaje: 0
+        }));
+
+        const resultado = await ejecutarIA(simulado.cliente);
+
+        assert.equal(resultado.porcentaje, 0);
+        assert.equal(
+            Object.hasOwn(resultado, 'evaluacion_posible'),
+            false
+        );
+    });
+
+    it('rechaza un documento ilegible sin guardar porcentaje', async () => {
+        const simulado = clienteIA(JSON.stringify({
+            ...REPORTE_VALIDO,
+            evaluacion_posible: false,
+            documento_ilegible: 'programa_origen',
+            porcentaje: null,
+            resumen: 'No se pudo leer el programa de origen'
+        }));
+
+        await assert.rejects(
+            ejecutarIA(simulado.cliente),
+            (error) => {
+                assert.equal(error.code, 'DOCUMENTO_ILEGIBLE');
+                assert.equal(
+                    error.documento,
+                    'el programa de la materia de origen'
+                );
+                return true;
+            }
+        );
     });
 
     it('rechaza la respuesta cuando falta una clave obligatoria', async () => {
@@ -267,6 +307,56 @@ describe('Respuestas de Gemini mediante cliente simulado', () => {
             code: 'IA_NO_DISPONIBLE'
         });
     });
+
+    it('convierte el timeout de 60 segundos en IA_TIMEOUT', async () => {
+        const temporizadorOriginal = globalThis.setTimeout;
+        let tiempoLimiteConfigurado = false;
+
+        const temporizador = mock.method(
+            globalThis,
+            'setTimeout',
+            (callback, milisegundos, ...argumentos) => {
+                if (milisegundos === 60_000) {
+                    tiempoLimiteConfigurado = true;
+
+                    // Simula el vencimiento sin esperar 60 segundos.
+                    queueMicrotask(() => callback(...argumentos));
+                    return null;
+                }
+
+                return temporizadorOriginal(
+                    callback,
+                    milisegundos,
+                    ...argumentos
+                );
+            }
+        );
+
+        const cliente = {
+            models: {
+                generateContent({ config }) {
+                    return new Promise((resolve, reject) => {
+                        config.abortSignal.addEventListener(
+                            'abort',
+                            () => reject(new Error('Tiempo agotado')),
+                            { once: true }
+                        );
+                    });
+                }
+            }
+        };
+
+        try {
+            await assert.rejects(
+                ejecutarIA(cliente),
+                { code: 'IA_TIMEOUT' }
+            );
+
+            assert.equal(tiempoLimiteConfigurado, true);
+        } finally {
+            temporizador.mock.restore();
+        }
+    });
 });
 
 describe('Clasificación de coincidencia por umbrales', () => {
@@ -290,6 +380,375 @@ describe('Clasificación de coincidencia por umbrales', () => {
     it('rechaza valores inválidos sin interpretarlos como porcentajes', () => {
         for (const valor of [-1, 101, Number.NaN, '80']) {
             assert.throws(() => clasificarCoincidencia(valor), TypeError);
+        }
+    });
+});
+
+describe('HU-3 CA3: limpieza de resultados ante errores', () => {
+    it('guarda ERROR y elimina porcentaje y reporte anteriores', async () => {
+        const errorIA = new Error('Documento ilegible');
+        errorIA.code = 'DOCUMENTO_ILEGIBLE';
+        errorIA.documento = 'el programa de la materia de origen';
+
+        const preparar = mock.method(
+            preparadorDocumentos,
+            'prepararDocumentos',
+            async () => DOCUMENTOS
+        );
+
+        const evaluar = mock.method(
+            require('../servicios/ia-coincidencia'),
+            'calcularCoincidencia',
+            async () => {
+                throw errorIA;
+            }
+        );
+
+        const caso = casoBase({
+            estado_calculo: 'SIN_CALCULAR',
+            porcentaje_coincidencia: 0,
+            justificacion_ia: { resumen: 'Resultado anterior' }
+        });
+
+        entorno.preparar([
+            {
+                operacion: 'consulta',
+                resultado: { data: [], error: null }
+            },
+            {
+                operacion: 'consulta',
+                resultado: { data: caso, error: null }
+            },
+            {
+                operacion: 'rpc',
+                resultado: { data: true, error: null },
+                verificar(argumentos) {
+                    assert.equal(
+                    argumentos.nombre,
+                    'reservar_evaluacion_diaria'
+                    );
+                }
+            },
+            {
+                operacion: 'consulta',
+                resultado: { error: null }
+            },
+            {
+                operacion: 'consulta',
+                resultado: { error: null }
+            }
+        ]);
+
+        try {
+            await colaEvaluacion.iniciar();
+
+            assert.equal(colaEvaluacion.encolar(ID_CASO), true);
+            await colaEvaluacion.esperarCola();
+
+            assert.equal(preparar.mock.callCount(), 1);
+            assert.equal(evaluar.mock.callCount(), 1);
+            assert.equal(entorno.llamadas.length, 5);
+
+            const ultimaLlamada = entorno.llamadas.at(-1);
+            assert.equal(
+                ultimaLlamada.argumentos.tabla,
+                'caso_equivalencia'
+            );
+
+            assert.deepEqual(
+                ultimaLlamada.argumentos.update[0][0],
+                {
+                    estado_calculo: 'ERROR',
+                    porcentaje_coincidencia: null,
+                    justificacion_ia: null,
+                    fecha_calculo: null,
+                    motivo_error_calculo:
+                        'No se pudo calcular la coincidencia: ' +
+                        'no se pudo leer el programa de la materia de origen'
+                }
+            );
+
+            assert.deepEqual(
+                ultimaLlamada.argumentos.eq[0],
+                ['id_caso', ID_CASO]
+            );
+        } finally {
+            preparar.mock.restore();
+            evaluar.mock.restore();
+        }
+    });
+});
+
+describe('HU-3 E3: recuperación de cálculos interrumpidos', () => {
+    it('cambia EN_CALCULO a ERROR después de una interrupción', async () => {
+        entorno.preparar([
+            {
+                operacion: 'consulta',
+                resultado: {
+                    data: [{ id_caso: ID_CASO }],
+                    error: null
+                },
+                verificar(argumentos) {
+                    assert.equal(
+                        argumentos.tabla,
+                        'caso_equivalencia'
+                    );
+
+                    assert.deepEqual(
+                        argumentos.update[0][0],
+                        {
+                            estado_calculo: 'ERROR',
+                            motivo_error_calculo:
+                                'El cálculo se interrumpió, intenta de nuevo'
+                        }
+                    );
+
+                    assert.deepEqual(
+                        argumentos.eq,
+                        [['estado_calculo', 'EN_CALCULO']]
+                    );
+
+                    assert.deepEqual(
+                        argumentos.select,
+                        [['id_caso']]
+                    );
+                }
+            }
+        ]);
+
+        const recuperados =
+            await colaEvaluacion.recuperarCasosInterrumpidos();
+
+        assert.equal(recuperados, 1);
+        assert.equal(entorno.llamadas.length, 1);
+    });
+});
+
+describe('HU-3 RN7: límite diario de evaluaciones', () => {
+    it('procesa 100 evaluaciones y bloquea la número 101', async () => {
+        const limiteAnterior = process.env.MAX_EVALUACIONES_DIARIAS;
+        const rutaCola = require.resolve('../servicios/cola-evaluacion');
+        const moduloAnterior = require.cache[rutaCola];
+
+        process.env.MAX_EVALUACIONES_DIARIAS = '100';
+
+        // Nueva instancia de la cola con contador diario en cero.
+        delete require.cache[rutaCola];
+        const colaAislada = require(rutaCola);
+
+        const preparar = mock.method(
+            preparadorDocumentos,
+            'prepararDocumentos',
+            async () => DOCUMENTOS
+        );
+
+        const evaluar = mock.method(
+            require('../servicios/ia-coincidencia'),
+            'calcularCoincidencia',
+            async () => ({
+                porcentaje: 80,
+                resumen: 'Resultado simulado'
+            })
+        );
+
+        // Una consulta de recuperación inicial.
+        const pasos = [{
+            operacion: 'consulta',
+            resultado: { data: [], error: null }
+        }];
+
+        // Simular 100 reservas autorizadas por PostgreSQL.
+        for (let i = 1; i <= 100; i++) {
+            pasos.push(
+                {
+                    operacion: 'consulta',
+                    resultado: {
+                        data: casoBase({
+                            id_caso: `caso-${i}`,
+                            estado_calculo: 'SIN_CALCULAR'
+                        }),
+                        error: null
+                    }
+                },
+                {
+                    operacion: 'rpc',
+                    resultado: { data: true, error: null },
+                    verificar(argumentos) {
+                        assert.equal(
+                            argumentos.nombre,
+                            'reservar_evaluacion_diaria'
+                        );
+                    }
+                },
+                {
+                    operacion: 'consulta',
+                    resultado: { error: null }
+                },
+                {
+                    operacion: 'consulta',
+                    resultado: { error: null }
+                }
+            );
+        }
+
+        // La evaluación 101 encuentra el límite agotado.
+        pasos.push(
+            {
+                operacion: 'consulta',
+                resultado: {
+                    data: casoBase({
+                        id_caso: 'caso-101',
+                        estado_calculo: 'SIN_CALCULAR'
+                    }),
+                    error: null
+                }
+            },
+            {
+                operacion: 'rpc',
+                resultado: { data: false, error: null },
+                verificar(argumentos) {
+                    assert.equal(
+                        argumentos.nombre,
+                        'reservar_evaluacion_diaria'
+                    );
+                }
+            }
+        );
+
+        entorno.preparar(pasos);
+
+        try {
+            await colaAislada.iniciar();
+
+            for (let i = 1; i <= 101; i++) {
+                assert.equal(
+                    colaAislada.encolar(`caso-${i}`),
+                    true
+                );
+
+                await colaAislada.esperarCola();
+            }
+
+            assert.equal(preparar.mock.callCount(), 100);
+            assert.equal(evaluar.mock.callCount(), 100);
+
+            // 1 recuperación + 100 evaluaciones × 3 operaciones.
+            assert.equal(entorno.llamadas.length, 403);
+        } finally {
+            preparar.mock.restore();
+            evaluar.mock.restore();
+
+            require.cache[rutaCola] = moduloAnterior;
+
+            if (limiteAnterior === undefined) {
+                delete process.env.MAX_EVALUACIONES_DIARIAS;
+            } else {
+                process.env.MAX_EVALUACIONES_DIARIAS = limiteAnterior;
+            }
+        }
+    });
+});
+
+describe('HU-3 E2: timeout de Gemini en la cola', () => {
+    it('guarda ERROR y elimina resultados anteriores', async () => {
+        const rutaCola = require.resolve('../servicios/cola-evaluacion');
+        const moduloAnterior = require.cache[rutaCola];
+
+        delete require.cache[rutaCola];
+        const colaAislada = require(rutaCola);
+
+        const preparar = mock.method(
+            preparadorDocumentos,
+            'prepararDocumentos',
+            async () => DOCUMENTOS
+        );
+
+        const evaluar = mock.method(
+            require('../servicios/ia-coincidencia'),
+            'calcularCoincidencia',
+            async () => {
+                const error = new Error('Tiempo agotado');
+                error.code = 'IA_TIMEOUT';
+                throw error;
+            }
+        );
+
+        entorno.preparar([
+            {
+                operacion: 'consulta',
+                resultado: { data: [], error: null }
+            },
+            {
+                operacion: 'consulta',
+                resultado: {
+                    data: casoBase({
+                        estado_calculo: 'SIN_CALCULAR',
+                        porcentaje_coincidencia: 85,
+                        justificacion_ia: {
+                            resumen: 'Reporte anterior'
+                        }
+                    }),
+                    error: null
+                }
+            },
+            {
+                operacion: 'rpc',
+                resultado: { data: true, error: null },
+                verificar(argumentos) {
+                    assert.equal(
+                        argumentos.nombre,
+                        'reservar_evaluacion_diaria'
+                    );
+                }
+            },
+            {
+                operacion: 'consulta',
+                resultado: { error: null }
+            },
+            {
+                operacion: 'consulta',
+                resultado: { error: null }
+            }
+        ]);
+
+        try {
+            await colaAislada.iniciar();
+
+            assert.equal(
+                colaAislada.encolar(ID_CASO),
+                true
+            );
+
+            await colaAislada.esperarCola();
+
+            assert.equal(preparar.mock.callCount(), 1);
+            assert.equal(evaluar.mock.callCount(), 1);
+            assert.equal(entorno.llamadas.length, 5);
+
+            const ultimaLlamada = entorno.llamadas.at(-1);
+
+            assert.equal(
+                ultimaLlamada.argumentos.tabla,
+                'caso_equivalencia'
+            );
+
+            assert.deepEqual(
+                ultimaLlamada.argumentos.update[0][0],
+                {
+                    estado_calculo: 'ERROR',
+                    porcentaje_coincidencia: null,
+                    justificacion_ia: null,
+                    fecha_calculo: null,
+                    motivo_error_calculo:
+                        'No se pudo calcular la coincidencia: ' +
+                        'el servicio de IA no está disponible, ' +
+                        'intenta de nuevo'
+                }
+            );
+        } finally {
+            preparar.mock.restore();
+            evaluar.mock.restore();
+            require.cache[rutaCola] = moduloAnterior;
         }
     });
 });

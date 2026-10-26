@@ -155,7 +155,7 @@
       }
     }
 
-    if (estado === "ERROR") {
+    if (estado === "ERROR" || estado === "SIN_CALCULAR") {
       const motivo = caso.motivo ||
         "No se recibió un motivo del error.";
 
@@ -172,6 +172,7 @@
       );
 
       error.setAttribute("role", "alert");
+      let errorMostrado = estado === "ERROR";
 
       const boton = crearElemento(
         "button",
@@ -235,12 +236,22 @@
           );
         } catch (fallo) {
           error.textContent = fallo.message;
+
+          if (!errorMostrado) {
+            contenedor.appendChild(error);
+            errorMostrado = true;
+          }
+
           boton.disabled = false;
           boton.textContent = "Reintentar";
         }
       });
 
-      contenedor.append(error, boton);
+      if (estado === "ERROR") {
+        contenedor.append(error, boton);
+      } else {
+        contenedor.appendChild(boton);
+      }
     }
   }
 
