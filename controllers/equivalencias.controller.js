@@ -7,6 +7,95 @@ const CAMPOS_OBLIGATORIOS = [
     'descripcion'
 ];
 
+async function listarEquivalencias(req, res) {
+    const idUniversidad = req.usuario.id_universidad;
+
+    if (!idUniversidad) {
+        return res.status(400).json({
+            error: 'Debes identificar a tu universidad para ver las equivalencias.'
+        });
+    }
+
+    const { data: materias, error } = await supabase
+        .from('materia')
+        .select(`
+            id_materia,
+            nombre,
+            carrera!inner (
+                nombre,
+                id_universidad
+            ),
+            casos:caso_equivalencia!caso_equivalencia_id_materia_origen_fkey (
+                id_caso,
+                estado,
+                estado_calculo,
+                porcentaje_coincidencia,
+                fecha_registro,
+                motivo_error_calculo,
+                materia_destino:materia!caso_equivalencia_id_materia_destino_fkey (
+                    nombre,
+                    carrera (
+                        nombre,
+                        universidad (
+                            nombre
+                        )
+                    )
+                )
+            )
+        `)
+        .eq('carrera.id_universidad', idUniversidad);
+
+    if (error) {
+        console.error('No se pudieron consultar las equivalencias:', error.message);
+        return res.status(500).json({
+            error: 'No se pudieron consultar las equivalencias.'
+        });
+    }
+
+    const casos = (materias || [])
+        .flatMap((materia) => (materia.casos || []).map((caso) => {
+            const tienePorcentaje =
+                caso.estado_calculo === 'CALCULADO' &&
+                caso.porcentaje_coincidencia !== null &&
+                caso.porcentaje_coincidencia !== undefined;
+
+            const valorPorcentaje = tienePorcentaje
+                ? Number(caso.porcentaje_coincidencia)
+                : null;
+
+            const porcentajeValido =
+                valorPorcentaje !== null &&
+                Number.isFinite(valorPorcentaje) &&
+                valorPorcentaje >= 0 &&
+                valorPorcentaje <= 100;
+
+            return {
+                id_caso: caso.id_caso,
+                materia_origen: materia.nombre,
+                carrera_origen: materia.carrera?.nombre ?? null,
+                materia_destino: caso.materia_destino?.nombre ?? null,
+                carrera_destino: caso.materia_destino?.carrera?.nombre ?? null,
+                universidad_destino:
+                    caso.materia_destino?.carrera?.universidad?.nombre ?? null,
+                porcentaje_coincidencia: porcentajeValido
+                    ? valorPorcentaje
+                    : null,
+                estado_calculo: caso.estado_calculo,
+                estado: caso.estado,
+                fecha_registro: caso.fecha_registro,
+                motivo_error_calculo: caso.motivo_error_calculo ?? null
+            };
+        }))
+        .sort((a, b) =>
+            String(b.fecha_registro).localeCompare(String(a.fecha_registro))
+        );
+
+    return res.status(200).json({
+        total: casos.length,
+        casos
+    });
+}
+
 async function registrarEquivalencias(req, res) {
     const datos = req.body;
 
@@ -116,4 +205,4 @@ async function registrarEquivalencias(req, res) {
 
 }
 
-module.exports = { registrarEquivalencias };
+module.exports = { registrarEquivalencias, listarEquivalencias };

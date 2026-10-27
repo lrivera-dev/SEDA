@@ -1,0 +1,175 @@
+.universidades {
+    margin-top: 35px;
+}
+
+.universidades>#estadoUniversidades {
+    color: #626b7b;
+    margin: 18px 0;
+}
+
+#totalUniversidades {
+    color: #626b7b;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.tabla-contenedor {
+    overflow-x: auto;
+    margin-top: 18px;
+    background: #fff;
+    border: 1px solid #e7eaf0;
+    border-radius: 10px;
+}
+
+.tabla-contenedor table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 680px;
+}
+
+.tabla-contenedor th,
+.tabla-contenedor td {
+    padding: 15px 18px;
+    text-align: left;
+    border-bottom: 1px solid #e8ebf2;
+}
+
+.tabla-contenedor th {
+    background: #f5f7ff;
+    color: #626b7b;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tabla-contenedor td {
+    font-size: 14px;
+}
+
+.tabla-contenedor tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.estado-universidad {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.estado-universidad--activa {
+    background: #e6f5ec;
+    color: #247343;
+}
+
+.estado-universidad--inactiva {
+    background: #fce9e9;
+    color: #a22d36;
+}
+
+.boton-detalle {
+    padding: 8px 12px;
+    border: 1px solid #dfe3eb;
+    border-radius: 7px;
+    background: #fff;
+    color: #2867df;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.boton-detalle:hover {
+    background: #f0f4ff;
+}
+
+.detalle-universidad {
+    padding: 20px;
+    background: #f8f9fd;
+    border-radius: 8px;
+}
+
+.detalle-universidad h3 {
+    margin: 0 0 14px;
+    font-size: 18px;
+}
+
+.detalle-universidad h4 {
+    margin: 20px 0 12px;
+    font-size: 15px;
+}
+
+.detalle-contacto {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    color: #626b7b;
+    font-size: 13px;
+}
+
+.detalle-contacto p {
+    margin: 0;
+}
+
+.detalle-carreras {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 12px;
+}
+
+.detalle-carrera {
+    padding: 14px;
+    border: 1px solid #e3e7ef;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.detalle-carrera h5 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+
+.detalle-carrera p,
+.detalle-carrera ul {
+    margin: 8px 0 0;
+    color: #626b7b;
+    font-size: 13px;
+}
+
+.detalle-carrera ul {
+    padding-left: 20px;
+}
+
+.detalle-carrera li+li {
+    margin-top: 5px;
+}
+
+.enlace-volver {
+    display: inline-block;
+    margin: 20px 0;
+    color: #2867df;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.enlace-volver:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+    #totalUniversidades {
+        white-space: normal;
+        text-align: right;
+    }
+
+    .tabla-contenedor th,
+    .tabla-contenedor td {
+        padding: 12px;
+    }
+
+    .detalle-universidad {
+        padding: 14px;
+    }
+}

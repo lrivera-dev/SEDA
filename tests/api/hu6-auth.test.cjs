@@ -11,21 +11,29 @@ const TOKEN = 'token-ficticio-hu6';
 const GENERICO = 'Correo o contraseña incorrectos';
 const BLOQUEO = 'Demasiados intentos. Intenta de nuevo en 5 minutos';
 const usuario = { id_usuario: 'qa-hu6', correo: 'mined@example.test', rol: 'MINED', estado: 'ACTIVO' };
-const consulta = data => ({ operacion: 'consulta', resultado: { data, error: null }, verificar: a => {
-    assert.equal(a.tabla, 'usuario');
-    assert.deepEqual(a.eq, [['id_usuario', 'qa-hu6']]);
-} });
-const consultaUniversidad = estado => ({ operacion: 'consulta', resultado: { data: { estado }, error: null }, verificar: a => {
-    assert.equal(a.tabla, 'universidad');
-    assert.deepEqual(a.eq, [['id_usuario', 'qa-hu6']]);
-} });
-const auth = (ok, correo) => ({ operacion: 'signInWithPassword', verificar: a => {
-    assert.deepEqual(a, { email: correo, password: 'clave-ficticia' });
-}, resultado: ok
-    ? { data: { user: { id: 'qa-hu6' }, session: { access_token: TOKEN } }, error: null }
-    : { data: { user: null, session: null }, error: { message: 'Credenciales simuladas rechazadas' } } });
-const getUser = ok => ({ operacion: 'getUser', verificar: a => assert.equal(a.token, TOKEN),
-    resultado: { data: { user: ok ? { id: 'qa-hu6' } : null }, error: ok ? null : { message: 'Token ficticio inválido' } } });
+const consulta = data => ({
+    operacion: 'consulta', resultado: { data, error: null }, verificar: a => {
+        assert.equal(a.tabla, 'usuario');
+        assert.deepEqual(a.eq, [['id_usuario', 'qa-hu6']]);
+    }
+});
+const consultaUniversidad = estado => ({
+    operacion: 'consulta', resultado: { data: { estado }, error: null }, verificar: a => {
+        assert.equal(a.tabla, 'universidad');
+        assert.deepEqual(a.eq, [['id_usuario', 'qa-hu6']]);
+    }
+});
+const auth = (ok, correo) => ({
+    operacion: 'signInWithPassword', verificar: a => {
+        assert.deepEqual(a, { email: correo, password: 'clave-ficticia' });
+    }, resultado: ok
+        ? { data: { user: { id: 'qa-hu6' }, session: { access_token: TOKEN } }, error: null }
+        : { data: { user: null, session: null }, error: { message: 'Credenciales simuladas rechazadas' } }
+});
+const getUser = ok => ({
+    operacion: 'getUser', verificar: a => assert.equal(a.token, TOKEN),
+    resultado: { data: { user: ok ? { id: 'qa-hu6' } : null }, error: ok ? null : { message: 'Token ficticio inválido' } }
+});
 
 describe('HU-6: autenticación y autorización aisladas', { concurrency: false }, () => {
     let correo, secuencia = 0;
@@ -153,7 +161,13 @@ describe('HU-6: autenticación y autorización aisladas', { concurrency: false }
     });
     let id = 18;
     // Solo autorización HU-6; los controladores de HU-8/HU-9 no deben alcanzarse.
-    for (const [metodo, ruta] of [['get', '/panel'], ['get', '/casos/1'], ['patch', '/casos/1/revision']]) {
+    for (const [metodo, ruta] of [
+        ['get', '/panel'],
+        ['get', '/panel/universidades'],
+        ['get', '/panel/universidades/11111111-1111-4111-8111-111111111111'],
+        ['get', '/casos/1'],
+        ['patch', '/casos/1/revision']
+    ]) {
         for (const modo of ['sin sesión', 'token inválido', 'rol incorrecto', 'cuenta inactiva']) {
             const numero = id++;
             test(`HU6-${numero} RN4: ${metodo.toUpperCase()} ${ruta} rechaza ${modo}`, async () => {
@@ -169,7 +183,7 @@ describe('HU-6: autenticación y autorización aisladas', { concurrency: false }
             });
         }
     }
-    test('HU6-29 RN1: middleware permite MINED ACTIVO y propaga identidad verificada', async () => {
+    test('HU6-38 RN1: middleware permite MINED ACTIVO y propaga identidad verificada', async () => {
         e.preparar([getUser(true), consulta(usuario)]);
         const req = { headers: { authorization: `Bearer ${TOKEN}` } };
         const res = e.respuesta(); let siguientes = 0;
@@ -177,5 +191,106 @@ describe('HU-6: autenticación y autorización aisladas', { concurrency: false }
         assert.equal(siguientes, 1);
         assert.equal(res.body, undefined);
         assert.deepEqual(req.usuario, { id: usuario.id_usuario, correo: usuario.correo });
+    });
+
+    test('MINED: lista universidades con cantidad de carreras', async () => {
+        e.preparar([
+            getUser(true),
+            consulta(usuario),
+            {
+                operacion: 'consulta',
+                resultado: {
+                    data: [{
+                        id_universidad: '11111111-1111-4111-8111-111111111111',
+                        nombre: 'Universidad QA',
+                        ubicacion: 'San Salvador',
+                        estado: 'ACTIVA',
+                        carreras: [
+                            { id_carrera: 'carrera-1' },
+                            { id_carrera: 'carrera-2' }
+                        ]
+                    }],
+                    error: null
+                }
+            }
+        ]);
+
+        const r = await request(app)
+            .get('/panel/universidades')
+            .set('Authorization', `Bearer ${TOKEN}`)
+            .expect(200);
+
+        assert.deepEqual(r.body.universidades, [{
+            id_universidad: '11111111-1111-4111-8111-111111111111',
+            nombre: 'Universidad QA',
+            ubicacion: 'San Salvador',
+            estado: 'ACTIVA',
+            cantidad_carreras: 2
+        }]);
+    });
+
+    test('MINED: detalle devuelve carreras, materias y disponibilidad de documentos', async () => {
+        const id = '11111111-1111-4111-8111-111111111111';
+
+        e.preparar([
+            getUser(true),
+            consulta(usuario),
+            {
+                operacion: 'consulta',
+                resultado: {
+                    data: {
+                        id_universidad: id,
+                        nombre: 'Universidad QA',
+                        ubicacion: 'San Salvador',
+                        correo_contacto: 'contacto@example.test',
+                        telefono_contacto: '22223333',
+                        estado: 'ACTIVA',
+                        carreras: [{
+                            id_carrera: 'carrera-1',
+                            nombre: 'Ingeniería',
+                            pensum_url: 'interno/pensum.pdf',
+                            materias: [{
+                                id_materia: 'materia-1',
+                                nombre: 'Cálculo I',
+                                programa_url: 'interno/programa.pdf'
+                            }]
+                        }]
+                    },
+                    error: null
+                }
+            }
+        ]);
+
+        const r = await request(app)
+            .get(`/panel/universidades/${id}`)
+            .set('Authorization', `Bearer ${TOKEN}`)
+            .expect(200);
+
+        assert.deepEqual(r.body.universidad.carreras, [{
+            id_carrera: 'carrera-1',
+            nombre: 'Ingeniería',
+            tiene_pensum: true,
+            materias: [{
+                id_materia: 'materia-1',
+                nombre: 'Cálculo I',
+                tiene_programa: true
+            }]
+        }]);
+        assert.equal(r.body.universidad.cantidad_carreras, 1);
+        assert.equal(JSON.stringify(r.body).includes('interno/'), false);
+    });
+
+    test('MINED: rechaza un identificador de universidad inválido', async () => {
+        e.preparar([getUser(true), consulta(usuario)]);
+
+        const r = await request(app)
+            .get('/panel/universidades/no-es-uuid')
+            .set('Authorization', `Bearer ${TOKEN}`)
+            .expect(400);
+
+        assert.equal(
+            r.body.error,
+            'El identificador de la universidad no es válido.'
+        );
     });
 });

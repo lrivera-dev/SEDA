@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEDA | Carreras</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/gestion-academica.css">
+    <script src="/js/proteger-universidad.js"></script>
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">↗</div>
+                <div>
+                    <strong>SEDA</strong>
+                    <small>Sistema de Equivalencias y Documentación Académica</small>
+                </div>
+            </div>
+
+            <nav>
+                <a href="/universidades.html">Dashboard</a>
+                <a href="/carreras.html" class="active" aria-current="page">Carreras</a>
+                <a href="/materias.html">Materias</a>
+                <a href="/equivalencias.html">Equivalencias</a>
+                <a href="/checklist.html">Checklist de coincidencia</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <header>
+                <div>
+                    <p>Gestión académica</p>
+                    <h1>Carreras</h1>
+                </div>
+                <button class="logout" type="button">Cerrar sesión</button>
+            </header>
+
+            <section class="gestion-card">
+                <div class="gestion-encabezado">
+                    <div>
+                        <h2>Carreras de tu universidad</h2>
+                        <p>Administra las carreras y sus pénsums.</p>
+                    </div>
+                    <button id="abrir-form-carrera" type="button">
+                        Agregar carrera
+                    </button>
+                </div>
+
+                <form id="form-carrera" hidden>
+                    <label for="nombre-carrera">Nombre de la carrera</label>
+                    <input id="nombre-carrera" name="nombre" type="text" required>
+
+                    <label for="archivo-pensum">
+                        Pénsum de la carrera (PDF o DOCX, máximo 20 MB)
+                    </label>
+                    <input
+                        id="archivo-pensum"
+                        type="file"
+                        accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        required
+                    >
+
+                    <div class="gestion-acciones-formulario">
+                        <button type="submit" id="boton-crear-carrera">
+                            Registrar carrera
+                        </button>
+                        <button type="button" id="cancelar-form-carrera">
+                            Cancelar
+                        </button>
+                    </div>
+
+                    <p id="estado-carrera" class="estado-formulario" role="status" aria-live="polite"></p>
+                </form>
+
+                <p id="estado-carreras" role="status" aria-live="polite">
+                    Cargando carreras...
+                </p>
+
+                <div class="tabla-contenedor">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Carrera</th>
+                                <th scope="col">Pénsum</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-carreras"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/js/gestion-carreras.js"></script>
+</body>
+
+</html>

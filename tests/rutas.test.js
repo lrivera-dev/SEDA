@@ -69,10 +69,10 @@ describe('Rutas de la API (sin base de datos real)', () => {
             assert.match(texto, /<html/i);
         });
 
-        it('sirve la pantalla de subida de archivos', async () => {
+        it('ya no sirve la pantalla independiente de subida de archivos', async () => {
             const { estado } = await pedir('GET', '/subir-archivos');
 
-            assert.equal(estado, 200);
+            assert.equal(estado, 404);
         });
 
         it('responde 404 en una ruta que no existe', async () => {
