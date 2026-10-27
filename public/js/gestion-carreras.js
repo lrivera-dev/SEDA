@@ -146,6 +146,8 @@ function prepararFormularioAlta() {
     campoPensum.required = true;
     etiquetaPensum.hidden = false;
     botonEnviar.textContent = "Registrar carrera";
+    etiquetaPensum.textContent =
+        "Pénsum de la carrera (PDF o DOCX, máximo 20 MB)";
 }
 
 function editarCarrera(carrera) {
@@ -160,9 +162,11 @@ function editarCarrera(carrera) {
     prepararFormularioAlta();
     carreraEnEdicion = carrera;
     campoNombre.value = carrera.nombre;
-    campoPensum.hidden = true;
+    campoPensum.hidden = false;
     campoPensum.required = false;
-    etiquetaPensum.hidden = true;
+    etiquetaPensum.hidden = false;
+    etiquetaPensum.textContent =
+        "Reemplazar pénsum (opcional, PDF o DOCX, máximo 20 MB)";
     botonEnviar.textContent = "Guardar cambios";
     estadoFormulario.textContent = "El pénsum actual se conservará.";
     formulario.hidden = false;
@@ -230,6 +234,11 @@ formulario.addEventListener("submit", async (evento) => {
     try {
         if (carreraEnEdicion) {
             const carrera = carreraEnEdicion;
+            const archivo = campoPensum.files[0];
+
+            if (archivo) {
+                validarPensum(archivo);
+            }
 
             await solicitar(
                 `/carreras/${encodeURIComponent(carrera.id_carrera)}`,
@@ -242,13 +251,25 @@ formulario.addEventListener("submit", async (evento) => {
                 }
             );
 
+            if (archivo) {
+                try {
+                    await subirPensum(carrera.id_carrera, archivo);
+                } catch (error) {
+                    estadoFormulario.textContent =
+                        `El nombre se actualizó, pero no se pudo reemplazar el pénsum: ${error.message}`;
+                    return;
+                }
+            }
+
             formulario.reset();
             prepararFormularioAlta();
             formulario.hidden = true;
 
             try {
                 await cargarCarreras();
-                estadoTabla.textContent = "Carrera actualizada correctamente.";
+                estadoTabla.textContent = archivo
+                    ? "Carrera y pénsum actualizados correctamente."
+                    : "Carrera actualizada correctamente.";
             } catch (error) {
                 estadoTabla.textContent =
                     `La carrera se actualizó, pero no se pudo refrescar la tabla. ${error.message}`;
