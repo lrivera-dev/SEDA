@@ -106,8 +106,16 @@
 
         fila.append(titulo, contexto, etiqueta);
 
-        // Mostrar el motivo de las equivalencias pendientes.
-        if (!aprobada) {
+        // Mostrar el motivo pendiente, excepto cuando el resultado calculado
+        // ya presenta la advertencia de coincidencia baja.
+        const porcentaje = Number(caso.porcentaje_coincidencia);
+        const coincidenciaBaja =
+            caso.estado_calculo === "CALCULADO" &&
+            Number.isFinite(porcentaje) &&
+            porcentaje >= 0 &&
+            porcentaje < 60;
+
+        if (!aprobada && !coincidenciaBaja) {
             const motivo = crearElemento(
                 "p",
                 "hu3-motivo-pendiente",
