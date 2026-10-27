@@ -1,4 +1,3 @@
-
 /* ==========================================
    SEDA - HU-3
    Estados y resultados de coincidencia
@@ -205,6 +204,21 @@
     cursor: not-allowed;
 }
 
+.hu3-contexto-caso {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 24px;
+    margin: -10px 0 18px;
+    color: #56637a;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.hu3-contexto-lado {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
 /* Diseño responsivo */
 
 @media (max-width: 600px) {
@@ -228,6 +242,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .hu3-seccion summary,
     .hu3-btn-reintentar {
         transition: none;
@@ -266,7 +281,7 @@
     border-radius: 13px;
     box-shadow: 0 4px 15px rgba(23, 35, 59, 0.04);
     transition: border-color 0.2s ease,
-                box-shadow 0.2s ease;
+        box-shadow 0.2s ease;
 }
 
 .hu3-caso:hover {
