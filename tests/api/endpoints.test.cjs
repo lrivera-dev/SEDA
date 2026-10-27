@@ -109,6 +109,12 @@ for (const [nombre, buffer, contentType, mensaje] of [
 }
 for (const [nombre, buffer, contentType] of [['PDF', d.pdf, d.MIME_PDF], ['DOCX', d.docx, d.MIME_DOCX]]) {
     test(`archivos: ${nombre} válido devuelve 201`, async () => {
+        const extension = nombre.toLowerCase();
+        const patronRuta = new RegExp(
+            `^10/pensum/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.${extension}$`,
+            'i'
+        );
+
         const res = await conUniversidadAutenticada(
             'post', '/archivos',
             d.consulta({ id_carrera: '10', id_universidad: 10 }),
@@ -120,11 +126,12 @@ for (const [nombre, buffer, contentType] of [['PDF', d.pdf, d.MIME_PDF], ['DOCX'
             d.consulta(null, null, args => {
                 assert.equal(args.tabla, 'carrera');
                 assert.deepEqual(args.eq, [['id_carrera', '10']]);
-                assert.match(args.update[0][0].pensum_url, /^10\/pensum\/\d+-qa\./);
+                assert.match(args.update[0][0].pensum_url, patronRuta);
             })
         ).field('tipo', 'pensum').field('id_carrera', '10')
             .attach('archivo', buffer, { filename: `qa.${nombre.toLowerCase()}`, contentType }).expect(201);
-        assert.equal(res.body.mensaje, 'Archivo cargado exitosamente'); assert.match(res.body.path, /^10\/pensum\/\d+-qa\./);
+        assert.equal(res.body.mensaje, 'Archivo cargado exitosamente');
+        assert.match(res.body.path, patronRuta);
         if (nombre === 'DOCX') assert.equal(res.body.advertencia, 'El archivo fue cargado, pero su lectura podría tardar o fallar');
         else assert.equal(res.body.advertencia, undefined);
     });
