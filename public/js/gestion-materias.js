@@ -191,6 +191,8 @@ function prepararFormularioAlta() {
     campoPrograma.required = true;
     etiquetaPrograma.hidden = false;
     botonEnviar.textContent = "Registrar materia";
+    etiquetaPrograma.textContent =
+        "Programa de la materia (PDF o DOCX, máximo 20 MB)";
 }
 
 function editarMateria(materia) {
@@ -208,13 +210,16 @@ function editarMateria(materia) {
     selectorCarrera.hidden = true;
     selectorCarrera.required = false;
     etiquetaCarrera.hidden = true;
-    campoPrograma.hidden = true;
+    campoPrograma.hidden = false;
     campoPrograma.required = false;
-    etiquetaPrograma.hidden = true;
+    etiquetaPrograma.hidden = false;
+    etiquetaPrograma.textContent =
+        "Reemplazar programa (opcional, PDF o DOCX, máximo 20 MB)";
     botonEnviar.textContent = "Guardar cambios";
     estadoFormulario.textContent =
-        "La carrera y el programa actuales se conservarán.";
+        "Si seleccionas otro archivo, reemplazará el programa actual.";
     formulario.hidden = false;
+
     campoNombre.focus();
 }
 
@@ -279,6 +284,11 @@ formulario.addEventListener("submit", async (evento) => {
     try {
         if (materiaEnEdicion) {
             const materia = materiaEnEdicion;
+            const archivo = campoPrograma.files[0];
+
+            if (archivo) {
+                validarPrograma(archivo);
+            }
 
             await solicitar(
                 `/materias/${encodeURIComponent(materia.id_materia)}`,
@@ -291,13 +301,25 @@ formulario.addEventListener("submit", async (evento) => {
                 }
             );
 
+            if (archivo) {
+                try {
+                    await subirPrograma(materia.id_materia, archivo);
+                } catch (error) {
+                    estadoFormulario.textContent =
+                        `El nombre se actualizó, pero no se pudo reemplazar el programa: ${error.message}`;
+                    return;
+                }
+            }
+
             formulario.reset();
             prepararFormularioAlta();
             formulario.hidden = true;
 
             try {
                 await cargarDatos();
-                estadoTabla.textContent = "Materia actualizada correctamente.";
+                estadoTabla.textContent = archivo
+                    ? "Materia y programa actualizados correctamente."
+                    : "Materia actualizada correctamente.";
             } catch (error) {
                 estadoTabla.textContent =
                     `La materia se actualizó, pero no se pudo refrescar la tabla. ${error.message}`;
