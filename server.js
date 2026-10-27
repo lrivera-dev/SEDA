@@ -22,10 +22,6 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Páginas
-app.get('/subir-archivos', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'subir-archivos.html'));
-});
-
 app.get('/subir-equivalencia', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'subir-equivalencia.html'));
 });
