@@ -3,6 +3,96 @@ const supabase = require('../supabaseClient');
 const REGEX_UUID =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+async function actualizarMateria(req, res) {
+    const idMateria = req.params.id_materia;
+    const nombre = typeof req.body?.nombre === 'string'
+        ? req.body.nombre.trim()
+        : '';
+
+    if (!REGEX_UUID.test(idMateria)) {
+        return res.status(400).json({
+            error: 'El identificador de la materia no es válido.'
+        });
+    }
+
+    if (!nombre) {
+        return res.status(400).json({
+            error: 'El nombre de la materia es obligatorio.'
+        });
+    }
+
+    const { data: materiaExistente, error: errorMateria } = await supabase
+        .from('materia')
+        .select('id_materia, id_carrera')
+        .eq('id_materia', idMateria)
+        .maybeSingle();
+
+    if (errorMateria) {
+        console.error('No se pudo consultar la materia:', errorMateria.message);
+        return res.status(500).json({
+            error: 'No se pudo actualizar la materia.'
+        });
+    }
+
+    if (!materiaExistente) {
+        return res.status(404).json({
+            error: 'No se encontró esa materia en tu universidad.'
+        });
+    }
+
+    const { data: carrera, error: errorCarrera } = await supabase
+        .from('carrera')
+        .select('id_carrera')
+        .eq('id_carrera', materiaExistente.id_carrera)
+        .eq('id_universidad', req.usuario.id_universidad)
+        .maybeSingle();
+
+    if (errorCarrera) {
+        console.error('No se pudo validar la universidad de la materia:', errorCarrera.message);
+        return res.status(500).json({
+            error: 'No se pudo actualizar la materia.'
+        });
+    }
+
+    if (!carrera) {
+        return res.status(404).json({
+            error: 'No se encontró esa materia en tu universidad.'
+        });
+    }
+
+    const { data: materia, error } = await supabase
+        .from('materia')
+        .update({ nombre })
+        .eq('id_materia', idMateria)
+        .eq('id_carrera', carrera.id_carrera)
+        .select('id_materia, id_carrera, nombre, programa_url')
+        .maybeSingle();
+
+    if (error?.code === '23505') {
+        return res.status(409).json({
+            error: 'Ya existe una materia con ese nombre en esta carrera.'
+        });
+    }
+
+    if (error) {
+        console.error('No se pudo actualizar la materia:', error.message);
+        return res.status(500).json({
+            error: 'No se pudo actualizar la materia.'
+        });
+    }
+
+    if (!materia) {
+        return res.status(404).json({
+            error: 'No se encontró esa materia en tu universidad.'
+        });
+    }
+
+    return res.status(200).json({
+        mensaje: 'Materia actualizada correctamente.',
+        materia
+    });
+}
+
 async function listarMaterias(req, res) {
     const idCarrera = typeof req.query.id_carrera === 'string'
         ? req.query.id_carrera.trim()
@@ -167,5 +257,6 @@ async function listarMateriasCatalogo(req, res) {
 module.exports = {
     listarMaterias,
     listarMateriasCatalogo,
-    crearMateria
+    crearMateria,
+    actualizarMateria
 };
