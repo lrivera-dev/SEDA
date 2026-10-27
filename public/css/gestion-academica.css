@@ -67,6 +67,104 @@
     margin: 0;
 }
 
+.gestion-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.gestion-encabezado h2 {
+    margin: 0 0 8px;
+}
+
+.gestion-encabezado p {
+    margin: 0;
+}
+
+.gestion-encabezado>button,
+.gestion-acciones-formulario button {
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 7px;
+    background: #2867df;
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+}
+
+.gestion-card form[hidden] {
+    display: none;
+}
+
+.gestion-acciones-formulario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.gestion-acciones-formulario button[type="button"] {
+    background: #e9edf5;
+    color: #293a56;
+}
+
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tabla-contenedor table {
+    width: 100%;
+    min-width: 620px;
+    border-collapse: collapse;
+    color: #293a56;
+    font-size: 14px;
+}
+
+.tabla-contenedor th,
+.tabla-contenedor td {
+    padding: 13px 15px;
+    border-bottom: 1px solid #e7eaf0;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.tabla-contenedor th {
+    background: #f5f7fb;
+    color: #56637a;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tabla-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tabla-acciones button {
+    padding: 7px 10px;
+    border: 1px solid #dfe3eb;
+    border-radius: 6px;
+    background: #fff;
+    color: #293a56;
+    font: inherit;
+    cursor: pointer;
+}
+
+.tabla-acciones .boton-peligro {
+    border-color: #f1c6ca;
+    color: #b42332;
+}
+
+@media (max-width: 600px) {
+    .gestion-encabezado {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
 #lista-carreras,
 #lista-materias {
     display: grid;

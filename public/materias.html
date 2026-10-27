@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEDA | Materias</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/gestion-academica.css">
+    <script src="/js/proteger-universidad.js"></script>
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">↗</div>
+                <div>
+                    <strong>SEDA</strong>
+                    <small>Sistema de Equivalencias y Documentación Académica</small>
+                </div>
+            </div>
+
+            <nav>
+                <a href="/universidades.html">Dashboard</a>
+                <a href="/carreras.html">Carreras</a>
+                <a href="/materias.html" class="active" aria-current="page">Materias</a>
+                <a href="/subir-archivos.html">Subir documentos</a>
+                <a href="/subir-equivalencia.html">Equivalencias</a>
+                <a href="/checklist.html">Checklist de coincidencia</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <header>
+                <div>
+                    <p>Gestión académica</p>
+                    <h1>Materias</h1>
+                </div>
+                <button class="logout" type="button">Cerrar sesión</button>
+            </header>
+
+            <section class="gestion-card">
+                <div class="gestion-encabezado">
+                    <div>
+                        <h2>Materias de tu universidad</h2>
+                        <p>Administra las materias y sus programas.</p>
+                    </div>
+                    <button id="abrir-form-materia" type="button">
+                        Agregar materia
+                    </button>
+                </div>
+
+                <form id="form-materia" hidden>
+                    <label for="carrera-materia">Carrera</label>
+                    <select id="carrera-materia" name="id_carrera" required>
+                        <option value="">Cargando carreras...</option>
+                    </select>
+
+                    <label for="nombre-materia">Nombre de la materia</label>
+                    <input id="nombre-materia" name="nombre" type="text" required>
+
+                    <label for="archivo-programa">
+                        Programa de la materia (PDF o DOCX, máximo 20 MB)
+                    </label>
+                    <input id="archivo-programa" type="file"
+                        accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        required>
+
+                    <div class="gestion-acciones-formulario">
+                        <button type="submit" id="boton-crear-materia">
+                            Registrar materia
+                        </button>
+                        <button type="button" id="cancelar-form-materia">
+                            Cancelar
+                        </button>
+                    </div>
+
+                    <p id="estado-materia" class="estado-formulario" role="status" aria-live="polite"></p>
+                </form>
+
+                <p id="estado-materias" role="status" aria-live="polite">
+                    Cargando materias...
+                </p>
+
+                <div class="tabla-contenedor">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Materia</th>
+                                <th scope="col">Carrera</th>
+                                <th scope="col">Programa</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-materias"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/js/gestion-materias.js"></script>
+</body>
+
+</html>
