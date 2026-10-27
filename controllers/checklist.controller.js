@@ -37,7 +37,11 @@ const CAMPOS_MATERIA_ORIGEN = `
     id_materia,
     nombre,
     programa_url,
-    carrera!inner ( pensum_url, id_universidad ),
+    carrera!inner (
+        nombre,
+        pensum_url,
+        id_universidad
+    ),
     casos:caso_equivalencia!caso_equivalencia_id_materia_origen_fkey!inner (
         id_caso,
         estado_calculo,
@@ -48,7 +52,13 @@ const CAMPOS_MATERIA_ORIGEN = `
         materia_destino:materia!caso_equivalencia_id_materia_destino_fkey (
             nombre,
             programa_url,
-            carrera ( pensum_url )
+            carrera (
+                nombre,
+                pensum_url,
+                universidad (
+                    nombre
+                )
+            )
         )
     )
 `;
@@ -118,7 +128,11 @@ function armarCaso(caso) {
     return {
         id_caso: caso.id_caso,
         materia_origen: caso.materia_origen?.nombre ?? null,
+        carrera_origen: caso.materia_origen?.carrera?.nombre ?? null,
         materia_destino: caso.materia_destino?.nombre ?? null,
+        carrera_destino: caso.materia_destino?.carrera?.nombre ?? null,
+        universidad_destino:
+            caso.materia_destino?.carrera?.universidad?.nombre ?? null,
         estado_calculo: caso.estado_calculo,
         porcentaje_coincidencia: porcentaje,
         reporte: leerReporte(caso.justificacion_ia),

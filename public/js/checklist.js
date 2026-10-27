@@ -52,6 +52,23 @@
             `${nombreOrigen} → ${nombreDestino}`
         );
 
+        const contexto = crearElemento("div", "hu3-contexto-caso");
+
+        const carreraOrigen = crearElemento(
+            "p",
+            "hu3-contexto-lado",
+            `Origen · ${caso.carrera_origen || "Carrera no especificada"}`
+        );
+
+        const destino = crearElemento(
+            "p",
+            "hu3-contexto-lado",
+            `Destino · ${caso.universidad_destino || "Universidad no especificada"} · ` +
+            `${caso.carrera_destino || "Carrera no especificada"}`
+        );
+
+        contexto.append(carreraOrigen, destino);
+
         // Selección visual del checklist (HU-4).
         const etiqueta = crearElemento("label", "hu3-seleccion");
 
@@ -87,10 +104,18 @@
 
         window.SEDAEstadoCalculo.renderizar(resultado, caso);
 
-        fila.append(titulo, etiqueta);
+        fila.append(titulo, contexto, etiqueta);
 
-        // Mostrar el motivo de las equivalencias pendientes.
-        if (!aprobada) {
+        // Mostrar el motivo pendiente, excepto cuando el resultado calculado
+        // ya presenta la advertencia de coincidencia baja.
+        const porcentaje = Number(caso.porcentaje_coincidencia);
+        const coincidenciaBaja =
+            caso.estado_calculo === "CALCULADO" &&
+            Number.isFinite(porcentaje) &&
+            porcentaje >= 0 &&
+            porcentaje < 60;
+
+        if (!aprobada && !coincidenciaBaja) {
             const motivo = crearElemento(
                 "p",
                 "hu3-motivo-pendiente",
