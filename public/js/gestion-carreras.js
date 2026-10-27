@@ -168,7 +168,6 @@ function editarCarrera(carrera) {
     etiquetaPensum.textContent =
         "Reemplazar pénsum (opcional, PDF o DOCX, máximo 20 MB)";
     botonEnviar.textContent = "Guardar cambios";
-    estadoFormulario.textContent = "El pénsum actual se conservará.";
     formulario.hidden = false;
     campoNombre.focus();
 }

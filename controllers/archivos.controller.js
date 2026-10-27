@@ -1,4 +1,10 @@
 const supabase = require('../supabaseClient');
+const { randomUUID } = require('node:crypto');
+
+const EXTENSIONES_POR_MIME = {
+    'application/pdf': 'pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx'
+};
 
 async function subirArchivo(req, res) {
     if (!req.file) {
@@ -90,7 +96,15 @@ async function subirArchivo(req, res) {
         columna = 'programa_url';
     }
 
-    const nombreArchivo = `${Date.now()}-${req.file.originalname}`;
+    const extension = EXTENSIONES_POR_MIME[req.file.mimetype];
+
+    if (!extension) {
+        return res.status(400).json({
+            error: 'El archivo no es compatible, formatos aceptados: PDF o Word'
+        });
+    }
+
+    const nombreArchivo = `${randomUUID()}.${extension}`;
 
     const path = tipo === 'pensum'
         ? `${idCarreraArchivo}/pensum/${nombreArchivo}`
