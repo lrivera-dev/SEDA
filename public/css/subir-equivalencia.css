@@ -337,11 +337,24 @@ small.error {
   cursor: pointer;
 }
 
+.enlace-volver {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--btn);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.enlace-volver:hover {
+  text-decoration: underline;
+}
+
 .btn-sec:hover {
   background: var(--campo);
 }
 
 @media (max-width: 760px) {
+
   .fila-origen,
   .fila-destino {
     grid-template-columns: 1fr;

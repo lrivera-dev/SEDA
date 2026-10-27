@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINED | Detalle de universidad</title>
+    <link rel="stylesheet" href="/css/mined.css">
+    <link rel="stylesheet" href="/css/mined-universidades.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">↗</div>
+                <div>
+                    <strong>SEDA</strong>
+                    <small>Sistema de Equivalencias y Documentación Académica</small>
+                </div>
+            </div>
+
+            <nav>
+                <a href="/mined.html">Dashboard</a>
+                <a href="/mined.html#equivalencias">Equivalencias</a>
+                <a href="/mined-universidades.html" class="active" aria-current="page">
+                    Universidades
+                </a>
+            </nav>
+
+            <div class="user">
+                <div class="user-icon">M</div>
+                <div>
+                    <strong>MINED</strong>
+                    <small>Administrador</small>
+                </div>
+            </div>
+        </aside>
+
+        <main class="content">
+            <header>
+                <div>
+                    <p>Universidades registradas</p>
+                    <h1 id="tituloUniversidad">Detalle de universidad</h1>
+                </div>
+                <button class="logout" id="logoutButton" type="button">
+                    Cerrar sesión
+                </button>
+            </header>
+
+            <a class="enlace-volver" href="/mined-universidades.html">
+                ← Volver a universidades
+            </a>
+
+            <p id="estadoDetalle" role="status" aria-live="polite">
+                Cargando información de la universidad...
+            </p>
+
+            <section id="detalleUniversidad" hidden></section>
+        </main>
+    </div>
+
+    <script src="/js/mined-universidad.js"></script>
+</body>
+
+</html>

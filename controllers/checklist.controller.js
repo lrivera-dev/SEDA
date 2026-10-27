@@ -207,4 +207,75 @@ async function obtenerChecklist(req, res) {
     });
 }
 
-module.exports = { obtenerChecklist };
+const REGEX_UUID =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const MAX_CASOS_POR_CONFIRMACION = 100;
+
+const MENSAJE_SIN_SELECCION = 'Selecciona al menos una equivalencia para confirmar';
+const MENSAJE_ERROR_GUARDADO = 'No se pudieron registrar las equivalencias. Intenta de nuevo';
+
+// Errores que lanza la función confirmar_equivalencias, con su código HTTP.
+const ERRORES_CONFIRMACION = {
+    CASO_NO_EXISTE: { estado: 404, mensaje: 'Uno o más casos seleccionados no existen.' },
+    CASO_AJENO: { estado: 403, mensaje: 'No tienes permiso para confirmar uno o más de los casos seleccionados.' },
+    CASO_YA_REVISADO: { estado: 409, mensaje: 'Uno o más casos ya fueron revisados por el MINED y no se pueden confirmar.' },
+    CASO_YA_CONFIRMADO: { estado: 409, mensaje: 'Una o más equivalencias ya fueron confirmadas.' },
+    CALCULO_INCOMPLETO: { estado: 409, mensaje: 'Debes completar la evaluación antes de confirmar esta equivalencia' },
+    DOCUMENTOS_INCOMPLETOS: { estado: 409, mensaje: 'Uno o más casos no tienen sus 4 documentos cargados.' }
+};
+
+async function confirmarEquivalencias(req, res) {
+    const { ids_caso: idsCaso } = req.body || {};
+
+    // E1: sin materias seleccionadas.
+    if (!Array.isArray(idsCaso) || idsCaso.length === 0) {
+        return res.status(400).json({ error: MENSAJE_SIN_SELECCION });
+    }
+
+    const idsUnicos = [...new Set(idsCaso)];
+
+    if (idsUnicos.length > MAX_CASOS_POR_CONFIRMACION) {
+        return res.status(400).json({
+            error: `Solo se pueden confirmar ${MAX_CASOS_POR_CONFIRMACION} equivalencias a la vez.`
+        });
+    }
+
+    if (!idsUnicos.every((id) => typeof id === 'string' && REGEX_UUID.test(id))) {
+        return res.status(400).json({ error: 'La selección contiene identificadores de caso no válidos.' });
+    }
+
+    // La universidad sale de la sesión (req.usuario), nunca del cuerpo de la petición.
+    const { data: fechaConfirmacion, error } = await supabase.rpc('confirmar_equivalencias', {
+        p_id_universidad: String(req.usuario.id_universidad),
+        p_id_usuario: req.usuario.id,
+        p_ids_caso: idsUnicos
+    });
+
+    if (error) {
+        if (error.message === 'SIN_SELECCION') {
+            return res.status(400).json({ error: MENSAJE_SIN_SELECCION });
+        }
+
+        const conocido = ERRORES_CONFIRMACION[error.message];
+
+        if (conocido) {
+            return res.status(conocido.estado).json({
+                error: conocido.mensaje,
+                ids_afectados: error.details ? [error.details] : []
+            });
+        }
+
+        // E6: cualquier otro error; la función ya revirtió todo.
+        console.error('No se pudieron confirmar las equivalencias:', error.message);
+        return res.status(500).json({ error: MENSAJE_ERROR_GUARDADO });
+    }
+
+    return res.status(200).json({
+        mensaje: 'Equivalencias confirmadas y registradas exitosamente',
+        confirmadas: idsUnicos.length,
+        fecha_confirmacion: fechaConfirmacion,
+        ids_caso: idsUnicos
+    });
+}
+
+module.exports = { obtenerChecklist, confirmarEquivalencias };

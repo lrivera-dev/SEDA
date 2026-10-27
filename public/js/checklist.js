@@ -13,6 +13,7 @@
     let consultando = false;
     let temporizador = null;
     let hayCasosEnEvaluacion = false;
+    let casoDesdeHashEnfocado = false;
 
     function crearElemento(etiqueta, clase, texto) {
         const elemento = document.createElement(etiqueta);
@@ -32,6 +33,25 @@
         return sessionStorage.getItem('seda_access_token');
     }
 
+    function enfocarCasoDesdeHash() {
+        if (casoDesdeHashEnfocado) return;
+
+        const idCaso = window.location.hash.slice(1);
+
+        if (!idCaso.startsWith("caso-")) return;
+
+        const elemento = document.getElementById(idCaso);
+
+        if (!elemento) return;
+
+        elemento.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+        elemento.classList.add("hu3-caso--resaltado");
+        casoDesdeHashEnfocado = true;
+    }
+
     function cerrarSesionUniversidad() {
         sessionStorage.removeItem('seda_access_token');
         sessionStorage.removeItem('seda_rol');
@@ -42,7 +62,7 @@
 
     function crearFila(caso) {
         const fila = crearElemento("article", "hu3-caso");
-
+        fila.id = `caso-${caso.id_caso}`;
         const nombreOrigen = caso.materia_origen || "Materia de origen";
         const nombreDestino = caso.materia_destino || "Materia de destino";
 
@@ -184,12 +204,14 @@
                     `${caso.materia_destino || "Materia"}: ` +
                     `faltan ${nombres.join(", ")}`
                 );
+                detalle.id = `caso-${caso.id_caso}`;
 
                 aviso.appendChild(detalle);
             }
 
             lista.appendChild(aviso);
         }
+        enfocarCasoDesdeHash();
     }
 
     async function cargarChecklist() {

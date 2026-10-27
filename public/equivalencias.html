@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEDA | Equivalencias registradas</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/gestion-academica.css">
+    <link rel="stylesheet" href="/css/equivalencias-tabla.css">
+    <script src="/js/proteger-universidad.js"></script>
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">↗</div>
+                <div>
+                    <strong>SEDA</strong>
+                    <small>Sistema de Equivalencias y Documentación Académica</small>
+                </div>
+            </div>
+
+            <nav>
+                <a href="/universidades.html">Dashboard</a>
+                <a href="/carreras.html">Carreras</a>
+                <a href="/materias.html">Materias</a>
+                <a href="/equivalencias.html" class="active" aria-current="page">
+                    Equivalencias
+                </a>
+                <a href="/checklist.html">Checklist de coincidencia</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <header>
+                <div>
+                    <p>Gestión académica</p>
+                    <h1>Equivalencias registradas</h1>
+                </div>
+                <button class="logout" type="button">Cerrar sesión</button>
+            </header>
+
+            <section class="gestion-card">
+                <div class="gestion-encabezado">
+                    <div>
+                        <h2>Matriz de equivalencias</h2>
+                        <p>Consulta las evaluaciones de IA y los dictámenes finales.</p>
+                    </div>
+                    <a class="boton-registrar-equivalencia" href="/subir-equivalencia.html">
+                        Registrar equivalencia
+                    </a>
+                </div>
+
+                <div class="equivalencias-filtros">
+                    <label for="filtro-dictamen">Filtrar dictamen</label>
+                    <select id="filtro-dictamen">
+                        <option value="TODAS">Todas</option>
+                        <option value="PENDIENTE">Pendientes</option>
+                        <option value="EN_REVISION">En revisión</option>
+                        <option value="ACEPTADO">Aceptadas</option>
+                        <option value="ADVERTENCIA">Con advertencia</option>
+                    </select>
+                </div>
+
+                <p id="estado-equivalencias" role="status" aria-live="polite">
+                    Cargando equivalencias...
+                </p>
+
+                <div class="tabla-contenedor">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Materia de origen</th>
+                                <th scope="col">Materia de destino</th>
+                                <th scope="col">Coincidencia IA</th>
+                                <th scope="col">Dictamen final</th>
+                                <th scope="col">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-equivalencias"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/js/equivalencias-tabla.js"></script>
+</body>
+
+</html>
