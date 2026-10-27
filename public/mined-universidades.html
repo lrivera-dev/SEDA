@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINED | Universidades</title>
+    <link rel="stylesheet" href="/css/mined.css">
+    <link rel="stylesheet" href="/css/mined-universidades.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">↗</div>
+                <div>
+                    <strong>SEDA</strong>
+                    <small>Sistema de Equivalencias y Documentación Académica</small>
+                </div>
+            </div>
+
+            <nav>
+                <a href="/mined.html">Dashboard</a>
+                <a href="/mined.html#equivalencias">Equivalencias</a>
+                <a href="/mined-universidades.html" class="active" aria-current="page">
+                    Universidades
+                </a>
+            </nav>
+
+            <div class="user">
+                <div class="user-icon">M</div>
+                <div>
+                    <strong>MINED</strong>
+                    <small>Administrador</small>
+                </div>
+            </div>
+        </aside>
+
+        <main class="content">
+            <header>
+                <div>
+                    <p>Panel de administración</p>
+                    <h1>Universidades registradas</h1>
+                </div>
+                <button class="logout" id="logoutButton" type="button">
+                    Cerrar sesión
+                </button>
+            </header>
+
+            <section class="universidades">
+                <div class="section-header">
+                    <div>
+                        <h2>Universidades</h2>
+                        <p>Consulta las instituciones y su información académica.</p>
+                    </div>
+                    <span id="totalUniversidades">0 universidades</span>
+                </div>
+
+                <p id="estadoUniversidades" role="status" aria-live="polite">
+                    Cargando universidades...
+                </p>
+
+                <div class="tabla-contenedor">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Universidad</th>
+                                <th>Ubicación</th>
+                                <th>Carreras registradas</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="universidadesBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/js/mined-universidades.js"></script>
+</body>
+
+</html>
