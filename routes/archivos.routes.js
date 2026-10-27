@@ -2,9 +2,18 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../middlewares/upload');
 const validarArchivo = require('../middlewares/validarArchivo');
-const { subirArchivo } = require('../controllers/archivos.controller');
+const {
+    subirArchivo,
+    obtenerEnlaceDocumento
+} = require('../controllers/archivos.controller');
 
 const validarUniversidad = require('../middlewares/validarUniversidad');
+
+router.get(
+    '/:tipo/:id_registro/enlace',
+    validarUniversidad,
+    obtenerEnlaceDocumento
+);
 
 router.post(
     '/',
