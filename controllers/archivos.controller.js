@@ -1,4 +1,107 @@
 const supabase = require('../supabaseClient');
+const { randomUUID } = require('node:crypto');
+
+const EXTENSIONES_POR_MIME = {
+    'application/pdf': 'pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx'
+};
+const REGEX_UUID =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const DURACION_ENLACE_DOCUMENTO_SEGUNDOS = 3600;
+
+async function obtenerEnlaceDocumento(req, res) {
+    const { tipo, id_registro: idRegistro } = req.params;
+
+    if (!['pensum', 'programa'].includes(tipo) || !REGEX_UUID.test(idRegistro)) {
+        return res.status(400).json({
+            error: 'El tipo o identificador del documento no es válido.'
+        });
+    }
+
+    let rutaDocumento;
+
+    if (tipo === 'pensum') {
+        const { data: carrera, error } = await supabase
+            .from('carrera')
+            .select('pensum_url')
+            .eq('id_carrera', idRegistro)
+            .eq('id_universidad', req.usuario.id_universidad)
+            .maybeSingle();
+
+        if (error) {
+            return res.status(500).json({
+                error: 'No se pudo consultar el pénsum.'
+            });
+        }
+
+        if (!carrera) {
+            return res.status(404).json({
+                error: 'No se encontró el documento solicitado.'
+            });
+        }
+
+        rutaDocumento = carrera.pensum_url;
+    } else {
+        const { data: materia, error: errorMateria } = await supabase
+            .from('materia')
+            .select('id_carrera, programa_url')
+            .eq('id_materia', idRegistro)
+            .maybeSingle();
+
+        if (errorMateria) {
+            return res.status(500).json({
+                error: 'No se pudo consultar el programa.'
+            });
+        }
+
+        if (!materia) {
+            return res.status(404).json({
+                error: 'No se encontró el documento solicitado.'
+            });
+        }
+
+        const { data: carrera, error: errorCarrera } = await supabase
+            .from('carrera')
+            .select('id_carrera')
+            .eq('id_carrera', materia.id_carrera)
+            .eq('id_universidad', req.usuario.id_universidad)
+            .maybeSingle();
+
+        if (errorCarrera) {
+            return res.status(500).json({
+                error: 'No se pudo validar la universidad del documento.'
+            });
+        }
+
+        if (!carrera) {
+            return res.status(404).json({
+                error: 'No se encontró el documento solicitado.'
+            });
+        }
+
+        rutaDocumento = materia.programa_url;
+    }
+
+    if (!rutaDocumento) {
+        return res.status(404).json({
+            error: 'Este registro todavía no tiene un documento cargado.'
+        });
+    }
+
+    const { data, error } = await supabase.storage
+        .from('documentos-carreras')
+        .createSignedUrl(rutaDocumento, DURACION_ENLACE_DOCUMENTO_SEGUNDOS);
+
+    if (error || !data?.signedUrl) {
+        return res.status(500).json({
+            error: 'No se pudo generar el enlace del documento.'
+        });
+    }
+
+    return res.status(200).json({
+        url: data.signedUrl
+    });
+}
 
 async function subirArchivo(req, res) {
     if (!req.file) {
@@ -90,7 +193,15 @@ async function subirArchivo(req, res) {
         columna = 'programa_url';
     }
 
-    const nombreArchivo = `${Date.now()}-${req.file.originalname}`;
+    const extension = EXTENSIONES_POR_MIME[req.file.mimetype];
+
+    if (!extension) {
+        return res.status(400).json({
+            error: 'El archivo no es compatible, formatos aceptados: PDF o Word'
+        });
+    }
+
+    const nombreArchivo = `${randomUUID()}.${extension}`;
 
     const path = tipo === 'pensum'
         ? `${idCarreraArchivo}/pensum/${nombreArchivo}`
@@ -129,4 +240,4 @@ async function subirArchivo(req, res) {
     return res.status(201).json(respuesta);
 }
 
-module.exports = { subirArchivo };
+module.exports = { subirArchivo, obtenerEnlaceDocumento };

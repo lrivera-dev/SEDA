@@ -50,6 +50,29 @@ async function solicitar(url, opciones = {}) {
     return datos;
 }
 
+async function abrirDocumento(tipo, idRegistro) {
+    const ventana = window.open("about:blank", "_blank");
+
+    if (!ventana) {
+        estadoTabla.textContent =
+            "Permite las ventanas emergentes para abrir el documento.";
+        return;
+    }
+
+    ventana.opener = null;
+
+    try {
+        const datos = await solicitar(
+            `/archivos/${tipo}/${encodeURIComponent(idRegistro)}/enlace`
+        );
+
+        ventana.location.href = datos.url;
+    } catch (error) {
+        ventana.close();
+        estadoTabla.textContent = error.message;
+    }
+}
+
 function validarPensum(archivo) {
     if (!archivo) {
         throw new Error("Selecciona el archivo del pénsum.");
@@ -120,9 +143,23 @@ function mostrarCarreras(carreras) {
             )
         );
 
+        const celdaPensum = crearCelda(
+            carrera.pensum_url ? "" : "Pendiente"
+        );
+
+        if (carrera.pensum_url) {
+            celdaPensum.appendChild(
+                crearBotonAccion(
+                    "Ver pénsum",
+                    "",
+                    () => abrirDocumento("pensum", carrera.id_carrera)
+                )
+            );
+        }
+
         fila.append(
             crearCelda(carrera.nombre),
-            crearCelda(carrera.pensum_url ? "Cargado" : "Pendiente"),
+            celdaPensum,
             acciones
         );
 
@@ -146,6 +183,8 @@ function prepararFormularioAlta() {
     campoPensum.required = true;
     etiquetaPensum.hidden = false;
     botonEnviar.textContent = "Registrar carrera";
+    etiquetaPensum.textContent =
+        "Pénsum de la carrera (PDF o DOCX, máximo 20 MB)";
 }
 
 function editarCarrera(carrera) {
@@ -160,11 +199,12 @@ function editarCarrera(carrera) {
     prepararFormularioAlta();
     carreraEnEdicion = carrera;
     campoNombre.value = carrera.nombre;
-    campoPensum.hidden = true;
+    campoPensum.hidden = false;
     campoPensum.required = false;
-    etiquetaPensum.hidden = true;
+    etiquetaPensum.hidden = false;
+    etiquetaPensum.textContent =
+        "Reemplazar pénsum (opcional, PDF o DOCX, máximo 20 MB)";
     botonEnviar.textContent = "Guardar cambios";
-    estadoFormulario.textContent = "El pénsum actual se conservará.";
     formulario.hidden = false;
     campoNombre.focus();
 }
@@ -230,6 +270,11 @@ formulario.addEventListener("submit", async (evento) => {
     try {
         if (carreraEnEdicion) {
             const carrera = carreraEnEdicion;
+            const archivo = campoPensum.files[0];
+
+            if (archivo) {
+                validarPensum(archivo);
+            }
 
             await solicitar(
                 `/carreras/${encodeURIComponent(carrera.id_carrera)}`,
@@ -242,13 +287,25 @@ formulario.addEventListener("submit", async (evento) => {
                 }
             );
 
+            if (archivo) {
+                try {
+                    await subirPensum(carrera.id_carrera, archivo);
+                } catch (error) {
+                    estadoFormulario.textContent =
+                        `El nombre se actualizó, pero no se pudo reemplazar el pénsum: ${error.message}`;
+                    return;
+                }
+            }
+
             formulario.reset();
             prepararFormularioAlta();
             formulario.hidden = true;
 
             try {
                 await cargarCarreras();
-                estadoTabla.textContent = "Carrera actualizada correctamente.";
+                estadoTabla.textContent = archivo
+                    ? "Carrera y pénsum actualizados correctamente."
+                    : "Carrera actualizada correctamente.";
             } catch (error) {
                 estadoTabla.textContent =
                     `La carrera se actualizó, pero no se pudo refrescar la tabla. ${error.message}`;
