@@ -50,6 +50,29 @@ async function solicitar(url, opciones = {}) {
     return datos;
 }
 
+async function abrirDocumento(tipo, idRegistro) {
+    const ventana = window.open("about:blank", "_blank");
+
+    if (!ventana) {
+        estadoTabla.textContent =
+            "Permite las ventanas emergentes para abrir el documento.";
+        return;
+    }
+
+    ventana.opener = null;
+
+    try {
+        const datos = await solicitar(
+            `/archivos/${tipo}/${encodeURIComponent(idRegistro)}/enlace`
+        );
+
+        ventana.location.href = datos.url;
+    } catch (error) {
+        ventana.close();
+        estadoTabla.textContent = error.message;
+    }
+}
+
 function validarPensum(archivo) {
     if (!archivo) {
         throw new Error("Selecciona el archivo del pénsum.");
@@ -120,9 +143,23 @@ function mostrarCarreras(carreras) {
             )
         );
 
+        const celdaPensum = crearCelda(
+            carrera.pensum_url ? "" : "Pendiente"
+        );
+
+        if (carrera.pensum_url) {
+            celdaPensum.appendChild(
+                crearBotonAccion(
+                    "Ver pénsum",
+                    "",
+                    () => abrirDocumento("pensum", carrera.id_carrera)
+                )
+            );
+        }
+
         fila.append(
             crearCelda(carrera.nombre),
-            crearCelda(carrera.pensum_url ? "Cargado" : "Pendiente"),
+            celdaPensum,
             acciones
         );
 

@@ -53,6 +53,29 @@ async function solicitar(url, opciones = {}) {
     return datos;
 }
 
+async function abrirDocumento(tipo, idRegistro) {
+    const ventana = window.open("about:blank", "_blank");
+
+    if (!ventana) {
+        estadoTabla.textContent =
+            "Permite las ventanas emergentes para abrir el documento.";
+        return;
+    }
+
+    ventana.opener = null;
+
+    try {
+        const datos = await solicitar(
+            `/archivos/${tipo}/${encodeURIComponent(idRegistro)}/enlace`
+        );
+
+        ventana.location.href = datos.url;
+    } catch (error) {
+        ventana.close();
+        estadoTabla.textContent = error.message;
+    }
+}
+
 function validarPrograma(archivo) {
     if (!archivo) {
         throw new Error("Selecciona el programa de la materia.");
@@ -148,10 +171,24 @@ function mostrarMaterias(materias) {
             )
         );
 
+        const celdaPrograma = crearCelda(
+            materia.programa_url ? "" : "Pendiente"
+        );
+
+        if (materia.programa_url) {
+            celdaPrograma.appendChild(
+                crearBotonAccion(
+                    "Ver programa",
+                    "",
+                    () => abrirDocumento("programa", materia.id_materia)
+                )
+            );
+        }
+
         fila.append(
             crearCelda(materia.nombre),
             crearCelda(carrerasPorId.get(materia.id_carrera) || "Carrera"),
-            crearCelda(materia.programa_url ? "Cargado" : "Pendiente"),
+            celdaPrograma,
             acciones
         );
 
