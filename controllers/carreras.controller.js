@@ -58,7 +58,59 @@ async function crearCarrera(req, res) {
     });
 }
 
+async function actualizarCarrera(req, res) {
+    const idCarrera = req.params.id_carrera;
+    const nombre = typeof req.body?.nombre === 'string'
+        ? req.body.nombre.trim()
+        : '';
+
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idCarrera)) {
+        return res.status(400).json({
+            error: 'El identificador de la carrera no es válido.'
+        });
+    }
+
+    if (!nombre) {
+        return res.status(400).json({
+            error: 'El nombre de la carrera es obligatorio.'
+        });
+    }
+
+    const { data: carrera, error } = await supabase
+        .from('carrera')
+        .update({ nombre })
+        .eq('id_carrera', idCarrera)
+        .eq('id_universidad', req.usuario.id_universidad)
+        .select('id_carrera, nombre, pensum_url')
+        .maybeSingle();
+
+    if (error?.code === '23505') {
+        return res.status(409).json({
+            error: 'Ya existe una carrera con ese nombre en esta universidad.'
+        });
+    }
+
+    if (error) {
+        console.error('No se pudo actualizar la carrera:', error.message);
+        return res.status(500).json({
+            error: 'No se pudo actualizar la carrera.'
+        });
+    }
+
+    if (!carrera) {
+        return res.status(404).json({
+            error: 'No se encontró esa carrera en tu universidad.'
+        });
+    }
+
+    return res.status(200).json({
+        mensaje: 'Carrera actualizada correctamente.',
+        carrera
+    });
+}
+
 module.exports = {
     listarCarreras,
-    crearCarrera
+    crearCarrera,
+    actualizarCarrera
 };
