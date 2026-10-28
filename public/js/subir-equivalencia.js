@@ -335,6 +335,10 @@
             const carrera = fila.querySelector('.f-carrera-destino').value;
             const destino = fila.querySelector('.f-destino').value;
             const carreraOrigen = fila.querySelector('.f-carrera-origen').value;
+            const notaInput = fila.querySelector('.f-nota-obtenida');
+            const notaMaximaInput = fila.querySelector('.f-nota-maxima');
+            const nota = Number(notaInput.value);
+            const notaMaxima = Number(notaMaximaInput.value);
             const porcentajeInput = fila.querySelector('.f-porcentaje-propuesto');
             const justificacionInput = fila.querySelector('.f-justificacion-manual');
             const porcentaje = Number(porcentajeInput.value);
@@ -343,6 +347,17 @@
 
             if (!carreraOrigen || !origen || !universidad || !carrera || !destino) {
                 mensaje = 'Selecciona las materias de origen y destino.';
+
+            } else if (
+                notaInput.value === '' ||
+                notaMaximaInput.value === '' ||
+                !Number.isFinite(nota) ||
+                !Number.isFinite(notaMaxima) ||
+                nota < 0 ||
+                notaMaxima <= 0 ||
+                nota > notaMaxima
+            ) {
+                mensaje = 'La nota debe estar entre 0 y la nota máxima indicada.';
             } else if (origen === destino) {
                 mensaje = 'La materia de origen y destino no pueden ser la misma.';
             } else if (origenesUsados.has(origen)) {
@@ -383,6 +398,8 @@
             equivalencias: filas().map((fila) => ({
                 id_materia_origen: fila.querySelector('.f-origen').value,
                 id_materia_destino: fila.querySelector('.f-destino').value,
+                nota_obtenida: Number(fila.querySelector('.f-nota-obtenida').value),
+                nota_maxima: Number(fila.querySelector('.f-nota-maxima').value),
                 porcentaje_propuesto: esManual
                     ? Number(fila.querySelector('.f-porcentaje-propuesto').value)
                     : null,

@@ -93,25 +93,43 @@
 
                 <div class="fila-destino">
                     <div class="field">
-                        <label>Universidad destino <span class="req">*</span></label>
+                        <label>Universidad a comparar <span class="req">*</span></label>
                         <select class="f-universidad-destino" required>
-                            <option value="">Selecciona una universidad</option>
+                            <option value=""><option value="">Selecciona una universidad para comparar</option></option>
                         </select>
                     </div>
 
                     <div class="field">
-                        <label>Carrera destino <span class="req">*</span></label>
+                        <label>Carrera a comparar <span class="req">*</span></label>
                         <select class="f-carrera-destino" required disabled>
                             <option value="">Primero selecciona una universidad</option>
                         </select>
                     </div>
 
                     <div class="field">
-                        <label>Materia destino <span class="req">*</span></label>
+                        <label>Materia a comparar <span class="req">*</span></label>
                         <select class="f-destino" required disabled>
                             <option value="">Primero selecciona una carrera</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="fila-nota">
+                    <div class="field">
+                        <label>
+                            Nota obtenida en la materia cursada <span class="req">*</span>
+                        </label>
+                        <input class="f-nota-obtenida" type="number" min="0" step="0.01" placeholder="Ej. 8.5" required>
+                    </div>
+
+                    <div class="field">
+                        <label>
+                            Nota máxima de la escala <span class="req">*</span>
+                        </label>
+                        <input class="f-nota-maxima" type="number" min="0.01" step="0.01" placeholder="Ej. 10" required>
+                    </div>
+
+                    <small>Registra la nota de esta materia, por ejemplo: 8.5 de 10.</small>
                 </div>
 
                 <div class="field datos-manuales" hidden>
