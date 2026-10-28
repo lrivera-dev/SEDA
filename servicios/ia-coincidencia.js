@@ -315,9 +315,17 @@ async function calcularCoincidencia(
     }
 
     if (controlador.signal.aborted) {
+      console.error('[Gemini] Se agotó el tiempo máximo', {
+        timeoutMs: TIEMPO_MAXIMO_MS
+      });
       throw crearError('IA_TIMEOUT');
     }
 
+    console.error('[Gemini] Falló la solicitud', {
+      status: error?.status ?? null,
+      code: error?.code ?? null,
+      message: String(error?.message ?? error).slice(0, 500)
+    });
     throw crearError('IA_NO_DISPONIBLE');
   } finally {
     clearTimeout(temporizador);

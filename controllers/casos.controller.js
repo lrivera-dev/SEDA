@@ -100,6 +100,24 @@ const REGEX_UUID =
 const MENSAJE_NO_EXISTE = "El caso solicitado no existe o fue eliminado";
 const TEXTO_SIN_PORCENTAJE = "Pendiente de cálculo";
 
+function leerReporte(valor) {
+  let reporte = valor;
+
+  if (typeof reporte === 'string') {
+    try {
+      reporte = JSON.parse(reporte);
+    } catch {
+      return null;
+    }
+  }
+
+  return reporte &&
+    typeof reporte === 'object' &&
+    !Array.isArray(reporte)
+    ? reporte
+    : null;
+}
+
 function describirLado(materia) {
   return {
     materia: materia?.nombre ?? null,
@@ -183,7 +201,7 @@ async function obtenerCaso(req, res) {
         : null,
       porcentaje_propuesto: caso.porcentaje_propuesto,
       justificacion_manual: caso.justificacion_manual,
-      justificacion_ia: caso.justificacion_ia,
+      justificacion_ia: leerReporte(caso.justificacion_ia),
       estado_calculo: caso.estado_calculo,
     },
     enlaces,
