@@ -301,3 +301,37 @@
   border-color: #c9d8f5;
   color: #2867df;
 }
+
+.analisis-ia-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.analisis-ia-item {
+  padding: 14px;
+  border: 1px solid #e7eaf0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.analisis-ia-item h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #4d5564;
+}
+
+.analisis-ia-item p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 800px) {
+  .analisis-ia-grid {
+    grid-template-columns: 1fr;
+  }
+}

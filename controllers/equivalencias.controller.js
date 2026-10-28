@@ -26,22 +26,30 @@ async function listarEquivalencias(req, res) {
                 id_universidad
             ),
             casos:caso_equivalencia!caso_equivalencia_id_materia_origen_fkey (
-                id_caso,
-                estado,
-                estado_calculo,
-                porcentaje_coincidencia,
-                fecha_registro,
-                motivo_error_calculo,
-                materia_destino:materia!caso_equivalencia_id_materia_destino_fkey (
+            id_caso,
+            id_solicitud,
+            estado,
+            estado_calculo,
+            porcentaje_coincidencia,
+            porcentaje_propuesto,
+            justificacion_manual,
+            fecha_registro,
+            motivo_error_calculo,
+            solicitud:solicitud_equivalencia!fk_caso_solicitud_equivalencia (
+                nombre_estudiante,
+                codigo_institucional,
+                modalidad
+            ),
+            materia_destino:materia!caso_equivalencia_id_materia_destino_fkey (
+                nombre,
+                carrera (
                     nombre,
-                    carrera (
-                        nombre,
-                        universidad (
-                            nombre
-                        )
+                    universidad (
+                        nombre
                     )
                 )
             )
+        )
         `)
         .eq('carrera.id_universidad', idUniversidad);
 
@@ -54,17 +62,23 @@ async function listarEquivalencias(req, res) {
 
     const casos = (materias || [])
         .flatMap((materia) => (materia.casos || []).map((caso) => {
-            const tienePorcentaje =
-                caso.estado_calculo === 'CALCULADO' &&
-                caso.porcentaje_coincidencia !== null &&
-                caso.porcentaje_coincidencia !== undefined;
+            const modalidad = caso.solicitud?.modalidad ?? 'AUTOMATICA';
+            const esManual = modalidad === 'MANUAL';
 
-            const valorPorcentaje = tienePorcentaje
-                ? Number(caso.porcentaje_coincidencia)
-                : null;
+            const valorOriginal = esManual
+                ? caso.porcentaje_propuesto
+                : caso.porcentaje_coincidencia;
+
+            const valorPorcentaje =
+                valorOriginal === null ||
+                    valorOriginal === undefined ||
+                    valorOriginal === ''
+                    ? null
+                    : Number(valorOriginal);
 
             const porcentajeValido =
                 valorPorcentaje !== null &&
+                (esManual || caso.estado_calculo === 'CALCULADO') &&
                 Number.isFinite(valorPorcentaje) &&
                 valorPorcentaje >= 0 &&
                 valorPorcentaje <= 100;
@@ -77,13 +91,18 @@ async function listarEquivalencias(req, res) {
                 carrera_destino: caso.materia_destino?.carrera?.nombre ?? null,
                 universidad_destino:
                     caso.materia_destino?.carrera?.universidad?.nombre ?? null,
-                porcentaje_coincidencia: porcentajeValido
-                    ? valorPorcentaje
-                    : null,
                 estado_calculo: caso.estado_calculo,
                 estado: caso.estado,
                 fecha_registro: caso.fecha_registro,
-                motivo_error_calculo: caso.motivo_error_calculo ?? null
+                motivo_error_calculo: caso.motivo_error_calculo ?? null,
+                modalidad,
+                nombre_estudiante: caso.solicitud?.nombre_estudiante ?? null,
+                codigo_institucional: caso.solicitud?.codigo_institucional ?? null,
+                porcentaje_coincidencia:
+                    !esManual && porcentajeValido ? valorPorcentaje : null,
+                porcentaje_propuesto:
+                    esManual && porcentajeValido ? valorPorcentaje : null,
+                justificacion_manual: caso.justificacion_manual ?? null,
             };
         }))
         .sort((a, b) =>
@@ -205,4 +224,239 @@ async function registrarEquivalencias(req, res) {
 
 }
 
-module.exports = { registrarEquivalencias, listarEquivalencias };
+const UUID_VALIDO =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function responderErrorSolicitud(res, codigo, mensaje) {
+    return res.status(codigo).json({ error: mensaje });
+}
+
+async function registrarSolicitudEquivalencia(req, res) {
+    const datos = req.body || {};
+    const {
+        nombre_estudiante: nombreEstudiante,
+        codigo_institucional: codigoInstitucional,
+        modalidad,
+        equivalencias
+    } = datos;
+
+    if (
+        typeof nombreEstudiante !== 'string' ||
+        !nombreEstudiante.trim() ||
+        nombreEstudiante.trim().length > 200 ||
+        typeof codigoInstitucional !== 'string' ||
+        !codigoInstitucional.trim() ||
+        codigoInstitucional.trim().length > 100
+    ) {
+        return responderErrorSolicitud(
+            res,
+            400,
+            'Ingresa el nombre del estudiante y su código institucional.'
+        );
+    }
+
+    if (!['MANUAL', 'AUTOMATICA'].includes(modalidad)) {
+        return responderErrorSolicitud(res, 400, 'Selecciona una modalidad válida.');
+    }
+
+    if (!Array.isArray(equivalencias) || equivalencias.length === 0) {
+        return responderErrorSolicitud(
+            res,
+            400,
+            'Agrega al menos una equivalencia.'
+        );
+    }
+
+    const origenesUsados = new Set();
+
+    for (const [indice, equivalencia] of equivalencias.entries()) {
+        const fila = indice + 1;
+        const origen = equivalencia?.id_materia_origen;
+        const destino = equivalencia?.id_materia_destino;
+
+        if (!UUID_VALIDO.test(origen || '') || !UUID_VALIDO.test(destino || '')) {
+            return responderErrorSolicitud(
+                res,
+                400,
+                `Selecciona las materias de origen y destino de la fila ${fila}.`
+            );
+        }
+
+        if (origen === destino) {
+            return responderErrorSolicitud(
+                res,
+                400,
+                `Las materias de la fila ${fila} no pueden ser la misma.`
+            );
+        }
+
+        if (origenesUsados.has(origen)) {
+            return responderErrorSolicitud(
+                res,
+                400,
+                'No repitas una materia de origen en la solicitud.'
+            );
+        }
+
+        origenesUsados.add(origen);
+
+        const notaObtenida = equivalencia?.nota_obtenida;
+        const notaMaxima = equivalencia?.nota_maxima;
+
+        if (
+            typeof notaObtenida !== 'number' ||
+            !Number.isFinite(notaObtenida) ||
+            typeof notaMaxima !== 'number' ||
+            !Number.isFinite(notaMaxima) ||
+            notaObtenida < 0 ||
+            notaMaxima <= 0 ||
+            notaObtenida > notaMaxima
+        ) {
+            return responderErrorSolicitud(
+                res,
+                400,
+                `Ingresa una nota válida, dentro de su escala, en la fila ${fila}.`
+            );
+        }
+
+        if (modalidad === 'MANUAL') {
+            const porcentaje = equivalencia.porcentaje_propuesto;
+            const justificacion = equivalencia.justificacion_manual;
+
+            if (
+                typeof porcentaje !== 'number' ||
+                !Number.isFinite(porcentaje) ||
+                porcentaje < 0 ||
+                porcentaje > 100 ||
+                typeof justificacion !== 'string' ||
+                justificacion.trim().length < 10 ||
+                justificacion.trim().length > 500
+            ) {
+                return responderErrorSolicitud(
+                    res,
+                    400,
+                    `La fila ${fila} requiere un porcentaje de 0 a 100 y una justificación de 10 a 500 caracteres.`
+                );
+            }
+        } else if (
+            equivalencia.porcentaje_propuesto != null ||
+            equivalencia.justificacion_manual != null
+        ) {
+            return responderErrorSolicitud(
+                res,
+                400,
+                'La modalidad automática no admite porcentaje ni justificación manual.'
+            );
+        }
+    }
+
+    try {
+        const { data, error } = await supabase.rpc(
+            'crear_solicitud_equivalencia',
+            {
+                p_id_universidad: req.usuario.id_universidad,
+                p_nombre_estudiante: nombreEstudiante.trim(),
+                p_codigo_institucional: codigoInstitucional.trim(),
+                p_modalidad: modalidad,
+                p_equivalencias: equivalencias.map((equivalencia) => ({
+                    id_materia_origen: equivalencia.id_materia_origen,
+                    id_materia_destino: equivalencia.id_materia_destino,
+                    nota_obtenida: equivalencia.nota_obtenida,
+                    nota_maxima: equivalencia.nota_maxima,
+                    porcentaje_propuesto:
+                        modalidad === 'MANUAL'
+                            ? equivalencia.porcentaje_propuesto
+                            : null,
+                    justificacion_manual:
+                        modalidad === 'MANUAL'
+                            ? equivalencia.justificacion_manual.trim()
+                            : null
+                }))
+            }
+        );
+
+        if (error) {
+            const mensaje = error.message || '';
+
+            if (mensaje.includes('MATERIA_ORIGEN_AJENA')) {
+                return responderErrorSolicitud(
+                    res,
+                    403,
+                    'No tienes permiso sobre una de las materias de origen.'
+                );
+            }
+
+            const erroresSolicitud = {
+                DOCUMENTOS_INCOMPLETOS:
+                    'Todas las materias deben tener sus documentos cargados.',
+                MATERIA_ORIGEN_NO_EXISTE:
+                    'No se encontró una de las materias de origen.',
+                MATERIA_DESTINO_NO_EXISTE:
+                    'No se encontró una de las materias de destino.',
+                DATOS_MANUALES_INVALIDOS:
+                    'Revisa el porcentaje y la justificación de la modalidad manual.',
+                DATOS_MANUALES_NO_PERMITIDOS:
+                    'La modalidad automática no admite datos manuales.',
+                MATERIAS_IGUALES:
+                    'Las materias de origen y destino no pueden ser la misma.',
+                SIN_EQUIVALENCIAS:
+                    'Agrega al menos una equivalencia.',
+                NOTA_ESTUDIANTE_INVALIDA:
+                    'Revisa la nota obtenida y la nota máxima de cada materia.'
+            };
+
+            const clave = Object.keys(erroresSolicitud).find((item) =>
+                mensaje.includes(item)
+            );
+
+            if (clave) {
+                return responderErrorSolicitud(res, 400, erroresSolicitud[clave]);
+            }
+
+            console.error('No se pudo registrar la solicitud:', mensaje);
+            return responderErrorSolicitud(
+                res,
+                500,
+                'No se pudo registrar la solicitud. Intenta de nuevo.'
+            );
+        }
+
+        if (
+            modalidad === 'AUTOMATICA' &&
+            Array.isArray(data?.ids_caso)
+        ) {
+            for (const idCaso of data.ids_caso) {
+                try {
+                    colaEvaluacion.encolar(idCaso);
+                } catch (error) {
+                    console.error(
+                        `No se pudo encolar el caso ${idCaso}:`,
+                        error.message
+                    );
+                }
+            }
+        }
+
+        return res.status(201).json({
+            mensaje: 'Solicitud de equivalencia registrada exitosamente.',
+            solicitud: {
+                id_solicitud: data.id_solicitud,
+                modalidad,
+                ids_caso: data.ids_caso
+            }
+        });
+    } catch (error) {
+        console.error('Error al registrar la solicitud:', error.message);
+        return responderErrorSolicitud(
+            res,
+            500,
+            'No se pudo registrar la solicitud. Intenta de nuevo.'
+        );
+    }
+}
+
+module.exports = {
+    registrarEquivalencias,
+    listarEquivalencias,
+    registrarSolicitudEquivalencia
+};

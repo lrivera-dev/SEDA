@@ -12,6 +12,9 @@
 
     <!-- Estilos de nuestra HU-3 -->
     <link rel="stylesheet" href="css/estado-calculo.css">
+
+    <!-- Estilos de la HU-5: confirmación de equivalencias -->
+    <link rel="stylesheet" href="css/confirmacion-equivalencias.css">
     <script src="/js/proteger-universidad.js"></script>
 </head>
 
@@ -71,8 +74,53 @@
             <section id="lista-casos" aria-label="Casos de equivalencia">
             </section>
 
+            <!-- HU-5: confirmación formal de equivalencias -->
+            <section id="barra-confirmacion" class="barra-confirmacion"
+                aria-label="Confirmación de equivalencias" hidden>
+                <p id="mensaje-confirmacion" class="mensaje-confirmacion" hidden></p>
+                <div class="barra-confirmacion__accion">
+                    <p id="contador-seleccion" class="barra-confirmacion__contador"></p>
+                    <button type="button" id="boton-confirmar" class="boton-confirmar">
+                        Confirmar equivalencias
+                    </button>
+                </div>
+            </section>
+
         </main>
     </div>
+
+    <!-- HU-5: resumen de la selección antes de registrar -->
+    <dialog id="dialogo-confirmacion" class="dialogo-confirmacion"
+        aria-labelledby="titulo-dialogo-confirmacion">
+        <h2 id="titulo-dialogo-confirmacion">Resumen de equivalencias a confirmar</h2>
+        <p id="texto-resumen" class="dialogo-confirmacion__texto"></p>
+        <ul id="resumen-seleccion" class="dialogo-confirmacion__lista"></ul>
+
+        <div id="aviso-baja-coincidencia" class="dialogo-confirmacion__aviso" hidden>
+            <p>
+                Incluiste materias con coincidencia menor al 80%. Quedarán
+                registradas como confirmadas por tu universidad, pero seguirán
+                sujetas a la revisión del MINED.
+            </p>
+            <label class="dialogo-confirmacion__acepto">
+                <input type="checkbox" id="acepto-baja-coincidencia">
+                <span>Entiendo y quiero confirmarlas de todos modos</span>
+            </label>
+        </div>
+
+        <p class="dialogo-confirmacion__nota">
+            La confirmación de la universidad no reemplaza la decisión definitiva del MINED.
+        </p>
+
+        <div class="dialogo-confirmacion__acciones">
+            <button type="button" id="boton-cancelar-confirmacion" class="boton-secundario">
+                Cancelar
+            </button>
+            <button type="button" id="boton-registrar-confirmacion" class="boton-confirmar">
+                Confirmar y registrar
+            </button>
+        </div>
+    </dialog>
 
     <!-- Componente visual HU-3 -->
     <script src="js/estado-calculo.js"></script>

@@ -100,6 +100,24 @@ const REGEX_UUID =
 const MENSAJE_NO_EXISTE = "El caso solicitado no existe o fue eliminado";
 const TEXTO_SIN_PORCENTAJE = "Pendiente de cálculo";
 
+function leerReporte(valor) {
+  let reporte = valor;
+
+  if (typeof reporte === 'string') {
+    try {
+      reporte = JSON.parse(reporte);
+    } catch {
+      return null;
+    }
+  }
+
+  return reporte &&
+    typeof reporte === 'object' &&
+    !Array.isArray(reporte)
+    ? reporte
+    : null;
+}
+
 function describirLado(materia) {
   return {
     materia: materia?.nombre ?? null,
@@ -122,6 +140,8 @@ async function obtenerCaso(req, res) {
             id_caso,
             descripcion,
             estado,
+            nota_obtenida,
+            nota_maxima,
             porcentaje_coincidencia,
             fecha_registro,
             materia_origen:materia!caso_equivalencia_id_materia_origen_fkey (
@@ -133,6 +153,16 @@ async function obtenerCaso(req, res) {
                 nombre,
                 programa_url,
                 carrera ( nombre, pensum_url, universidad ( nombre ) )
+            ),
+            id_solicitud,
+            porcentaje_propuesto,
+            justificacion_manual,
+            justificacion_ia,
+            estado_calculo,
+            solicitud:solicitud_equivalencia!fk_caso_solicitud_equivalencia (
+                nombre_estudiante,
+                codigo_institucional,
+                modalidad
             )
         `,
     )
@@ -155,14 +185,27 @@ async function obtenerCaso(req, res) {
       id_caso: caso.id_caso,
       descripcion: caso.descripcion,
       estado: caso.estado,
+      nota_obtenida: caso.nota_obtenida,
+      nota_maxima: caso.nota_maxima,
       fecha_registro: caso.fecha_registro,
       porcentaje_coincidencia:
         caso.porcentaje_coincidencia ?? TEXTO_SIN_PORCENTAJE,
       origen: describirLado(caso.materia_origen),
       destino: describirLado(caso.materia_destino),
+      modalidad: caso.solicitud?.modalidad ?? 'AUTOMATICA',
+      estudiante: caso.solicitud
+        ? {
+          nombre: caso.solicitud.nombre_estudiante,
+          codigo_institucional: caso.solicitud.codigo_institucional
+        }
+        : null,
+      porcentaje_propuesto: caso.porcentaje_propuesto,
+      justificacion_manual: caso.justificacion_manual,
+      justificacion_ia: leerReporte(caso.justificacion_ia),
+      estado_calculo: caso.estado_calculo,
     },
     enlaces,
-    documentos_faltantes,
+    documentos_faltantes
   });
 }
 
