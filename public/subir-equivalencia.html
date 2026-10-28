@@ -20,13 +20,51 @@
 
         <!--Inicio de equivalencia manual-->
         <form id="form-equivalencia" class="card" novalidate>
-            <h2>Equivalencia por materia</h2>
-            <div id="eq-filas" class="filas"></div>
-            <button type="button" class="btn-sec" id="btn-agregar-fila">+ Agregar materia</button>
+            <h2>Datos del estudiante y solicitud</h2>
 
+            <div class="grid">
+                <div class="field">
+                    <label for="nombre-estudiante">
+                        Nombre del estudiante <span class="req">*</span>
+                    </label>
+                    <input id="nombre-estudiante" type="text" maxlength="200" autocomplete="name">
+                </div>
+
+                <div class="field">
+                    <label for="codigo-institucional">
+                        Código institucional <span class="req">*</span>
+                    </label>
+                    <input id="codigo-institucional" type="text" maxlength="100">
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="modalidad-equivalencia">
+                    Modalidad <span class="req">*</span>
+                </label>
+                <select id="modalidad-equivalencia">
+                    <option value="AUTOMATICA">Automática con análisis de IA</option>
+                    <option value="MANUAL">Manual, con porcentaje propuesto</option>
+                </select>
+                <small id="ayuda-modalidad">
+                    SEDA calculará el porcentaje y generará el análisis con IA.
+                </small>
+            </div>
+
+            <h2>Materias de la solicitud</h2>
+
+            <div id="eq-filas" class="filas"></div>
+
+            <button type="button" class="btn-sec" id="btn-agregar-fila">
+                + Agregar materia
+            </button>
 
             <p class="error" id="error-equivalencia" role="alert"></p>
-            <button type="submit" class="btn" id="btn-guardar-eq">Guardar</button>
+
+            <button type="submit" class="btn" id="btn-guardar-eq">
+                Registrar solicitud
+            </button>
+
             <div class="status" id="status-equivalencia" role="status" aria-live="polite"></div>
         </form>
 
@@ -76,9 +114,20 @@
                     </div>
                 </div>
 
-                <div class="field f-desc">
-                    <label>Descripción de la equivalencia <span class="req">*</span></label>
-                    <textarea class="f-descripcion" rows="2" maxlength="500"></textarea>
+                <div class="field datos-manuales" hidden>
+                    <label>
+                        Porcentaje propuesto por la universidad
+                        <span class="req">*</span>
+                    </label>
+                    <input class="f-porcentaje-propuesto" type="number" min="0" max="100" step="0.01"
+                        placeholder="0 a 100">
+                    <small>Es una propuesta de la universidad; no es la decisión del MINED.</small>
+
+                    <label>
+                        Justificación académica <span class="req">*</span>
+                    </label>
+                    <textarea class="f-justificacion-manual" rows="3" minlength="10" maxlength="500"></textarea>
+                    <small>Explica cómo los documentos respaldan el porcentaje propuesto.</small>
                 </div>
 
                 <small class="error fila-error"></small>
