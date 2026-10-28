@@ -182,7 +182,15 @@ async function evaluarCaso(idCaso) {
 
         await guardarResultado(idCaso, resultado);
     } catch (error) {
-        console.error(`Falló la evaluación del caso ${idCaso}:`, error.code || '', error.message);
+        const documento = error.documento
+            ? ` (${error.documento})`
+            : '';
+
+        console.error(
+            `Falló la evaluación del caso ${idCaso}:`,
+            `${error.code || ''}${documento}`,
+            error.message
+        );
         await guardarError(idCaso, describirError(error));
     }
 }
