@@ -133,16 +133,69 @@
                 </div>
 
 
-                <div class="reporte__seccion">
+                <section id="solicitud-estudiante" class="reporte__seccion" hidden>
+                    <h2 class="reporte__titulo">Datos del estudiante</h2>
+                    <p class="reporte__texto">
+                        <strong>Nombre:</strong> <span id="estudiante-nombre"></span>
+                    </p>
+                    <p class="reporte__texto">
+                        <strong>Código institucional:</strong>
+                        <span id="estudiante-codigo"></span>
+                    </p>
+                    <p class="reporte__texto">
+                        <strong>Nota obtenida:</strong>
+                        <span id="estudiante-nota"></span>
+                    </p>
+                    <p class="reporte__texto">
+                        <strong>Modalidad:</strong> <span id="solicitud-modalidad"></span>
+                    </p>
+                </section>
 
-                    <h2 class="reporte__titulo">
-                        Descripción de la equivalencia
-                    </h2>
-
+                <section id="descripcion-legada" class="reporte__seccion" hidden>
+                    <h2 class="reporte__titulo">Descripción registrada</h2>
                     <p class="reporte__texto" id="caso-descripcion"></p>
+                </section>
 
-                </div>
+                <section id="analisis-manual" class="reporte__seccion" hidden>
+                    <h2 class="reporte__titulo">Propuesta manual de la universidad</h2>
+                    <h3 class="reporte__titulo">Justificación académica</h3>
+                    <p class="reporte__texto" id="justificacion-manual"></p>
+                </section>
 
+                <section id="analisis-ia" class="reporte__seccion" hidden>
+                    <h2 class="reporte__titulo">Análisis automático de IA</h2>
+
+                    <p id="ia-pendiente" class="reporte__texto" hidden>
+                        El análisis de IA todavía no está disponible.
+                    </p>
+
+                    <div id="ia-detalle" class="analisis-ia-grid" hidden>
+                        <div class="analisis-ia-item">
+                            <h3>Resumen</h3>
+                            <p id="ia-resumen"></p>
+                        </div>
+                        <div class="analisis-ia-item">
+                            <h3>Contenidos coincidentes</h3>
+                            <p id="ia-contenidos"></p>
+                        </div>
+                        <div class="analisis-ia-item">
+                            <h3>Metodología</h3>
+                            <p id="ia-metodologia"></p>
+                        </div>
+                        <div class="analisis-ia-item">
+                            <h3>Diferencias</h3>
+                            <p id="ia-diferencias"></p>
+                        </div>
+                        <div class="analisis-ia-item">
+                            <h3>Contexto de los pénsums</h3>
+                            <p id="ia-contexto-pensum"></p>
+                        </div>
+                        <div class="analisis-ia-item">
+                            <h3>Conclusión</h3>
+                            <p id="ia-conclusion"></p>
+                        </div>
+                    </div>
+                </section>
 
                 <!-- Aviso: solo aparece si falta algún documento -->
                 <div id="aviso-documentos-faltantes" class="aviso aviso--advertencia" role="alert" hidden>
@@ -169,13 +222,15 @@
 
                             <li class="documento" data-documento="pensum_origen">
                                 <span class="documento__nombre">Pensum de la carrera</span>
-                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir documento</a>
+                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
+                                    documento</a>
                                 <span class="documento__faltante" hidden>No disponible</span>
                             </li>
 
                             <li class="documento" data-documento="programa_origen">
                                 <span class="documento__nombre">Programa de la materia</span>
-                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir documento</a>
+                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
+                                    documento</a>
                                 <span class="documento__faltante" hidden>No disponible</span>
                             </li>
 
@@ -205,13 +260,15 @@
 
                             <li class="documento" data-documento="pensum_destino">
                                 <span class="documento__nombre">Pensum de la carrera</span>
-                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir documento</a>
+                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
+                                    documento</a>
                                 <span class="documento__faltante" hidden>No disponible</span>
                             </li>
 
                             <li class="documento" data-documento="programa_destino">
                                 <span class="documento__nombre">Programa de la materia</span>
-                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir documento</a>
+                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
+                                    documento</a>
                                 <span class="documento__faltante" hidden>No disponible</span>
                             </li>
 
@@ -270,9 +327,7 @@
 
                     <div>
 
-                        <span>
-                            Coincidencia
-                        </span>
+                        <span id="caso-porcentaje-etiqueta">Coincidencia calculada por IA</span>
 
                         <strong id="caso-porcentaje"></strong>
 

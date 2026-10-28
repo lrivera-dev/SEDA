@@ -1,5 +1,5 @@
 (() => {
-    const API_EQUIVALENCIAS = '/equivalencias';
+    const API_EQUIVALENCIAS = '/equivalencias/solicitudes';
     const ICONOS = {
         loading: '<span class="spin" aria-hidden="true"></span>',
         ok: '✓',
@@ -13,6 +13,10 @@
     const btnGuardar = $('btn-guardar-eq');
     const errorEq = $('error-equivalencia');
     const statusEq = $('status-equivalencia');
+    const nombreEstudiante = $('nombre-estudiante');
+    const codigoInstitucional = $('codigo-institucional');
+    const modalidadInput = $('modalidad-equivalencia');
+    const ayudaModalidad = $('ayuda-modalidad');
 
     let materiasOrigen = [];
     let materiasDestino = [];
@@ -140,6 +144,24 @@
         return [...contFilas.querySelectorAll('.fila')];
     }
 
+    function actualizarCamposModalidad() {
+        const esManual = modalidadInput.value === 'MANUAL';
+
+        ayudaModalidad.textContent = esManual
+            ? 'Propón un porcentaje y respáldalo con una justificación académica.'
+            : 'SEDA calculará el porcentaje y generará el análisis con IA.';
+
+        filas().forEach((fila) => {
+            const camposManuales = fila.querySelector('.datos-manuales');
+            const porcentaje = fila.querySelector('.f-porcentaje-propuesto');
+            const justificacion = fila.querySelector('.f-justificacion-manual');
+
+            camposManuales.hidden = !esManual;
+            porcentaje.required = esManual;
+            justificacion.required = esManual;
+        });
+    }
+
     function actualizarOpcionesFila(fila) {
         const selectUniversidad = fila.querySelector('.f-universidad-destino');
         const selectCarrera = fila.querySelector('.f-carrera-destino');
@@ -246,12 +268,17 @@
         const fila = $('tpl-fila').content.firstElementChild.cloneNode(true);
 
         fila.querySelectorAll('.field').forEach((campo) => {
-            const control = campo.querySelector('select, input, textarea');
-            if (!control) return;
+            const controles = campo.querySelectorAll('select, input, textarea');
+            const etiquetas = campo.querySelectorAll('label');
 
-            const id = `fila-campo-${++contadorIds}`;
-            control.id = id;
-            campo.querySelector('label').htmlFor = id;
+            controles.forEach((control, indice) => {
+                const id = `fila-campo-${++contadorIds}`;
+                control.id = id;
+
+                if (etiquetas[indice]) {
+                    etiquetas[indice].htmlFor = id;
+                }
+            });
         });
 
         fila.querySelector('.btn-quitar').addEventListener('click', () => {
@@ -283,33 +310,76 @@
 
         contFilas.append(fila);
         actualizarOpcionesFila(fila);
+        actualizarCamposModalidad();
         refrescarBotonesQuitar();
     }
 
     function validar() {
         let valido = true;
         const origenesUsados = new Set();
+        const esManual = modalidadInput.value === 'MANUAL';
 
-        filas().forEach((fila) => {
+        if (!nombreEstudiante.value.trim()) {
+            errorEq.textContent = 'Ingresa el nombre del estudiante.';
+            return false;
+        }
+
+        if (!codigoInstitucional.value.trim()) {
+            errorEq.textContent = 'Ingresa el código institucional del estudiante.';
+            return false;
+        }
+
+        filas().forEach((fila, indice) => {
             const origen = fila.querySelector('.f-origen').value;
             const universidad = fila.querySelector('.f-universidad-destino').value;
             const carrera = fila.querySelector('.f-carrera-destino').value;
             const destino = fila.querySelector('.f-destino').value;
-            const descripcion = fila.querySelector('.f-descripcion').value.trim();
             const carreraOrigen = fila.querySelector('.f-carrera-origen').value;
+            const notaInput = fila.querySelector('.f-nota-obtenida');
+            const notaMaximaInput = fila.querySelector('.f-nota-maxima');
+            const nota = Number(notaInput.value);
+            const notaMaxima = Number(notaMaximaInput.value);
+            const porcentajeInput = fila.querySelector('.f-porcentaje-propuesto');
+            const justificacionInput = fila.querySelector('.f-justificacion-manual');
+            const porcentaje = Number(porcentajeInput.value);
+            const justificacion = justificacionInput.value.trim();
             let mensaje = '';
 
             if (!carreraOrigen || !origen || !universidad || !carrera || !destino) {
-                mensaje = 'Selecciona carrera y materia de origen, universidad, carrera y materia destino.';
+                mensaje = 'Selecciona las materias de origen y destino.';
+
+            } else if (
+                notaInput.value === '' ||
+                notaMaximaInput.value === '' ||
+                !Number.isFinite(nota) ||
+                !Number.isFinite(notaMaxima) ||
+                nota < 0 ||
+                notaMaxima <= 0 ||
+                nota > notaMaxima
+            ) {
+                mensaje = 'La nota debe estar entre 0 y la nota máxima indicada.';
             } else if (origen === destino) {
-                mensaje = 'La materia cursada y la equivalente no pueden ser la misma.';
-            } else if (!descripcion) {
-                mensaje = 'Ingresa la descripción de esta equivalencia.';
+                mensaje = 'La materia de origen y destino no pueden ser la misma.';
             } else if (origenesUsados.has(origen)) {
-                mensaje = 'Esta materia cursada ya está en otra fila.';
+                mensaje = 'Esta materia de origen ya aparece en otra fila.';
+            } else if (
+                esManual &&
+                (
+                    porcentajeInput.value === '' ||
+                    !Number.isFinite(porcentaje) ||
+                    porcentaje < 0 ||
+                    porcentaje > 100
+                )
+            ) {
+                mensaje = 'Ingresa un porcentaje propuesto de 0 a 100.';
+            } else if (
+                esManual &&
+                (justificacion.length < 10 || justificacion.length > 500)
+            ) {
+                mensaje = 'La justificación debe tener entre 10 y 500 caracteres.';
             }
 
-            origenesUsados.add(origen);
+            if (origen) origenesUsados.add(origen);
             fila.querySelector('.fila-error').textContent = mensaje;
 
             if (mensaje) valido = false;
@@ -317,17 +387,32 @@
 
         return valido;
     }
-    function construirCuerpo(fila) {
+
+    function construirCuerpo() {
+        const esManual = modalidadInput.value === 'MANUAL';
+
         return {
-            id_materia_origen: fila.querySelector('.f-origen').value,
-            id_materia_destino: fila.querySelector('.f-destino').value,
-            descripcion: fila.querySelector('.f-descripcion').value.trim()
+            nombre_estudiante: nombreEstudiante.value.trim(),
+            codigo_institucional: codigoInstitucional.value.trim(),
+            modalidad: modalidadInput.value,
+            equivalencias: filas().map((fila) => ({
+                id_materia_origen: fila.querySelector('.f-origen').value,
+                id_materia_destino: fila.querySelector('.f-destino').value,
+                nota_obtenida: Number(fila.querySelector('.f-nota-obtenida').value),
+                nota_maxima: Number(fila.querySelector('.f-nota-maxima').value),
+                porcentaje_propuesto: esManual
+                    ? Number(fila.querySelector('.f-porcentaje-propuesto').value)
+                    : null,
+                justificacion_manual: esManual
+                    ? fila.querySelector('.f-justificacion-manual').value.trim()
+                    : null
+            }))
         };
     }
 
     function mensajeError(respuesta, json) {
         if (respuesta.status === 404) {
-            return 'No se encontró el servicio de equivalencias en el servidor (POST /equivalencias).';
+            return 'No se encontró el servicio de solicitudes (POST /equivalencias/solicitudes).';
         }
 
         if (Array.isArray(json?.archivos_faltantes)) {
@@ -345,6 +430,7 @@
         formEq.reset();
         contFilas.replaceChildren();
         agregarFila();
+        actualizarCamposModalidad();
     }
 
     formEq.addEventListener('submit', async (evento) => {
@@ -365,73 +451,67 @@
             return;
         }
 
-        const lista = filas();
-        let guardadas = 0;
-        let fallo = false;
         btnGuardar.disabled = true;
 
         try {
-            for (const fila of lista) {
-                mostrarEq(
-                    'loading',
-                    'Guardando…',
-                    `Registrando equivalencia (${guardadas + 1} de ${lista.length}).`
-                );
+            mostrarEq(
+                'loading',
+                'Guardando solicitud…',
+                'Registrando los datos del estudiante y sus equivalencias.'
+            );
 
-                const respuesta = await fetch(API_EQUIVALENCIAS, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`
-                    },
-                    body: JSON.stringify(construirCuerpo(fila))
-                });
+            const respuesta = await fetch(API_EQUIVALENCIAS, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(construirCuerpo())
+            });
 
-                const json = await respuesta.json().catch(() => null);
+            const json = await respuesta.json().catch(() => null);
 
-                if (respuesta.ok && json?.equivalencia) {
-                    guardadas++;
-                    fila.remove();
-                    continue;
-                }
+            if (respuesta.status === 401) {
+                cerrarSesionUniversidad();
+                return;
+            }
 
-                if (respuesta.status === 401) {
-                    cerrarSesionUniversidad();
-                    return;
-                }
-
+            if (!respuesta.ok) {
                 const mensaje = mensajeError(respuesta, json);
-                fila.querySelector('.fila-error').textContent = mensaje;
+                const primeraFila = filas()[0];
 
-                const avisoPrevio = guardadas
-                    ? ` Se guardaron ${guardadas} de ${lista.length} materias; corrige la fila marcada y vuelve a guardar.`
-                    : '';
+                if (primeraFila) {
+                    primeraFila.querySelector('.fila-error').textContent = mensaje;
+                }
 
-                mostrarEq('err', 'No se guardó la equivalencia', mensaje + avisoPrevio);
-                fallo = true;
-                break;
+                mostrarEq('err', 'No se registró la solicitud', mensaje);
+                return;
             }
 
-            if (!fallo) {
-                reiniciar();
-                mostrarEq(
-                    'ok',
-                    'Equivalencia registrada',
-                    'El caso quedó pendiente de revisión del MINED.'
-                );
-            } else {
-                refrescarBotonesQuitar();
-            }
+            const fueManual = modalidadInput.value === 'MANUAL';
+            const cantidad = json?.solicitud?.ids_caso?.length || filas().length;
+
+            reiniciar();
+
+            mostrarEq(
+                'ok',
+                'Solicitud registrada',
+                fueManual
+                    ? `Se registró la propuesta manual con ${cantidad} equivalencia(s), pendiente de revisión del MINED.`
+                    : `Se registró la solicitud con ${cantidad} equivalencia(s); SEDA iniciará el análisis con IA.`
+            );
         } catch (error) {
             mostrarEq(
                 'err',
-                'No se pudieron cargar o guardar las materias',
+                'No se pudo guardar la solicitud',
                 error.message || 'Revisa tu conexión e intenta de nuevo.'
             );
         } finally {
             btnGuardar.disabled = false;
         }
     });
+
+    modalidadInput.addEventListener('change', actualizarCamposModalidad);
 
     $('btn-agregar-fila').addEventListener('click', agregarFila);
     agregarFila();

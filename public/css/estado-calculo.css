@@ -433,3 +433,8 @@
     outline-offset: 3px;
     scroll-margin-top: 30px;
 }
+
+.hu3-estado--manual {
+    background: #fff4d6;
+    color: #805c12;
+}

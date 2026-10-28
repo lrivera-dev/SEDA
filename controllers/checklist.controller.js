@@ -44,11 +44,23 @@ const CAMPOS_MATERIA_ORIGEN = `
     ),
     casos:caso_equivalencia!caso_equivalencia_id_materia_origen_fkey!inner (
         id_caso,
+        id_solicitud,
+        porcentaje_propuesto,
+        justificacion_manual,
+        solicitud:solicitud_equivalencia!fk_caso_solicitud_equivalencia (
+            nombre_estudiante,
+            codigo_institucional,
+            modalidad
+        ),
         estado_calculo,
         porcentaje_coincidencia,
         justificacion_ia,
         motivo_error_calculo,
         fecha_registro,
+        estado,
+        confirmada_universidad,
+        fecha_confirmacion,
+        id_usuario_confirmacion,
         materia_destino:materia!caso_equivalencia_id_materia_destino_fkey (
             nombre,
             programa_url,
@@ -74,14 +86,26 @@ function obtenerDocumentosFaltantes(caso) {
 }
 
 // RN1: solo un caso CALCULADO tiene un porcentaje que cuente; en cualquier otro estado es null.
-function leerPorcentaje(caso) {
-    if (caso.estado_calculo !== ESTADO_CALCULADO || caso.porcentaje_coincidencia === null || caso.porcentaje_coincidencia === undefined) {
+function leerPorcentaje(caso, modalidad) {
+    if (modalidad !== 'MANUAL' && caso.estado_calculo !== ESTADO_CALCULADO) {
         return null;
     }
 
-    const porcentaje = Number(caso.porcentaje_coincidencia);
+    const valor = modalidad === 'MANUAL'
+        ? caso.porcentaje_propuesto
+        : caso.porcentaje_coincidencia;
 
-    return Number.isFinite(porcentaje) && porcentaje >= 0 && porcentaje <= 100 ? porcentaje : null;
+    if (valor === null || valor === undefined || valor === '') {
+        return null;
+    }
+
+    const porcentaje = Number(valor);
+
+    return Number.isFinite(porcentaje) &&
+        porcentaje >= 0 &&
+        porcentaje <= 100
+        ? porcentaje
+        : null;
 }
 
 // El reporte se guarda como JSON; si la columna es de texto llega como string y se convierte.
@@ -100,6 +124,14 @@ function leerReporte(valor) {
 function describirMotivo(caso, clasificacion) {
     if (clasificacion.estado_checklist === 'APROBADA') {
         return null;
+    }
+
+    if (caso.modalidad === 'MANUAL') {
+        if (clasificacion.nivel === 'BAJA') {
+            return 'Propuesta manual baja: revisa los documentos antes de confirmar';
+        }
+
+        return `La propuesta manual es menor al ${UMBRAL_APROBACION}% requerido para aprobar`;
     }
 
     if (caso.estado_calculo === ESTADO_ERROR) {
@@ -122,7 +154,8 @@ function describirMotivo(caso, clasificacion) {
 }
 
 function armarCaso(caso) {
-    const porcentaje = leerPorcentaje(caso);
+    const modalidad = caso.solicitud?.modalidad ?? 'AUTOMATICA';
+    const porcentaje = leerPorcentaje(caso, modalidad);
     const clasificacion = clasificarCoincidencia(porcentaje);
 
     return {
@@ -134,11 +167,28 @@ function armarCaso(caso) {
         universidad_destino:
             caso.materia_destino?.carrera?.universidad?.nombre ?? null,
         estado_calculo: caso.estado_calculo,
-        porcentaje_coincidencia: porcentaje,
-        reporte: leerReporte(caso.justificacion_ia),
+        modalidad,
+        nombre_estudiante: caso.solicitud?.nombre_estudiante ?? null,
+        codigo_institucional: caso.solicitud?.codigo_institucional ?? null,
+        porcentaje_coincidencia:
+            modalidad === 'AUTOMATICA' ? porcentaje : null,
+        porcentaje_propuesto:
+            modalidad === 'MANUAL' ? porcentaje : null,
+        justificacion_manual: caso.justificacion_manual ?? null,
+        reporte: modalidad === 'AUTOMATICA'
+            ? leerReporte(caso.justificacion_ia)
+            : null,
         estado_checklist: clasificacion.estado_checklist,
-        motivo: describirMotivo(caso, clasificacion),
-        documentos_faltantes: obtenerDocumentosFaltantes(caso)
+        motivo: describirMotivo(
+            { ...caso, modalidad },
+            clasificacion
+        ),
+        documentos_faltantes: obtenerDocumentosFaltantes(caso),
+        // HU-5: estado de la revisión del MINED y de la confirmación de la universidad (CA4).
+        estado_caso: caso.estado ?? null,
+        confirmada_universidad: caso.confirmada_universidad === true,
+        fecha_confirmacion: caso.fecha_confirmacion ?? null,
+        id_usuario_confirmacion: caso.id_usuario_confirmacion ?? null
     };
 }
 
