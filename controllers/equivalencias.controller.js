@@ -26,22 +26,30 @@ async function listarEquivalencias(req, res) {
                 id_universidad
             ),
             casos:caso_equivalencia!caso_equivalencia_id_materia_origen_fkey (
-                id_caso,
-                estado,
-                estado_calculo,
-                porcentaje_coincidencia,
-                fecha_registro,
-                motivo_error_calculo,
-                materia_destino:materia!caso_equivalencia_id_materia_destino_fkey (
+            id_caso,
+            id_solicitud,
+            estado,
+            estado_calculo,
+            porcentaje_coincidencia,
+            porcentaje_propuesto,
+            justificacion_manual,
+            fecha_registro,
+            motivo_error_calculo,
+            solicitud:solicitud_equivalencia!fk_caso_solicitud_equivalencia (
+                nombre_estudiante,
+                codigo_institucional,
+                modalidad
+            ),
+            materia_destino:materia!caso_equivalencia_id_materia_destino_fkey (
+                nombre,
+                carrera (
                     nombre,
-                    carrera (
-                        nombre,
-                        universidad (
-                            nombre
-                        )
+                    universidad (
+                        nombre
                     )
                 )
             )
+        )
         `)
         .eq('carrera.id_universidad', idUniversidad);
 
@@ -54,17 +62,23 @@ async function listarEquivalencias(req, res) {
 
     const casos = (materias || [])
         .flatMap((materia) => (materia.casos || []).map((caso) => {
-            const tienePorcentaje =
-                caso.estado_calculo === 'CALCULADO' &&
-                caso.porcentaje_coincidencia !== null &&
-                caso.porcentaje_coincidencia !== undefined;
+            const modalidad = caso.solicitud?.modalidad ?? 'AUTOMATICA';
+            const esManual = modalidad === 'MANUAL';
 
-            const valorPorcentaje = tienePorcentaje
-                ? Number(caso.porcentaje_coincidencia)
-                : null;
+            const valorOriginal = esManual
+                ? caso.porcentaje_propuesto
+                : caso.porcentaje_coincidencia;
+
+            const valorPorcentaje =
+                valorOriginal === null ||
+                    valorOriginal === undefined ||
+                    valorOriginal === ''
+                    ? null
+                    : Number(valorOriginal);
 
             const porcentajeValido =
                 valorPorcentaje !== null &&
+                (esManual || caso.estado_calculo === 'CALCULADO') &&
                 Number.isFinite(valorPorcentaje) &&
                 valorPorcentaje >= 0 &&
                 valorPorcentaje <= 100;
@@ -77,13 +91,18 @@ async function listarEquivalencias(req, res) {
                 carrera_destino: caso.materia_destino?.carrera?.nombre ?? null,
                 universidad_destino:
                     caso.materia_destino?.carrera?.universidad?.nombre ?? null,
-                porcentaje_coincidencia: porcentajeValido
-                    ? valorPorcentaje
-                    : null,
                 estado_calculo: caso.estado_calculo,
                 estado: caso.estado,
                 fecha_registro: caso.fecha_registro,
-                motivo_error_calculo: caso.motivo_error_calculo ?? null
+                motivo_error_calculo: caso.motivo_error_calculo ?? null,
+                modalidad,
+                nombre_estudiante: caso.solicitud?.nombre_estudiante ?? null,
+                codigo_institucional: caso.solicitud?.codigo_institucional ?? null,
+                porcentaje_coincidencia:
+                    !esManual && porcentajeValido ? valorPorcentaje : null,
+                porcentaje_propuesto:
+                    esManual && porcentajeValido ? valorPorcentaje : null,
+                justificacion_manual: caso.justificacion_manual ?? null,
             };
         }))
         .sort((a, b) =>

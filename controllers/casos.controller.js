@@ -133,6 +133,16 @@ async function obtenerCaso(req, res) {
                 nombre,
                 programa_url,
                 carrera ( nombre, pensum_url, universidad ( nombre ) )
+            ),
+            id_solicitud,
+            porcentaje_propuesto,
+            justificacion_manual,
+            justificacion_ia,
+            estado_calculo,
+            solicitud:solicitud_equivalencia!fk_caso_solicitud_equivalencia (
+                nombre_estudiante,
+                codigo_institucional,
+                modalidad
             )
         `,
     )
@@ -160,9 +170,20 @@ async function obtenerCaso(req, res) {
         caso.porcentaje_coincidencia ?? TEXTO_SIN_PORCENTAJE,
       origen: describirLado(caso.materia_origen),
       destino: describirLado(caso.materia_destino),
+      modalidad: caso.solicitud?.modalidad ?? 'AUTOMATICA',
+      estudiante: caso.solicitud
+        ? {
+          nombre: caso.solicitud.nombre_estudiante,
+          codigo_institucional: caso.solicitud.codigo_institucional
+        }
+        : null,
+      porcentaje_propuesto: caso.porcentaje_propuesto,
+      justificacion_manual: caso.justificacion_manual,
+      justificacion_ia: caso.justificacion_ia,
+      estado_calculo: caso.estado_calculo,
     },
     enlaces,
-    documentos_faltantes,
+    documentos_faltantes
   });
 }
 
