@@ -1,5 +1,5 @@
 const supabase = require('../supabaseClient');
-const { randomUUID } = require('node:crypto');
+const gestionarDocumentos = require('../servicios/gestionar-documentos');
 
 const EXTENSIONES_POR_MIME = {
     'application/pdf': 'pdf',
@@ -120,8 +120,6 @@ async function subirArchivo(req, res) {
 
     let idRegistro;
     let idCarreraArchivo;
-    let tabla;
-    let columna;
 
     if (tipo === 'pensum') {
         if (!id_carrera) {
@@ -155,8 +153,6 @@ async function subirArchivo(req, res) {
 
         idRegistro = carrera.id_carrera;
         idCarreraArchivo = carrera.id_carrera;
-        tabla = 'carrera';
-        columna = 'pensum_url';
     } else {
         if (!id_materia) {
             return res.status(400).json({
@@ -189,8 +185,6 @@ async function subirArchivo(req, res) {
 
         idRegistro = materia.id_materia;
         idCarreraArchivo = materia.carrera.id_carrera;
-        tabla = 'materia';
-        columna = 'programa_url';
     }
 
     const extension = EXTENSIONES_POR_MIME[req.file.mimetype];
@@ -201,31 +195,16 @@ async function subirArchivo(req, res) {
         });
     }
 
-    const nombreArchivo = `${randomUUID()}.${extension}`;
+    const { path, error: errorGuardado } = await gestionarDocumentos.guardarDocumento({
+        tipo,
+        idRegistro,
+        idCarrera: idCarreraArchivo,
+        extension,
+        archivo: req.file
+    });
 
-    const path = tipo === 'pensum'
-        ? `${idCarreraArchivo}/pensum/${nombreArchivo}`
-        : `${idCarreraArchivo}/materias/${idRegistro}/${nombreArchivo}`;
-
-    const { error: errorSubida } = await supabase.storage
-        .from('documentos-carreras')
-        .upload(path, req.file.buffer, {
-            contentType: req.file.mimetype
-        });
-
-    if (errorSubida) {
-        return res.status(500).json({ error: errorSubida.message });
-    }
-
-    const idColumna = tipo === 'pensum' ? 'id_carrera' : 'id_materia';
-
-    const { error: errorUpdate } = await supabase
-        .from(tabla)
-        .update({ [columna]: path })
-        .eq(idColumna, idRegistro);
-
-    if (errorUpdate) {
-        return res.status(500).json({ error: errorUpdate.message });
+    if (errorGuardado) {
+        return res.status(500).json({ error: errorGuardado.message });
     }
 
     const respuesta = {
