@@ -300,6 +300,25 @@ async function registrarSolicitudEquivalencia(req, res) {
 
         origenesUsados.add(origen);
 
+        const notaObtenida = equivalencia?.nota_obtenida;
+        const notaMaxima = equivalencia?.nota_maxima;
+
+        if (
+            typeof notaObtenida !== 'number' ||
+            !Number.isFinite(notaObtenida) ||
+            typeof notaMaxima !== 'number' ||
+            !Number.isFinite(notaMaxima) ||
+            notaObtenida < 0 ||
+            notaMaxima <= 0 ||
+            notaObtenida > notaMaxima
+        ) {
+            return responderErrorSolicitud(
+                res,
+                400,
+                `Ingresa una nota válida, dentro de su escala, en la fila ${fila}.`
+            );
+        }
+
         if (modalidad === 'MANUAL') {
             const porcentaje = equivalencia.porcentaje_propuesto;
             const justificacion = equivalencia.justificacion_manual;
@@ -342,6 +361,8 @@ async function registrarSolicitudEquivalencia(req, res) {
                 p_equivalencias: equivalencias.map((equivalencia) => ({
                     id_materia_origen: equivalencia.id_materia_origen,
                     id_materia_destino: equivalencia.id_materia_destino,
+                    nota_obtenida: equivalencia.nota_obtenida,
+                    nota_maxima: equivalencia.nota_maxima,
                     porcentaje_propuesto:
                         modalidad === 'MANUAL'
                             ? equivalencia.porcentaje_propuesto
