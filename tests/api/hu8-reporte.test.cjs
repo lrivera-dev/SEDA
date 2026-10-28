@@ -13,7 +13,8 @@ test('HU8-01 CA1: reporte completo, cuatro enlaces de 3600 segundos y solo lectu
     assert.deepEqual(r.body.caso, { id_caso: ID, descripcion: 'Equivalencia ficticia', estado: 'PENDIENTE',
         fecha_registro: '2026-01-01T00:00:00Z', porcentaje_coincidencia: 'Pendiente de cálculo',
         origen: { materia: 'Materia A', carrera: 'Carrera A', universidad: 'Universidad A' },
-        destino: { materia: 'Materia B', carrera: 'Carrera B', universidad: 'Universidad B' } });
+        destino: { materia: 'Materia B', carrera: 'Carrera B', universidad: 'Universidad B' },
+        modalidad: 'AUTOMATICA', estudiante: null, justificacion_ia: null });
     assert.deepEqual(r.body.documentos_faltantes, []);
     assert.deepEqual(Object.keys(r.body.enlaces), claves);
     for (const k of claves) assert.equal(r.body.enlaces[k], `https://documentos.invalid/${k}?firma=ficticia`);

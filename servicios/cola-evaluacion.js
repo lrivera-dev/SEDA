@@ -34,6 +34,8 @@ const CAMPOS_CASO = `
     id_caso,
     estado,
     estado_calculo,
+    nota_obtenida,
+    nota_maxima,
     materia_origen:materia!caso_equivalencia_id_materia_origen_fkey (
         programa_url,
         carrera ( pensum_url )
@@ -173,11 +175,22 @@ async function evaluarCaso(idCaso) {
     try {
         const documentos = await preparadorDocumentos.prepararDocumentos(caso);
 
-        const resultado = await iaCoincidencia.calcularCoincidencia(documentos);
+        const resultado = await iaCoincidencia.calcularCoincidencia(documentos, {
+            notaObtenida: caso.nota_obtenida,
+            notaMaxima: caso.nota_maxima
+        });
 
         await guardarResultado(idCaso, resultado);
     } catch (error) {
-        console.error(`Falló la evaluación del caso ${idCaso}:`, error.code || '', error.message);
+        const documento = error.documento
+            ? ` (${error.documento})`
+            : '';
+
+        console.error(
+            `Falló la evaluación del caso ${idCaso}:`,
+            `${error.code || ''}${documento}`,
+            error.message
+        );
         await guardarError(idCaso, describirError(error));
     }
 }

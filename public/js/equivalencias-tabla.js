@@ -68,6 +68,43 @@ async function solicitarEquivalencias() {
     mostrarTabla();
 }
 
+function crearCeldaEstudiante(caso) {
+    const celda = document.createElement("td");
+
+    celda.appendChild(
+        crearElemento(
+            "span",
+            "equivalencia-principal",
+            caso.nombre_estudiante || "Registro anterior"
+        )
+    );
+
+    celda.appendChild(
+        crearElemento(
+            "span",
+            "equivalencia-secundaria",
+            caso.codigo_institucional
+                ? `Código: ${caso.codigo_institucional}`
+                : "Código no disponible"
+        )
+    );
+
+    return celda;
+}
+
+function crearCeldaModalidad(modalidad) {
+    const celda = document.createElement("td");
+    const etiqueta = modalidad === "MANUAL"
+        ? "Manual"
+        : "Automática con IA";
+
+    celda.appendChild(
+        crearElemento("span", "coincidencia-estado", etiqueta)
+    );
+
+    return celda;
+}
+
 function crearCeldaMateria(nombre, carrera, universidad = null) {
     const celda = document.createElement("td");
 
@@ -94,46 +131,57 @@ function crearCeldaMateria(nombre, carrera, universidad = null) {
 
 function crearCeldaCoincidencia(caso) {
     const celda = document.createElement("td");
+    const esManual = caso.modalidad === "MANUAL";
+    const porcentaje = esManual
+        ? caso.porcentaje_propuesto
+        : caso.porcentaje_coincidencia;
 
-    if (
-        caso.estado_calculo === "CALCULADO" &&
-        typeof caso.porcentaje_coincidencia === "number"
-    ) {
+    if (typeof porcentaje === "number") {
+        celda.appendChild(
+            crearElemento("span", "coincidencia-valor", `${porcentaje}%`)
+        );
+
         celda.appendChild(
             crearElemento(
                 "span",
-                "coincidencia-valor",
-                `${caso.porcentaje_coincidencia}%`
+                "coincidencia-estado",
+                esManual ? "Propuesta de la universidad" : "Calculado por IA"
             )
         );
 
-        const barra = document.createElement("progress");
-        barra.className = "coincidencia-barra";
-        barra.max = 100;
-        barra.value = caso.porcentaje_coincidencia;
-        barra.setAttribute(
-            "aria-label",
-            `Coincidencia de IA: ${caso.porcentaje_coincidencia}%`
-        );
-        celda.appendChild(barra);
-    } else {
-        celda.appendChild(
-            crearElemento(
-                "span",
-                "coincidencia-valor",
-                ETIQUETAS_CALCULO[caso.estado_calculo] || "Sin calcular"
-            )
-        );
-
-        if (caso.estado_calculo === "ERROR" && caso.motivo_error_calculo) {
-            celda.appendChild(
-                crearElemento(
-                    "span",
-                    "coincidencia-estado",
-                    caso.motivo_error_calculo
-                )
+        if (!esManual) {
+            const barra = document.createElement("progress");
+            barra.className = "coincidencia-barra";
+            barra.max = 100;
+            barra.value = porcentaje;
+            barra.setAttribute(
+                "aria-label",
+                `Coincidencia calculada por IA: ${porcentaje}%`
             );
+            celda.appendChild(barra);
         }
+
+        return celda;
+    }
+
+    celda.appendChild(
+        crearElemento(
+            "span",
+            "coincidencia-valor",
+            esManual
+                ? "Sin porcentaje propuesto"
+                : ETIQUETAS_CALCULO[caso.estado_calculo] || "Sin calcular"
+        )
+    );
+
+    if (!esManual && caso.estado_calculo === "ERROR" && caso.motivo_error_calculo) {
+        celda.appendChild(
+            crearElemento(
+                "span",
+                "coincidencia-estado",
+                caso.motivo_error_calculo
+            )
+        );
     }
 
     return celda;
@@ -182,7 +230,7 @@ function mostrarTabla() {
                 ? "Aún no tienes equivalencias registradas."
                 : "No hay equivalencias con ese dictamen."
         );
-        celda.colSpan = 5;
+        celda.colSpan = 7;
         fila.appendChild(celda);
         tabla.appendChild(fila);
 
@@ -197,6 +245,7 @@ function mostrarTabla() {
         fila.dataset.estado = caso.estado || "";
 
         fila.append(
+            crearCeldaEstudiante(caso),
             crearCeldaMateria(
                 caso.materia_origen,
                 caso.carrera_origen
@@ -206,6 +255,7 @@ function mostrarTabla() {
                 caso.carrera_destino,
                 caso.universidad_destino
             ),
+            crearCeldaModalidad(caso.modalidad),
             crearCeldaCoincidencia(caso),
             crearCeldaDictamen(caso.estado),
             crearCeldaAccion(caso)
