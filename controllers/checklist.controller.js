@@ -57,6 +57,10 @@ const CAMPOS_MATERIA_ORIGEN = `
         justificacion_ia,
         motivo_error_calculo,
         fecha_registro,
+        estado,
+        confirmada_universidad,
+        fecha_confirmacion,
+        id_usuario_confirmacion,
         materia_destino:materia!caso_equivalencia_id_materia_destino_fkey (
             nombre,
             programa_url,
@@ -179,7 +183,12 @@ function armarCaso(caso) {
             { ...caso, modalidad },
             clasificacion
         ),
-        documentos_faltantes: obtenerDocumentosFaltantes(caso)
+        documentos_faltantes: obtenerDocumentosFaltantes(caso),
+        // HU-5: estado de la revisión del MINED y de la confirmación de la universidad (CA4).
+        estado_caso: caso.estado ?? null,
+        confirmada_universidad: caso.confirmada_universidad === true,
+        fecha_confirmacion: caso.fecha_confirmacion ?? null,
+        id_usuario_confirmacion: caso.id_usuario_confirmacion ?? null
     };
 }
 
