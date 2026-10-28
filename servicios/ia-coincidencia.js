@@ -181,7 +181,14 @@ function validarRespuesta(texto) {
   return reporte;
 }
 
-async function calcularCoincidencia(documentos, { cliente: clienteSimulado } = {}) {
+async function calcularCoincidencia(
+  documentos,
+  {
+    cliente: clienteSimulado,
+    notaObtenida = null,
+    notaMaxima = null
+  } = {}
+) {
   validarDocumentos(documentos);
 
   const apiKey = process.env.IA_API_KEY;
@@ -228,10 +235,20 @@ async function calcularCoincidencia(documentos, { cliente: clienteSimulado } = {
     'El resultado es una ayuda para el MINED. No declares que la equivalencia está aprobada o rechazada.',
     'Devuelve únicamente un objeto JSON con todas las claves requeridas por el esquema.',
     'Si algún documento es ilegible y no permite una evaluación confiable, devuelve evaluacion_posible false, porcentaje null e identifica el documento_ilegible.',
-    'Si los documentos permiten una comparación válida, devuelve evaluacion_posible true, documento_ilegible NINGUNO y un porcentaje numérico entre 0 y 100.'
+    'Si los documentos permiten una comparación válida, devuelve evaluacion_posible true, documento_ilegible NINGUNO y un porcentaje numérico entre 0 y 100.',
+    'La nota obtenida es contexto individual del estudiante: no la uses para modificar el porcentaje, que mide únicamente la similitud curricular de las materias. Incluye la nota como contexto para MINED en la conclusión, sin recomendar aprobación ni rechazo.'
   ].join(' ');
 
+  const contextoNota =
+    notaObtenida == null || notaMaxima == null
+      ? 'No registrada.'
+      : `${notaObtenida} de ${notaMaxima}`;
+
   const contenido = [
+    [
+      'NOTA OBTENIDA POR EL ESTUDIANTE (contexto individual; no usar para calcular el porcentaje):',
+      contextoNota
+    ],
     ['PROGRAMA DE LA MATERIA DE ORIGEN:', documentos.programa_origen],
     ['PROGRAMA DE LA MATERIA DE DESTINO:', documentos.programa_destino],
     ['PENSUM DE LA CARRERA DE ORIGEN (solo contexto):', documentos.pensum_origen],

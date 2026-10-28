@@ -122,6 +122,8 @@ async function obtenerCaso(req, res) {
             id_caso,
             descripcion,
             estado,
+            nota_obtenida,
+            nota_maxima,
             porcentaje_coincidencia,
             fecha_registro,
             materia_origen:materia!caso_equivalencia_id_materia_origen_fkey (
@@ -165,6 +167,8 @@ async function obtenerCaso(req, res) {
       id_caso: caso.id_caso,
       descripcion: caso.descripcion,
       estado: caso.estado,
+      nota_obtenida: caso.nota_obtenida,
+      nota_maxima: caso.nota_maxima,
       fecha_registro: caso.fecha_registro,
       porcentaje_coincidencia:
         caso.porcentaje_coincidencia ?? TEXTO_SIN_PORCENTAJE,

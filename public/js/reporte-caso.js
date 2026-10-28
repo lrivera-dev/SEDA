@@ -83,6 +83,8 @@ function mostrarReporte(datos) {
 function mostrarDatosSolicitud(caso) {
     const estudiante = caso.estudiante;
     const seccion = obtenerElemento('solicitud-estudiante');
+    const notaObtenida = caso.nota_obtenida;
+    const notaMaxima = caso.nota_maxima;
 
     seccion.hidden = !estudiante;
 
@@ -92,6 +94,13 @@ function mostrarDatosSolicitud(caso) {
         estudiante.nombre || TEXTO_SIN_INFORMACION;
     obtenerElemento('estudiante-codigo').textContent =
         estudiante.codigo_institucional || TEXTO_SIN_INFORMACION;
+    obtenerElemento('estudiante-nota').textContent =
+        notaObtenida !== null &&
+            notaObtenida !== undefined &&
+            notaMaxima !== null &&
+            notaMaxima !== undefined
+            ? `${notaObtenida} de ${notaMaxima}`
+            : TEXTO_SIN_INFORMACION;
     obtenerElemento('solicitud-modalidad').textContent =
         caso.modalidad === 'MANUAL'
             ? 'Manual'
