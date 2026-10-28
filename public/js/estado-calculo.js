@@ -28,7 +28,8 @@
     SIN_CALCULAR: "Sin calcular",
     EN_CALCULO: "En evaluación",
     CALCULADO: "Calculado",
-    ERROR: "Error"
+    ERROR: "Error",
+    NO_APLICA: "Propuesta manual"
   };
 
   function crearElemento(etiqueta, clase, texto) {
@@ -69,14 +70,55 @@
     contenedor.replaceChildren();
 
     const estado = caso.estado_calculo || "SIN_CALCULAR";
+    const esManual = caso.modalidad === "MANUAL";
 
     const etiqueta = crearElemento(
       "span",
-      `hu3-estado hu3-estado--${estado.toLowerCase()}`,
-      ESTADOS[estado] || "Estado desconocido"
+      `hu3-estado hu3-estado--${esManual ? "manual" : estado.toLowerCase()}`,
+      esManual ? "Propuesta manual" : ESTADOS[estado] || "Estado desconocido"
     );
 
     contenedor.appendChild(etiqueta);
+
+    if (esManual) {
+      const valorPropuesto = caso.porcentaje_propuesto;
+      const porcentaje =
+        valorPropuesto === null ||
+          valorPropuesto === undefined ||
+          valorPropuesto === ""
+          ? NaN
+          : Number(valorPropuesto);
+
+      if (
+        Number.isFinite(porcentaje) &&
+        porcentaje >= 0 &&
+        porcentaje <= 100
+      ) {
+        contenedor.appendChild(
+          crearElemento(
+            "strong",
+            "hu3-porcentaje",
+            `${porcentaje}% propuesto por la universidad`
+          )
+        );
+      }
+
+      const justificacion = crearElemento("details", "hu3-seccion");
+      const encabezado = crearElemento(
+        "summary",
+        "",
+        "Justificación de la universidad"
+      );
+      const contenido = crearElemento(
+        "p",
+        "hu3-texto-ia",
+        caso.justificacion_manual || "No se registró una justificación."
+      );
+
+      justificacion.append(encabezado, contenido);
+      contenedor.appendChild(justificacion);
+      return;
+    }
 
     if (estado === "EN_CALCULO") {
       const mensaje = crearElemento(
