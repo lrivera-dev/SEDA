@@ -400,7 +400,9 @@ async function registrarSolicitudEquivalencia(req, res) {
                 MATERIAS_IGUALES:
                     'Las materias de origen y destino no pueden ser la misma.',
                 SIN_EQUIVALENCIAS:
-                    'Agrega al menos una equivalencia.'
+                    'Agrega al menos una equivalencia.',
+                NOTA_ESTUDIANTE_INVALIDA:
+                    'Revisa la nota obtenida y la nota máxima de cada materia.'
             };
 
             const clave = Object.keys(erroresSolicitud).find((item) =>
