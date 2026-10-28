@@ -1,0 +1,35 @@
+# ADR 0005: Borrar el archivo subido cuando falla su registro
+
+## Contexto
+
+Cuando una universidad sube un pensum o un programa, el sistema hace dos cosas seguidas: guarda el archivo en Supabase Storage y anota dónde quedó en la base de datos.
+
+El problema es que son dos servicios separados y no se pueden deshacer juntos. Si el archivo se guarda pero falla el paso de anotarlo en la base de datos, el archivo queda en Storage sin que nada lo use. Si esto pasa muchas veces, se acumulan archivos que nadie puede ver ni usar, y Storage y la base de datos dejan de coincidir.
+
+La HU-11 pide que el sistema se recupere bien de estos errores, pero solo en las cargas de documentos, porque es el último sprint. Crear un sistema que garantice que todo se guarde o todo se deshaga entre varios servicios, o un proceso que reintente la limpieza todo el tiempo, quedó fuera del alcance.
+
+## Decisión
+
+Hicimos un solo servicio, `servicios/gestionar-documentos.js`, que se encarga de las cargas. Funciona así:
+
+- Primero guarda el archivo y después anota su ubicación en la base de datos.
+- Si falla el guardado del archivo, no se anota nada.
+- Si el archivo se guarda pero falla el anotarlo, el sistema intenta borrar ese archivo.
+- Si tampoco se puede borrar, el sistema deja un aviso en el registro del servidor (el log) con la ubicación del archivo, el tipo de documento, a qué carrera o materia pertenece, qué falló y cuándo. Con eso, una persona puede borrarlo a mano.
+- El intento de borrado nunca oculta el error original. La persona que subió el archivo recibe el mismo error de siempre, y nunca se le muestra la ubicación interna del archivo.
+
+Cuando se reemplaza un documento, el archivo anterior se mantiene hasta que el nuevo quede bien anotado. Por ahora, después de eso tampoco se borra el anterior.
+
+No hicimos un sistema que deshaga todo entre varios servicios, ni un proceso que reintente la limpieza solo, porque es mucho trabajo para lo que necesitamos ahora.
+
+## Consecuencias
+
+- Si falla el registro de una carga, el archivo se borra y no queda basura en Storage.
+- Si el borrado también falla, hay que limpiar a mano. Esto depende del log del servidor: si el log no se guarda, el aviso se pierde.
+- Cuando se reemplaza un documento, el archivo viejo se queda en Storage sin que nada lo use. Para borrarlo habría que saber cuál era, y revisar que ningún cálculo en curso lo esté usando todavía.
+- Este ADR solo habla de la carga de documentos. El caso de la cuenta de universidad que se crea y luego falla el registro se trata aparte.
+- Volveremos a revisar esta decisión si se suben muchos más documentos o si los fallos de limpieza se vuelven frecuentes.
+
+## Estado
+
+Aceptada
