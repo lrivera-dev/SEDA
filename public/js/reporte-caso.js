@@ -60,11 +60,18 @@ function mostrarReporte(datos) {
     obtenerElemento('caso-id').textContent = idCaso;
     obtenerElemento('caso-fecha').textContent = formatearFecha(fechaRegistro);
     obtenerElemento('caso-descripcion').textContent = descripcion ?? TEXTO_SIN_INFORMACION;
+    const seccionDescripcion = obtenerElemento('descripcion-legada');
+    seccionDescripcion.hidden = !descripcion;
+    obtenerElemento('caso-descripcion').textContent =
+        descripcion || TEXTO_SIN_INFORMACION;
+
+    mostrarDatosSolicitud(caso);
+    mostrarAnalisis(caso);
 
     llenarEstado(estado);
     llenarMateria('origen', origen);
     llenarMateria('destino', destino);
-    llenarPorcentaje(porcentajeCoincidencia);
+    llenarPorcentaje(caso);
     llenarDocumentos(enlaces ?? {});
     llenarAvisoFaltantes(Array.isArray(documentosFaltantes) ? documentosFaltantes : []);
     prepararRevision(estado, idCaso);
@@ -73,6 +80,59 @@ function mostrarReporte(datos) {
     obtenerElemento('reporte-contenido').hidden = false;
 }
 
+function mostrarDatosSolicitud(caso) {
+    const estudiante = caso.estudiante;
+    const seccion = obtenerElemento('solicitud-estudiante');
+
+    seccion.hidden = !estudiante;
+
+    if (!estudiante) return;
+
+    obtenerElemento('estudiante-nombre').textContent =
+        estudiante.nombre || TEXTO_SIN_INFORMACION;
+    obtenerElemento('estudiante-codigo').textContent =
+        estudiante.codigo_institucional || TEXTO_SIN_INFORMACION;
+    obtenerElemento('solicitud-modalidad').textContent =
+        caso.modalidad === 'MANUAL'
+            ? 'Manual'
+            : 'Automática con IA';
+}
+
+function mostrarAnalisis(caso) {
+    const esManual = caso.modalidad === 'MANUAL';
+    const seccionManual = obtenerElemento('analisis-manual');
+    const seccionIA = obtenerElemento('analisis-ia');
+
+    seccionManual.hidden = !esManual;
+    seccionIA.hidden = esManual;
+
+    if (esManual) {
+        obtenerElemento('justificacion-manual').textContent =
+            caso.justificacion_manual || TEXTO_SIN_INFORMACION;
+        return;
+    }
+
+    const analisis = caso.justificacion_ia;
+    const hayAnalisis = analisis && typeof analisis === 'object';
+
+    obtenerElemento('ia-pendiente').hidden = Boolean(hayAnalisis);
+    obtenerElemento('ia-detalle').hidden = !hayAnalisis;
+
+    if (!hayAnalisis) return;
+
+    const campos = {
+        'ia-resumen': analisis.resumen,
+        'ia-contenidos': analisis.contenidos_coincidentes,
+        'ia-metodologia': analisis.metodologia,
+        'ia-diferencias': analisis.diferencias,
+        'ia-contexto-pensum': analisis.contexto_pensum,
+        'ia-conclusion': analisis.conclusion
+    };
+
+    Object.entries(campos).forEach(([id, texto]) => {
+        obtenerElemento(id).textContent = texto || TEXTO_SIN_INFORMACION;
+    });
+}
 
 /* RELLENO DE DATOS */
 
@@ -112,10 +172,19 @@ function obtenerPorcentajeNumerico(valor) {
     return null;
 }
 
-function llenarPorcentaje(porcentajeCoincidencia) {
-    const porcentaje = obtenerPorcentajeNumerico(porcentajeCoincidencia);
+function llenarPorcentaje(caso) {
+    const esManual = caso.modalidad === 'MANUAL';
+    const valor = esManual
+        ? caso.porcentaje_propuesto
+        : caso.porcentaje_coincidencia;
+    const porcentaje = obtenerPorcentajeNumerico(valor);
     const elementoTexto = obtenerElemento('caso-porcentaje');
     const elementoBarra = obtenerElemento('caso-porcentaje-barra');
+
+    obtenerElemento('caso-porcentaje-etiqueta').textContent =
+        esManual
+            ? 'Porcentaje propuesto por la universidad'
+            : 'Coincidencia calculada por IA';
 
     if (porcentaje === null) {
         elementoTexto.textContent = TEXTO_SIN_PORCENTAJE;
@@ -124,7 +193,8 @@ function llenarPorcentaje(porcentajeCoincidencia) {
     }
 
     elementoTexto.textContent = `${porcentaje}%`;
-    elementoBarra.style.width = `${Math.min(Math.max(porcentaje, 0), 100)}%`;
+    elementoBarra.style.width =
+        `${Math.min(Math.max(porcentaje, 0), 100)}%`;
 }
 
 // Solo se aceptan enlaces http(s); cualquier otra cosa se trata como documento no disponible.
