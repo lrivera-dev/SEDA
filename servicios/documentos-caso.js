@@ -113,6 +113,7 @@ async function descargarDocumentosCaso(caso) {
 }
 
 module.exports = {
+    BUCKET_DOCUMENTOS,
     generarEnlacesDocumentos,
     descargarDocumentosCaso
 };
