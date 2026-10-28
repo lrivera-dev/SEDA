@@ -222,7 +222,8 @@ describe('Respuestas de Gemini mediante cliente simulado', () => {
             assert.equal(solicitud.model, 'modelo-de-prueba-sin-acceso');
             assert.equal(solicitud.config.responseMimeType, 'application/json');
             assert.equal(solicitud.config.responseJsonSchema.required.length, 9);
-            assert.equal(solicitud.contents.length, 4);
+            // La solicitud incluye la nota individual y los cuatro documentos.
+            assert.equal(solicitud.contents.length, 5);
         });
         const resultado = await ejecutarIA(simulado.cliente);
         assert.equal(resultado.porcentaje, 80);
