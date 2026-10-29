@@ -46,6 +46,7 @@ const cliente = {
     },
     storage: { from: bucket => ({
         upload: (...datos) => resolver('upload', { bucket, datos }),
+        remove: (...datos) => resolver('remove', { bucket, datos }),
         createSignedUrl: (...datos) => resolver('createSignedUrl', { bucket, datos })
     }) }
 };
