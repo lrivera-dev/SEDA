@@ -425,6 +425,58 @@ describe("HU-12: seguridad y aislamiento universitario", { concurrency: false },
             assert.equal(e.llamadas.length, 2);
         });
     }
+    
+    test("HU12-07: rechaza usuario sin universidad asociada", async () => {
+        e.preparar([
+            {
+                operacion: "getUser",
+                resultado: {
+                    data: { user: { id: "usuario-qa" } },
+                    error: null
+                }
+            },
+            {
+                operacion: "consulta",
+                verificar: args => {
+                    assert.equal(args.tabla, "usuario");
+                },
+                resultado: {
+                    data: {
+                        id_usuario: "usuario-qa",
+                        correo: "qa@example.test",
+                        rol: "UNIVERSIDAD",
+                        estado: "ACTIVO"
+                    },
+                    error: null
+                }
+            },
+            {
+                operacion: "consulta",
+                verificar: args => {
+                    assert.equal(args.tabla, "universidad");
+                    assert.deepEqual(args.eq, [
+                        ["id_usuario", "usuario-qa"]
+                    ]);
+                },
+                resultado: {
+                    data: null,
+                    error: null
+                }
+            }
+        ]);
+
+        const respuesta = await request(app)
+            .get(`/archivos/pensum/${ID_CARRERA_UCA}/enlace`)
+            .set("Authorization", `Bearer ${TOKEN}`);
+
+        assert.equal(respuesta.status, 401);
+        assert.deepEqual(respuesta.body, {
+            error: "No autorizado."
+        });
+
+        // No debe consultar carreras ni generar enlaces.
+        assert.equal(e.llamadas.length, 3);
+    });
 
     // ============================================================
     // HU12-08: Documento inexistente
