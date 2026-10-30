@@ -393,11 +393,9 @@ test('archivos: una excepción al subir a Storage responde con error controlado 
     }
 });
 
-// Hallazgo para reportar (RN7): el controlador devuelve errorGuardado.message al cliente, por lo que
-// el mensaje interno de PostgreSQL llega a la respuesta. Se marca como pendiente (todo) para dejar
-// la evidencia sin bloquear el CI; quitar la marca cuando el equipo corrija el controlador.
+// HU-11 RN7: verificar que los errores internos de PostgreSQL
+// no se expongan al cliente durante la carga de documentos.
 test('archivos: el mensaje interno de PostgreSQL no debería llegar al cliente (RN7)',
-    { todo: 'Hallazgo HU-11 RN7: archivos.controller devuelve errorGuardado.message al cliente' },
     async () => {
         const subida = {};
         const errores = capturarErrores();
