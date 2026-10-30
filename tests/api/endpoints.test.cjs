@@ -515,5 +515,12 @@ test('archivos: error de almacenamiento devuelve 500', async () => {
         { operacion: 'upload', resultado: { error: { message: 'Error de almacenamiento simulado' } } }
     ).field('tipo', 'pensum').field('id_carrera', '10')
         .attach('archivo', d.pdf, { filename: 'qa.pdf', contentType: d.MIME_PDF }).expect(500);
-    assert.deepEqual(res.body, { error: 'Error de almacenamiento simulado' });
+    assert.deepEqual(res.body, {
+        error: 'No se pudo guardar el documento.'
+    });
+    // RN7: no exponer detalles internos de Storage al cliente.
+    assert.doesNotMatch(
+        JSON.stringify(res.body),
+        /Error de almacenamiento simulado/
+    );
 });

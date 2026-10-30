@@ -135,7 +135,13 @@ async function subirArchivo(req, res) {
             .maybeSingle();
 
         if (error) {
-            return res.status(500).json({ error: error.message });
+            console.error("HU11_ERROR_CONSULTA_CARRERA", {
+                codigo: error?.code || "ERROR_DESCONOCIDO"
+            });
+
+            return res.status(500).json({
+                error: "No se pudo consultar la carrera."
+            });
         }
 
         if (!carrera) {
@@ -167,7 +173,13 @@ async function subirArchivo(req, res) {
             .maybeSingle();
 
         if (error) {
-            return res.status(500).json({ error: error.message });
+            console.error("HU11_ERROR_CONSULTA_MATERIA", {
+                codigo: error?.code || "ERROR_DESCONOCIDO"
+            });
+
+            return res.status(500).json({
+                error: "No se pudo consultar la materia."
+            });
         }
 
         if (!materia || !materia.carrera) {
@@ -202,9 +214,14 @@ async function subirArchivo(req, res) {
         extension,
         archivo: req.file
     });
-
     if (errorGuardado) {
-        return res.status(500).json({ error: errorGuardado.message });
+        console.error("HU11_ERROR_GUARDADO_DOCUMENTO", {
+            codigo: errorGuardado?.code || "ERROR_DESCONOCIDO"
+        });
+
+        return res.status(500).json({
+            error: "No se pudo guardar el documento."
+        });
     }
 
     const respuesta = {
