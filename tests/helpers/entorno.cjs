@@ -34,12 +34,19 @@ const cliente = {
         return resolver('rpc', { nombre, parametros });
     },
     auth: {
-        admin: { createUser: datos => resolver('auth', datos) },
+        admin: {
+            createUser: datos => resolver('auth', datos),
+
+            // HU-11 CA4: simular la eliminación compensatoria
+            // de una cuenta recién creada en Supabase Auth.
+            deleteUser: idUsuario => resolver('deleteUser', { idUsuario })
+        },
         signInWithPassword: datos => resolver('signInWithPassword', datos),
         getUser: token => resolver('getUser', { token })
     },
     storage: { from: bucket => ({
         upload: (...datos) => resolver('upload', { bucket, datos }),
+        remove: (...datos) => resolver('remove', { bucket, datos }),
         createSignedUrl: (...datos) => resolver('createSignedUrl', { bucket, datos })
     }) }
 };
