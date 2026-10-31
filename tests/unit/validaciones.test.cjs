@@ -34,9 +34,24 @@ for (const valor of [123, true, {}, []]) {
 }
 test('universidad: datos válidos crean usuario y universidad', async () => {
     const registro = { id_universidad: 10, nombre: d.universidad.nombre };
-    entorno.preparar([d.consulta(), { operacion: 'auth', resultado: { data: { user: { id: 'qa-usuario' } }, error: null }, verificar: datos => assert.equal(datos.email, d.universidad.correo) },
-        d.consulta(null, null, args => { assert.equal(args.tabla, 'usuario'); assert.equal(args.insert[0][0].rol, 'UNIVERSIDAD'); }),
-        d.consulta(registro, null, args => { assert.equal(args.tabla, 'universidad'); assert.equal(args.insert[0][0].nombre, d.universidad.nombre); })]);
+    entorno.preparar([
+        d.consulta(),
+        {
+            operacion: 'auth',
+            resultado: { data: { user: { id: 'qa-usuario' } }, error: null },
+            verificar: datos => assert.equal(datos.email, d.universidad.correo)
+        },
+        // HU-11: usuario y universidad se registran con una sola RPC transaccional.
+        {
+            operacion: 'rpc',
+            resultado: { data: registro, error: null },
+            verificar: args => {
+                assert.equal(args.nombre, 'registrar_universidad_transaccional');
+                assert.equal(args.parametros.p_id_usuario, 'qa-usuario');
+                assert.equal(args.parametros.p_nombre, d.universidad.nombre);
+            }
+        }
+    ]);
     const res = entorno.respuesta();
     await registrarUniversidad({ body: d.universidad }, res);
     assert.equal(res.statusCode, 201);
@@ -44,8 +59,8 @@ test('universidad: datos válidos crean usuario y universidad', async () => {
 });
 for (const [nombre, pasos, codigo, mensaje] of [
     ['duplicada', [d.consulta({ id_universidad: 10 })], 409, 'Ya existe una universidad registrada con ese nombre. Verifique los datos.'],
-    ['error de búsqueda', [d.consulta(null, { message: 'Error de consulta simulado' })], 500, 'Error de consulta simulado'],
-    ['error de Auth', [d.consulta(), { operacion: 'auth', resultado: { error: { message: 'Correo inválido simulado' } } }], 400, 'Correo inválido simulado']
+    ['error de búsqueda', [d.consulta(null, { message: 'Error de consulta simulado' })], 500, 'No se pudo registrar la universidad. Intenta de nuevo.'],
+    ['error de Auth', [d.consulta(), { operacion: 'auth', resultado: { error: { message: 'Correo inválido simulado' } } }], 400, 'No se pudo crear la cuenta de la universidad.']
 ]) {
     test(`universidad: ${nombre}`, async () => {
         entorno.preparar(pasos); const res = entorno.respuesta();

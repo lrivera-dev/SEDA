@@ -1,0 +1,122 @@
+[
+  {
+    "id_universidad": "274edc3c-3945-4c17-b2c3-984b08f97c12",
+    "universidad": "Universidad Centroamericana José Simeón Cañas",
+    "id_carrera": "36420bc4-3498-4faf-9001-a031d86f6298",
+    "carrera": "Arquitectura",
+    "pensum_url": "36420bc4-3498-4faf-9001-a031d86f6298/pensum/27dcc93f-27f6-4caa-8d5d-7cbaf2754d85.pdf",
+    "id_materia": "e2367f8a-ca2b-4d5d-afaa-d4778fc3a93e",
+    "materia": "Arquitectura bioclimática",
+    "programa_url": "36420bc4-3498-4faf-9001-a031d86f6298/materias/e2367f8a-ca2b-4d5d-afaa-d4778fc3a93e/ead7152f-dc5c-46e4-b44a-c562b910c06e.pdf"
+  },
+  {
+    "id_universidad": "274edc3c-3945-4c17-b2c3-984b08f97c12",
+    "universidad": "Universidad Centroamericana José Simeón Cañas",
+    "id_carrera": "36420bc4-3498-4faf-9001-a031d86f6298",
+    "carrera": "Arquitectura",
+    "pensum_url": "36420bc4-3498-4faf-9001-a031d86f6298/pensum/27dcc93f-27f6-4caa-8d5d-7cbaf2754d85.pdf",
+    "id_materia": "009f66bd-42c4-4a9c-ba3b-5c3a530675eb",
+    "materia": "Taller espacial I",
+    "programa_url": "36420bc4-3498-4faf-9001-a031d86f6298/materias/009f66bd-42c4-4a9c-ba3b-5c3a530675eb/eb8f333a-b34e-4d9d-a7e4-1fe18c34842b.pdf"
+  },
+  {
+    "id_universidad": "274edc3c-3945-4c17-b2c3-984b08f97c12",
+    "universidad": "Universidad Centroamericana José Simeón Cañas",
+    "id_carrera": "36420bc4-3498-4faf-9001-a031d86f6298",
+    "carrera": "Arquitectura",
+    "pensum_url": "36420bc4-3498-4faf-9001-a031d86f6298/pensum/27dcc93f-27f6-4caa-8d5d-7cbaf2754d85.pdf",
+    "id_materia": "adbb3646-2564-4c0d-861d-884248ccbf99",
+    "materia": "Tecnología en construcción I",
+    "programa_url": "36420bc4-3498-4faf-9001-a031d86f6298/materias/adbb3646-2564-4c0d-861d-884248ccbf99/95610237-8335-4ef2-906c-769c4be35b43.pdf"
+  },
+  {
+    "id_universidad": "274edc3c-3945-4c17-b2c3-984b08f97c12",
+    "universidad": "Universidad Centroamericana José Simeón Cañas",
+    "id_carrera": "7d0291a3-7e8d-40a2-ab2b-12a8dddb6090",
+    "carrera": "Ingeniería Informática",
+    "pensum_url": "7d0291a3-7e8d-40a2-ab2b-12a8dddb6090/pensum/1b221c3d-ae30-4607-886e-444c17126b02.pdf",
+    "id_materia": "9feed77e-8c13-426e-a2a4-e49a1500ede1",
+    "materia": "Bases de datos",
+    "programa_url": "7d0291a3-7e8d-40a2-ab2b-12a8dddb6090/materias/9feed77e-8c13-426e-a2a4-e49a1500ede1/58f9915b-2c99-4458-b3a6-cdb2d5839a78.pdf"
+  },
+  {
+    "id_universidad": "274edc3c-3945-4c17-b2c3-984b08f97c12",
+    "universidad": "Universidad Centroamericana José Simeón Cañas",
+    "id_carrera": "7d0291a3-7e8d-40a2-ab2b-12a8dddb6090",
+    "carrera": "Ingeniería Informática",
+    "pensum_url": "7d0291a3-7e8d-40a2-ab2b-12a8dddb6090/pensum/1b221c3d-ae30-4607-886e-444c17126b02.pdf",
+    "id_materia": "2c63b65a-1d05-4ab4-86a6-038ed6fbf792",
+    "materia": "Fundamentos de programación",
+    "programa_url": "7d0291a3-7e8d-40a2-ab2b-12a8dddb6090/materias/2c63b65a-1d05-4ab4-86a6-038ed6fbf792/ed229ba3-8276-4863-b65b-548a9a89b6b2.pdf"
+  },
+  {
+    "id_universidad": "274edc3c-3945-4c17-b2c3-984b08f97c12",
+    "universidad": "Universidad Centroamericana José Simeón Cañas",
+    "id_carrera": "7d0291a3-7e8d-40a2-ab2b-12a8dddb6090",
+    "carrera": "Ingeniería Informática",
+    "pensum_url": "7d0291a3-7e8d-40a2-ab2b-12a8dddb6090/pensum/1b221c3d-ae30-4607-886e-444c17126b02.pdf",
+    "id_materia": "da6b9492-90ed-4657-b370-9f341ec2c5fb",
+    "materia": "Ingeniería de software",
+    "programa_url": "7d0291a3-7e8d-40a2-ab2b-12a8dddb6090/materias/da6b9492-90ed-4657-b370-9f341ec2c5fb/c0d22b92-9468-4341-964a-74136126bc6a.pdf"
+  },
+  {
+    "id_universidad": "22b1e6ca-5dee-4425-81be-83b492a3f88c",
+    "universidad": "Universidad Don Bosco",
+    "id_carrera": "0b75b0f3-7de3-4936-9272-56e3cbf613f5",
+    "carrera": "Ingeniería Industrial",
+    "pensum_url": "0b75b0f3-7de3-4936-9272-56e3cbf613f5/pensum/ceaa9e4e-b749-461e-a9a5-662a176846e5.pdf",
+    "id_materia": "0ddb02ba-6e30-4835-9e8a-54ef91a6f93b",
+    "materia": "Aplicaciones de Dibujo Industrial y Sistemas CAD",
+    "programa_url": "0b75b0f3-7de3-4936-9272-56e3cbf613f5/materias/0ddb02ba-6e30-4835-9e8a-54ef91a6f93b/80354ba6-a50a-4d83-9709-1bc650474372.pdf"
+  },
+  {
+    "id_universidad": "22b1e6ca-5dee-4425-81be-83b492a3f88c",
+    "universidad": "Universidad Don Bosco",
+    "id_carrera": "0b75b0f3-7de3-4936-9272-56e3cbf613f5",
+    "carrera": "Ingeniería Industrial",
+    "pensum_url": "0b75b0f3-7de3-4936-9272-56e3cbf613f5/pensum/ceaa9e4e-b749-461e-a9a5-662a176846e5.pdf",
+    "id_materia": "c3ede3b8-fe57-4b81-b8f2-9403aca0c121",
+    "materia": "Diseño de Plantas Industriales",
+    "programa_url": "0b75b0f3-7de3-4936-9272-56e3cbf613f5/materias/c3ede3b8-fe57-4b81-b8f2-9403aca0c121/264cb932-40bf-49d3-a518-f679827a5f60.pdf"
+  },
+  {
+    "id_universidad": "22b1e6ca-5dee-4425-81be-83b492a3f88c",
+    "universidad": "Universidad Don Bosco",
+    "id_carrera": "0b75b0f3-7de3-4936-9272-56e3cbf613f5",
+    "carrera": "Ingeniería Industrial",
+    "pensum_url": "0b75b0f3-7de3-4936-9272-56e3cbf613f5/pensum/ceaa9e4e-b749-461e-a9a5-662a176846e5.pdf",
+    "id_materia": "ac31f528-6016-4290-99f2-1a22b23503c8",
+    "materia": "Gestión Ambiental",
+    "programa_url": "0b75b0f3-7de3-4936-9272-56e3cbf613f5/materias/ac31f528-6016-4290-99f2-1a22b23503c8/49f03094-8349-4555-9c78-67c744d95ce0.pdf"
+  },
+  {
+    "id_universidad": "22b1e6ca-5dee-4425-81be-83b492a3f88c",
+    "universidad": "Universidad Don Bosco",
+    "id_carrera": "4da62d3c-14cc-4754-9d57-683cdef4b382",
+    "carrera": "Licenciatura en Administración de Empresas",
+    "pensum_url": "4da62d3c-14cc-4754-9d57-683cdef4b382/pensum/d8ac0848-6cb0-40a5-aaf5-5cbe39cfced7.pdf",
+    "id_materia": "d72f0d1d-e77e-4d89-80e3-f48abd65b1b8",
+    "materia": "Análisis de Datos Empresariales",
+    "programa_url": "4da62d3c-14cc-4754-9d57-683cdef4b382/materias/d72f0d1d-e77e-4d89-80e3-f48abd65b1b8/29b6f5bf-07ab-4824-af0d-43718e571eac.pdf"
+  },
+  {
+    "id_universidad": "22b1e6ca-5dee-4425-81be-83b492a3f88c",
+    "universidad": "Universidad Don Bosco",
+    "id_carrera": "4da62d3c-14cc-4754-9d57-683cdef4b382",
+    "carrera": "Licenciatura en Administración de Empresas",
+    "pensum_url": "4da62d3c-14cc-4754-9d57-683cdef4b382/pensum/d8ac0848-6cb0-40a5-aaf5-5cbe39cfced7.pdf",
+    "id_materia": "d1fd3be6-ed86-4b1e-ab49-78c330b0e60d",
+    "materia": "Tecnologías de Información y Comunicación",
+    "programa_url": "4da62d3c-14cc-4754-9d57-683cdef4b382/materias/d1fd3be6-ed86-4b1e-ab49-78c330b0e60d/03bde978-25c5-4ea7-8bda-68bd901de186.pdf"
+  },
+  {
+    "id_universidad": "22b1e6ca-5dee-4425-81be-83b492a3f88c",
+    "universidad": "Universidad Don Bosco",
+    "id_carrera": "4da62d3c-14cc-4754-9d57-683cdef4b382",
+    "carrera": "Licenciatura en Administración de Empresas",
+    "pensum_url": "4da62d3c-14cc-4754-9d57-683cdef4b382/pensum/d8ac0848-6cb0-40a5-aaf5-5cbe39cfced7.pdf",
+    "id_materia": "965cb609-b12f-4e47-b1f8-a2e8dd3980c4",
+    "materia": "Transformación Digital en la Empresa",
+    "programa_url": "4da62d3c-14cc-4754-9d57-683cdef4b382/materias/965cb609-b12f-4e47-b1f8-a2e8dd3980c4/e3db85d7-d34e-4c29-8bc0-c7c97f00c321.pdf"
+  }
+]
