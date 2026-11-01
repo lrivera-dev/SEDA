@@ -38,7 +38,7 @@ function buildModel(raw) {
             if (!['test:pass', 'test:fail'].includes(event.type)) continue;
             const d = event.data;
             completed.add(identity(d));
-            if (d.details?.type === 'suite' || /subtestsFailed/.test(d.details?.error?.failureType || '') || /\.test\.cjs$/.test(d.name)) continue;
+            if (d.details?.type === 'suite' || /subtestsFailed/.test(d.details?.error?.failureType || '') || /\.test\.(?:cjs|js)$/.test(d.name)) continue;
             const chain = errorChain(d.details?.error);
             const blocked = chain.some(e => ['EACCES', 'EPERM', 'ENOENT', 'ERR_MODULE_NOT_FOUND', 'MODULE_NOT_FOUND'].includes(e.code) || /connect (?:EACCES|EPERM)/.test(e.message || ''));
             const status = d.skip || d.todo ? 'NOT_RUN' : blocked ? 'BLOCKED' : event.type === 'test:pass' ? 'PASS' : 'FAIL';
@@ -55,7 +55,7 @@ function buildModel(raw) {
         }
         for (const event of run.events) {
             const d = event.data;
-            if (event.type !== 'test:enqueue' || completed.has(identity(d)) || /\.test\.cjs$/.test(d.name)) continue;
+            if (event.type !== 'test:enqueue' || completed.has(identity(d)) || /\.test\.(?:cjs|js)$/.test(d.name)) continue;
             local.push({ id: `${run.suite.toUpperCase()}-P${local.length + 1}`, suite: run.suite, name: d.name, status: 'NOT_RUN',
                 functionality: 'No determinada', behavior: d.name, expected: expected(d.name, run.suite), observed: 'Descubierta sin resultado final; ejecución interrumpida o incompleta.', location: `${d.file}:${d.line || '?'}` });
         }

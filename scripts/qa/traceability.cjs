@@ -6,6 +6,11 @@ const { root } = require('./sanitize.cjs');
 function validate(config) {
     if (config.schemaVersion !== 1 || !Number.isInteger(config.number) || config.number < 1 || !config.title || !config.goal) throw new Error('Configuración de Sprint inválida.');
     for (const key of ['sources', 'stories', 'dod', 'openQuestions', 'outOfScope']) if (!Array.isArray(config[key])) throw new Error(`Falta ${key} en la configuración.`);
+    const dodIds = new Set();
+    for (const criterion of config.dod) {
+        if (!criterion.id || dodIds.has(criterion.id) || !criterion.text || !criterion.sourceRef || !Array.isArray(criterion.evidence)) throw new Error('Definition of Done duplicada o incompleta.');
+        dodIds.add(criterion.id);
+    }
     const ids = new Set();
     for (const story of config.stories) {
         if (!story.id || !Array.isArray(story.criteria) || !story.criteria.length) throw new Error('Historia sin criterios.');
@@ -47,10 +52,17 @@ function applyTraceability(model, config) {
         });
         const testResult = aggregate(links.map(l => l.status));
         const status = testResult === 'PASS' && (!criterion.coverageComplete || criterion.proposal?.status === 'PENDIENTE_PO') ? 'SIN_EVIDENCIA' : testResult;
+        const passing = links.filter(l => l.status === 'PASS').length;
+        const technicalEvidence = passing ? 'PARCIAL_CON_PRUEBAS_PASS' : links.length ? 'SIN_PRUEBAS_APROBADAS' : 'SIN_PRUEBAS_VINCULADAS';
+        const details = links.length
+            ? `${passing}/${links.length} pruebas vinculadas PASS: ${links.map(l => `${l.name} [${l.status}]`).join('; ')}.`
+            : 'No existe aún prueba automatizada vinculada con este criterio.';
         rows.push({ storyId: story.id, storyTitle: story.title, functionality: story.functionality,
             id: criterion.id, criterion: criterion.text, sourceRef: criterion.sourceRef,
             implementation: criterion.implementation || 'No verificado en la referencia evaluada', links, testResult, status,
-            evidence: [...links.map(l => l.evidence), ...criterion.evidence], observations: criterion.observations || '',
+            technicalEvidence, passingTestCount: passing,
+            evidence: [...links.map(l => l.evidence), ...criterion.evidence],
+            observations: `${details} ${criterion.observations || ''}`.trim(),
             coverageComplete: criterion.coverageComplete, pending: criterion.pending,
             plannedCase: criterion.plannedCase, proposal: criterion.proposal });
     }
@@ -65,8 +77,13 @@ function applyTraceability(model, config) {
         if (d.kind === 'regression') evidence = `Evidencia parcial: ${regression.length} casos de regresión identificados, ${regression.filter(c => c.status === 'PASS').length} PASS y ${regression.filter(c => c.status === 'FAIL').length} FAIL. La ejecución está acreditada; la verificación de todo el incremento no lo está.`;
         if (d.kind === 'defects') evidence = `${model.findings.length} hallazgos documentados; las prioridades son sugeridas. No se acredita corrección de errores críticos ni cierre de criterios.`;
         if (d.kind === 'shared') evidence = 'Las ejecuciones usan servicios simulados; no verifican el ambiente compartido.';
+        if (d.kind === 'original_review') evidence = 'La revisión por un integrante diferente requiere PR y comentarios verificables; el ejecutor no los consulta.';
+        if (d.kind === 'original_manual') evidence = 'Las pruebas manuales de registro y visualización requieren actas o capturas, no resultados simulados.';
+        if (d.kind === 'original_end_to_end') evidence = 'El recorrido real, completo y cruzado requiere evidencia en el ambiente compartido.';
+        if (d.kind === 'original_po') evidence = 'Requiere aprobación verificable del Product Owner; no se infiere de PASS.';
+        if (d.kind === 'original_shared') evidence = 'Requiere comprobación del despliegue accesible y flujos funcionales completos.';
         if (d.kind === 'branches') evidence = `Referencia de la evidencia: ${model.metadata.branch || 'No disponible'}, ${model.metadata.commit || 'No disponible'}. No se inspeccionaron otras ramas ni se acredita integración. Revisar la diferencia developer/development indicada en las fuentes.`;
-        return { ...d, status: result, evaluation: evidence };
+        return { ...d, status: result, evaluation: evidence + (d.evidence.length ? ` Evidencias declaradas (pendientes de verificar): ${d.evidence.join('; ')}.` : '') };
     });
     return { ...model, metadata: { ...model.metadata, sprint: `Sprint ${config.number}: ${config.title}`, sprintSource: config.sources.map(s => s.title).join('; ') },
         dod: dod.map(d => [d.text, `${d.status}: ${d.evaluation}`]),
