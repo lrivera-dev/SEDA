@@ -71,7 +71,7 @@ function documentBlocks(m) {
         h(`${f.id} | ${f.priority}`);
         p(`Qué corregir: ${f.recommendation}`);
         p(`Por qué: ${f.rationale}`);
-        p(`Revisar: ${f.component}. Repetir: ${f.tests.join(', ')} y ambas suites de regresión.`);
+        p(`Revisar: ${f.component}. Repetir: ${f.tests.join(', ')} y las suites de regresión.`);
         p(`Posibles áreas relacionadas: ${f.related}`);
     }
     if (!m.findings.length) p('Sin correcciones derivadas de FAIL. Esto no elimina las verificaciones pendientes.');
@@ -88,9 +88,9 @@ function documentBlocks(m) {
     p('No se declara el Sprint terminado. La validación del Product Owner y las verificaciones externas permanecen pendientes.');
     title('H. Conclusiones');
     p(`Resultado: ${m.totals.PASS} PASS, ${m.totals.FAIL} FAIL, ${m.totals.BLOCKED} BLOCKED y ${m.totals.NOT_RUN} NOT_RUN. Hallazgos prioritarios: ${m.findings.filter(f => f.priority.startsWith('Alta')).map(f => f.id).join(', ') || 'No identificados con evidencia suficiente'}.`);
-    p('Acciones: revisar los hallazgos, autorizar las correcciones necesarias y repetir los casos afectados junto con ambas suites. Resolver primero cualquier bloqueo de infraestructura.');
+    p('Acciones: revisar los hallazgos, autorizar las correcciones necesarias y repetir los casos afectados junto con las suites. Resolver primero cualquier bloqueo de infraestructura.');
     m.limitations.forEach(p);
-    p('Trazabilidad: execution.json conserva eventos por suite; results.json contiene el modelo normalizado y los diagnósticos; unit.jsonl/api.jsonl conservan eventos individuales sanitizados de las suites seleccionadas.');
+    p('Trazabilidad: execution.json conserva eventos por suite; results.json contiene el modelo normalizado y los diagnósticos; unit.jsonl/api.jsonl/team.jsonl conservan eventos individuales sanitizados de las suites seleccionadas.');
     if (!m.traceability) return blocks;
     const t = m.traceability;
     // Reordenar el contenido existente sin perder el detalle técnico de cada caso.

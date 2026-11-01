@@ -12,10 +12,12 @@ function git(args) {
     catch { return 'No disponible'; }
 }
 async function execute(suite, directory) {
-    const files = fs.readdirSync(path.join(root, 'tests', suite)).filter(f => f.endsWith('.test.cjs')).sort()
-        .map(f => path.join('tests', suite, f));
+    const files = suite === 'team'
+        ? ['exportaciones.test.js', 'rutas.test.js', 'validar-archivos.test.js', 'coincidencia.test.js'].map(f => path.join('tests', f))
+        : fs.readdirSync(path.join(root, 'tests', suite)).filter(f => f.endsWith('.test.cjs')).sort()
+            .map(f => path.join('tests', suite, f));
     if (!files.length) return { suite, exitCode: null, events: [], infrastructure: 'No se encontraron archivos de pruebas.' };
-    const args = ['--test', '--test-reporter=./scripts/qa/reporter.cjs', ...files];
+    const args = [...(suite === 'team' ? ['--require', './tests/helpers/equipo-bootstrap.cjs'] : []), '--test', '--test-reporter=./scripts/qa/reporter.cjs', ...files];
     return new Promise(resolve => {
         const events = []; let partial = '', parseError = '', spawnError = '', stderrBytes = 0;
         const output = path.join(directory, `${suite}.jsonl`);
@@ -46,7 +48,7 @@ async function execute(suite, directory) {
 }
 async function main() {
     const selection = process.argv[2] || 'all';
-    if (!['unit', 'api', 'all'].includes(selection)) throw new Error('Uso: node scripts/qa/run.cjs [all|unit|api]');
+    if (!['unit', 'api', 'team', 'all'].includes(selection)) throw new Error('Uso: node scripts/qa/run.cjs [all|unit|api|team]');
     const started = new Date().toISOString();
     const id = started.replace(/[:.]/g, '-') + '-' + crypto.randomBytes(3).toString('hex');
     const directory = path.join(root, 'qa-output', id);
@@ -58,7 +60,7 @@ async function main() {
         node: process.version, platform: `${process.platform}/${process.arch}`,
         environment: process.env.GITHUB_ACTIONS === 'true' ? 'GitHub Actions' : 'Local' };
     const suites = [];
-    for (const suite of ['unit', 'api']) {
+    for (const suite of ['unit', 'api', 'team']) {
         if (selection !== 'all' && selection !== suite) { suites.push({ suite, notRun: true, events: [] }); continue; }
         console.log(`Hachi: ejecutando suite ${suite}...`);
         try { suites.push(await execute(suite, directory)); }
