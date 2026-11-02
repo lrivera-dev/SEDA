@@ -1,0 +1,1650 @@
+{
+  "schemaVersion": 1,
+  "strategy": {
+    "flows": [
+      {
+        "flow": "Registro de equivalencias",
+        "level": "Integración",
+        "expectation": "Formulario, base de datos y almacenamiento del registro",
+        "sourceRef": "ESTRATEGIA / sección 2 / página 1"
+      },
+      {
+        "flow": "Consulta y visualización",
+        "level": "E2E",
+        "expectation": "Ingreso, consulta y visualización de datos",
+        "sourceRef": "ESTRATEGIA / sección 2 / página 1"
+      },
+      {
+        "flow": "Cálculo de coincidencia",
+        "level": "Unitaria",
+        "expectation": "Funciones de cálculo y porcentajes (aplicable a HU-3 en Sprint 3; sin evidencia todavía).",
+        "sourceRef": "ESTRATEGIA / sección 2 / página 1"
+      }
+    ],
+    "manual": "Pruebas cruzadas por pares con casos negativos; quien desarrolla no debe ser la única persona que prueba y aprueba. Responsabilidades rotativas.",
+    "manualSource": "ESTRATEGIA / sección 3 / página 2",
+    "prevention": [
+      "Conflictos de rutas: pruebas de integración.",
+      "Mensajes en español: comprobación E2E.",
+      "Conflictos entre ramas: integración y regresión.",
+      "Tareas y criterios definidos antes del Sprint: pruebas de aceptación."
+    ],
+    "preventionSource": "ESTRATEGIA / sección 4 / páginas 2-3"
+  },
+  "id": "sprint-4",
+  "number": 4,
+  "title": "Confirmación, autenticación, resiliencia y datos de prueba",
+  "goal": "Completar las HU-05, HU-10, HU-11 y HU-12 con seguridad, integridad, regresión y evidencias verificables.",
+  "sources": [
+    {
+      "id": "REFINAMIENTO4",
+      "title": "Refinamiento de Sprint 4 compartido por el equipo (HU-05, HU-10, HU-11, HU-12)",
+      "sha256": "NO_DISPONIBLE: texto suministrado en conversación",
+      "incorporation": "22 criterios de aceptación copiados del refinamiento suministrado; no implica aprobación."
+    },
+    {
+      "id": "ESTRATEGIA",
+      "title": "Estrategia de pruebas-HiGuysP3.pdf",
+      "sha256": "f10fbd56cbff242465fee04ca48314e41d339ea97067d25bc849dafc5a3f6de2",
+      "incorporation": "Siete criterios DoD actualizados, secciones 3-5."
+    },
+    {
+      "id": "DOD_ORIGINAL",
+      "title": "DefinitionofDoneHiGuys.pdf",
+      "sha256": "NO_DISPONIBLE: archivo de referencia externo",
+      "incorporation": "Cinco criterios originales agregados a auditoría final."
+    }
+  ],
+  "stories": [
+    {
+      "id": "HU-05",
+      "title": "Confirmación y registro formal de equivalencias",
+      "functionality": "Confirmación y registro formal de equivalencias",
+      "sourceRef": "REFINAMIENTO4 / HU-05",
+      "userStory": "Confirmar las equivalencias seleccionadas en el checklist sin reemplazar la decisión del MINED",
+      "description": "Confirmar las equivalencias seleccionadas en el checklist sin reemplazar la decisión del MINED",
+      "criteria": [
+        {
+          "id": "HU-05-CA1",
+          "text": "Al confirmar una o varias equivalencias válidas, el sistema las registra permanentemente con la fecha, el usuario responsable y el estado de confirmación.",
+          "sourceRef": "REFINAMIENTO4 / HU-05 / CA1",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-085",
+              "suite": "api",
+              "name": "HU5-01 CA1: confirma dos equivalencias y registra la operación",
+              "file": "tests/api/hu5-confirmacion.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Confirmar lectura posterior en PostgreSQL de fecha, usuario y confirmación para varios casos.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-05-CA2",
+          "text": "Si no existen materias seleccionadas, faltan documentos o hay cálculos pendientes, el sistema rechaza la confirmación sin modificar datos.",
+          "sourceRef": "REFINAMIENTO4 / HU-05 / CA2",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-086",
+              "suite": "api",
+              "name": "HU5-02 CA2: rechaza selección vacía sin registrar equivalencias",
+              "file": "tests/api/hu5-confirmacion.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Probar también documentos incompletos y cálculo pendiente; la referencia actual cubre selección vacía.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-05-CA3",
+          "text": "Si ocurre un error durante el registro de varias equivalencias, ninguna queda confirmada parcialmente.",
+          "sourceRef": "REFINAMIENTO4 / HU-05 / CA3",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-089",
+              "suite": "api",
+              "name": "HU5-05 CA3: fallo al registrar varias equivalencias devuelve 500",
+              "file": "tests/api/hu5-confirmacion.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Verificar rollback contra PostgreSQL real; la prueba API usa RPC simulada y el SQL define una única operación.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-05-CA4",
+          "text": "Al recargar el checklist o iniciar sesión nuevamente, las equivalencias confirmadas mantienen su estado y no pueden confirmarse por segunda vez.",
+          "sourceRef": "REFINAMIENTO4 / HU-05 / CA4",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-088",
+              "suite": "api",
+              "name": "HU5-04 CA4: rechaza una equivalencia ya confirmada",
+              "file": "tests/api/hu5-confirmacion.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar persistencia al recargar o iniciar otra sesión; el caso enlazado comprueba el rechazo de duplicados.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-05-CA5",
+          "text": "Una universidad no puede confirmar casos de otra universidad, aunque conozca sus identificadores.",
+          "sourceRef": "REFINAMIENTO4 / HU-05 / CA5",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-087",
+              "suite": "api",
+              "name": "HU5-03 CA5: rechaza confirmar casos de otra universidad",
+              "file": "tests/api/hu5-confirmacion.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar rechazo 403 con una universidad diferente en el ambiente compartido.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        }
+      ],
+      "businessRules": [],
+      "dependencies": []
+    },
+    {
+      "id": "HU-10",
+      "title": "Autenticación y aislamiento de sesión para universidades",
+      "functionality": "Autenticación y aislamiento de sesión para universidades",
+      "sourceRef": "REFINAMIENTO4 / HU-10",
+      "userStory": "Validar token y limitar los recursos a la universidad autenticada",
+      "description": "Validar token y limitar los recursos a la universidad autenticada",
+      "criteria": [
+        {
+          "id": "HU-10-CA1",
+          "text": "Una universidad activa puede iniciar sesión con credenciales válidas y utilizar un token autenticado.",
+          "sourceRef": "REFINAMIENTO4 / HU-10 / CA1",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-081",
+              "suite": "api",
+              "name": "HU12-05: permite consultar pensum propio",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar login universitario real, usuario activo y token autenticado; no basta un token ficticio de MINED.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-10-CA2",
+          "text": "Las solicitudes protegidas sin un token válido son rechazadas con 401.",
+          "sourceRef": "REFINAMIENTO4 / HU-10 / CA2",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-077",
+              "suite": "api",
+              "name": "HU12-01: rechaza acceso a pensum sin autenticacion",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            },
+            {
+              "id": "S4-078",
+              "suite": "api",
+              "name": "HU12-02: rechaza token invalido al solicitar un pensum",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar todas las rutas universitarias protegidas, además de los endpoints enlazados.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-10-CA3",
+          "text": "Cada universidad únicamente puede consultar sus equivalencias y realizar operaciones sobre sus propios registros.",
+          "sourceRef": "REFINAMIENTO4 / HU-10 / CA3",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-079",
+              "suite": "api",
+              "name": "HU12-03: rechaza acceso a pensum de otra universidad",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            },
+            {
+              "id": "S4-080",
+              "suite": "api",
+              "name": "HU12-04: rechaza programa de otra universidad",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar listado y modificación de equivalencias, no solo acceso a documentos.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-10-CA4",
+          "text": "Si un usuario modifica manualmente un identificador para acceder a recursos ajenos, el sistema rechaza la operación sin modificar información.",
+          "sourceRef": "REFINAMIENTO4 / HU-10 / CA4",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-079",
+              "suite": "api",
+              "name": "HU12-03: rechaza acceso a pensum de otra universidad",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            },
+            {
+              "id": "S4-080",
+              "suite": "api",
+              "name": "HU12-04: rechaza programa de otra universidad",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar modificación de identificadores de casos/equivalencias y ausencia de escrituras no autorizadas.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-10-CA5",
+          "text": "Al cerrar sesión, se eliminan los datos locales de autenticación y se impide continuar navegando por funcionalidades protegidas sin una sesión válida.",
+          "sourceRef": "REFINAMIENTO4 / HU-10 / CA5",
+          "implementation": "El script public/js/proteger-universidad.js elimina token/rol de sessionStorage y redirige; prueba unitario-VM enlazada, sin acreditar E2E real.",
+          "testRefs": [
+            {
+              "id": "HU10-CA5-UNIT-1",
+              "suite": "unit",
+              "name": "HU10-CA5: cerrar sesión elimina token y rol y redirige al inicio",
+              "file": "tests/unit/hu10-sesion.test.cjs"
+            },
+            {
+              "id": "HU10-CA5-UNIT-2",
+              "suite": "unit",
+              "name": "HU10-CA5: botón logout ejecuta el cierre de sesión",
+              "file": "tests/unit/hu10-sesion.test.cjs"
+            },
+            {
+              "id": "HU10-CA5-UNIT-3",
+              "suite": "unit",
+              "name": "HU10-CA5: volver a cargar página protegida sin sesión redirige",
+              "file": "tests/unit/hu10-sesion.test.cjs"
+            },
+            {
+              "id": "HU10-CA5-UNIT-4",
+              "suite": "unit",
+              "name": "HU10-CA5: rol no universitario no permite cargar página protegida",
+              "file": "tests/unit/hu10-sesion.test.cjs"
+            },
+            {
+              "id": "HU10-CA5-UNIT-5",
+              "suite": "unit",
+              "name": "HU10-CA5: sesión de universidad válida no redirige al cargar",
+              "file": "tests/unit/hu10-sesion.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Verificar cerrarSesion mediante E2E en navegador real tras el cierre de sesión; las pruebas node:vm verifican lógica del script con objetos simulados, no navegación real.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        }
+      ],
+      "businessRules": [],
+      "dependencies": []
+    },
+    {
+      "id": "HU-11",
+      "title": "Resiliencia del backend y gestión centralizada de documentos",
+      "functionality": "Resiliencia del backend y gestión centralizada de documentos",
+      "sourceRef": "REFINAMIENTO4 / HU-11",
+      "userStory": "Evitar inconsistencias al fallar Storage, Auth o PostgreSQL",
+      "description": "Evitar inconsistencias al fallar Storage, Auth o PostgreSQL",
+      "criteria": [
+        {
+          "id": "HU-11-CA1",
+          "text": "Las operaciones principales de carga utilizan un servicio centralizado sin modificar innecesariamente el funcionamiento de los endpoints existentes.",
+          "sourceRef": "REFINAMIENTO4 / HU-11 / CA1",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-071",
+              "suite": "api",
+              "name": "archivos: si falla la subida a Storage no se registra ninguna referencia ni se intenta limpiar",
+              "file": "tests/api/hu11-resiliencia.test.cjs"
+            },
+            {
+              "id": "S4-072",
+              "suite": "api",
+              "name": "archivos: si falla el registro en PostgreSQL se elimina el archivo recién subido",
+              "file": "tests/api/hu11-resiliencia.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar que los endpoints principales delegan efectivamente al servicio centralizado y conservan contratos.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-11-CA2",
+          "text": "Si falla el registro de un archivo en PostgreSQL después de subirlo a Storage, el sistema ejecuta su eliminación compensatoria y registra cualquier fallo de limpieza.",
+          "sourceRef": "REFINAMIENTO4 / HU-11 / CA2",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-072",
+              "suite": "api",
+              "name": "archivos: si falla el registro en PostgreSQL se elimina el archivo recién subido",
+              "file": "tests/api/hu11-resiliencia.test.cjs"
+            },
+            {
+              "id": "S4-073",
+              "suite": "api",
+              "name": "archivos: si la eliminación compensatoria lanza una excepción se registra la incidencia y se responde igual",
+              "file": "tests/api/hu11-resiliencia.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar eliminación compensatoria, registro de incidencia y efectos en Storage/DB real o entorno controlado.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-11-CA3",
+          "text": "Si falla una operación que modifica varios registros relacionados en PostgreSQL, todos los cambios de esa transacción se revierten.",
+          "sourceRef": "REFINAMIENTO4 / HU-11 / CA3",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-089",
+              "suite": "api",
+              "name": "HU5-05 CA3: fallo al registrar varias equivalencias devuelve 500",
+              "file": "tests/api/hu5-confirmacion.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar rollback de registros dependientes contra la RPC SQL; las simulaciones no ejecutan transacciones reales.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-11-CA4",
+          "text": "Si falla el registro de una universidad después de crear su cuenta en Supabase Auth, el sistema intenta revertir la creación de la cuenta.",
+          "sourceRef": "REFINAMIENTO4 / HU-11 / CA4",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-063",
+              "suite": "api",
+              "name": "universidades: excepción de la RPC se trata como estado incierto y no elimina la cuenta de Auth",
+              "file": "tests/api/hu11-resiliencia.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Distinguir errores anteriores/posteriores a crear Auth: si estado de RPC es incierto no se debe eliminar ciegamente la cuenta.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-11-CA5",
+          "text": "Las pruebas automatizadas simulan errores y verifican que el sistema responda de manera controlada.",
+          "sourceRef": "REFINAMIENTO4 / HU-11 / CA5",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-074",
+              "suite": "api",
+              "name": "archivos: una excepción inesperada al registrar en PostgreSQL elimina el archivo y responde con error controlado",
+              "file": "tests/api/hu11-resiliencia.test.cjs"
+            },
+            {
+              "id": "S4-075",
+              "suite": "api",
+              "name": "archivos: una excepción al subir a Storage responde con error controlado sin registrar referencia",
+              "file": "tests/api/hu11-resiliencia.test.cjs"
+            },
+            {
+              "id": "S4-071",
+              "suite": "api",
+              "name": "archivos: si falla la subida a Storage no se registra ninguna referencia ni se intenta limpiar",
+              "file": "tests/api/hu11-resiliencia.test.cjs"
+            },
+            {
+              "id": "S4-072",
+              "suite": "api",
+              "name": "archivos: si falla el registro en PostgreSQL se elimina el archivo recién subido",
+              "file": "tests/api/hu11-resiliencia.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Vincular todos los escenarios de errores relevantes, no solamente las cuatro referencias actuales.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-11-CA6",
+          "text": "Las funcionalidades existentes de documentos, equivalencias y autenticación continúan funcionando después de los cambios.",
+          "sourceRef": "REFINAMIENTO4 / HU-11 / CA6",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-085",
+              "suite": "api",
+              "name": "HU5-01 CA1: confirma dos equivalencias y registra la operación",
+              "file": "tests/api/hu5-confirmacion.test.cjs"
+            },
+            {
+              "id": "S4-081",
+              "suite": "api",
+              "name": "HU12-05: permite consultar pensum propio",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar regresión completa y flujos principales en despliegue después de cambios.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        }
+      ],
+      "businessRules": [],
+      "dependencies": []
+    },
+    {
+      "id": "HU-12",
+      "title": "Preparación y carga de datos académicos de prueba",
+      "functionality": "Preparación y carga de datos académicos de prueba",
+      "sourceRef": "REFINAMIENTO4 / HU-12",
+      "userStory": "Preparar dos universidades, cuatro carreras, doce materias y dieciséis documentos",
+      "description": "Preparar dos universidades, cuatro carreras, doce materias y dieciséis documentos",
+      "criteria": [
+        {
+          "id": "HU-12-CA1",
+          "text": "Se registran al menos dos nuevas universidades de prueba, cada una con dos carreras diferentes y sus relaciones correctamente establecidas en PostgreSQL.",
+          "sourceRef": "REFINAMIENTO4 / HU-12 / CA1",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-030",
+              "suite": "unit",
+              "name": "HU-12: inventario academico consistente",
+              "file": "tests/unit/hu12-documentos.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Cotejar dos universidades y cuatro carreras con consulta SQL del ambiente compartido; inventario local no acredita por sí solo inserción.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-12-CA2",
+          "text": "Cada carrera contiene al menos tres materias distribuidas en tres ciclos académicos distintos, alcanzando un mínimo de doce materias.",
+          "sourceRef": "REFINAMIENTO4 / HU-12 / CA2",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-030",
+              "suite": "unit",
+              "name": "HU-12: inventario academico consistente",
+              "file": "tests/unit/hu12-documentos.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Acreditar tres ciclos diferentes por carrera con los cuatro pénsums; la tabla materia no tiene columna ciclo.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-12-CA3",
+          "text": "Las cuatro carreras tienen un pensum y las doce materias tienen su programa correspondiente, con referencias válidas a archivos disponibles en Supabase Storage.",
+          "sourceRef": "REFINAMIENTO4 / HU-12 / CA3",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-031",
+              "suite": "unit",
+              "name": "HU-12: metadatos de documentos consistentes",
+              "file": "tests/unit/hu12-documentos.test.cjs"
+            },
+            {
+              "id": "S4-032",
+              "suite": "unit",
+              "name": "HU-12: los 16 documentos aparecen en Storage exportado",
+              "file": "tests/unit/hu12-documentos.test.cjs"
+            },
+            {
+              "id": "S4-007",
+              "suite": "unit",
+              "name": "HU-12: confirma un documento existente en Storage",
+              "file": "tests/unit/hu12-cargador.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Comprobar existencia de 16 objetos PDF en Storage real y sus 16 referencias en PostgreSQL; archivos exportados no garantizan estado actual.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-12-CA4",
+          "text": "Los documentos reutilizados no modifican ni eliminan los originales y mantienen coherencia con las carreras y materias a las que fueron asignados.",
+          "sourceRef": "REFINAMIENTO4 / HU-12 / CA4",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-014",
+              "suite": "unit",
+              "name": "HU-12: no sobrescribe un destino existente",
+              "file": "tests/unit/hu12-cargador.test.cjs"
+            },
+            {
+              "id": "S4-022",
+              "suite": "unit",
+              "name": "HU-12: no sobrescribe una asociacion existente",
+              "file": "tests/unit/hu12-cargador.test.cjs"
+            },
+            {
+              "id": "S4-016",
+              "suite": "unit",
+              "name": "HU-12: copia con upsert deshabilitado",
+              "file": "tests/unit/hu12-cargador.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "No hay hash histórico que demuestre conservación byte a byte de originales; cotejar referencias y no sobrescritura.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-12-CA5",
+          "text": "Las universidades de prueba pueden iniciar sesión y utilizar los registros creados en el flujo de equivalencias, respetando el aislamiento de información.",
+          "sourceRef": "REFINAMIENTO4 / HU-12 / CA5",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-079",
+              "suite": "api",
+              "name": "HU12-03: rechaza acceso a pensum de otra universidad",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            },
+            {
+              "id": "S4-080",
+              "suite": "api",
+              "name": "HU12-04: rechaza programa de otra universidad",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            },
+            {
+              "id": "S4-081",
+              "suite": "api",
+              "name": "HU12-05: permite consultar pensum propio",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            },
+            {
+              "id": "S4-082",
+              "suite": "api",
+              "name": "HU12-06: permite consultar programa propio",
+              "file": "tests/api/hu12-seguridad.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Probar inicio de sesión y uso real de datos para registrar equivalencias entre universidades, además de aislamiento simulado.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        },
+        {
+          "id": "HU-12-CA6",
+          "text": "El equipo dispone de un inventario verificable de los registros insertados, sus relaciones y los documentos asociados, sin duplicados provocados por repetir el proceso de carga.",
+          "sourceRef": "REFINAMIENTO4 / HU-12 / CA6",
+          "implementation": "Código existente pendiente de cotejo integral con el criterio.",
+          "testRefs": [
+            {
+              "id": "S4-030",
+              "suite": "unit",
+              "name": "HU-12: inventario academico consistente",
+              "file": "tests/unit/hu12-documentos.test.cjs"
+            },
+            {
+              "id": "S4-025",
+              "suite": "unit",
+              "name": "HU-12: no duplica documentos que ya estan completos",
+              "file": "tests/unit/hu12-cargador.test.cjs"
+            }
+          ],
+          "evidence": [],
+          "verification": "SIN_EVIDENCIA",
+          "coverageComplete": false,
+          "observations": "Pruebas automatizadas vinculadas por nombre, archivo y suite; su resultado acredita únicamente las aserciones ejecutadas.",
+          "pending": [
+            "Demostrar idempotencia de la carga real; el simulador verifica prevención de duplicados sin ejecutar carga en vivo.",
+            "Adjuntar evidencia de prueba cruzada y aceptación del Product Owner cuando corresponda."
+          ]
+        }
+      ],
+      "businessRules": [],
+      "dependencies": []
+    }
+  ],
+  "dod": [
+    {
+      "id": "DOD-ORIG-1",
+      "kind": "original_review",
+      "text": "El código fue revisado por al menos un miembro distinto del desarrollador y se integró en la rama principal.",
+      "sourceRef": "DOD_ORIGINAL / página 1",
+      "evidence": []
+    },
+    {
+      "id": "DOD-ORIG-2",
+      "kind": "original_manual",
+      "text": "Se realizaron pruebas manuales del registro y visualización de equivalencias.",
+      "sourceRef": "DOD_ORIGINAL / página 1",
+      "evidence": []
+    },
+    {
+      "id": "DOD-ORIG-3",
+      "kind": "original_end_to_end",
+      "text": "El esqueleto se ejecutó y validó de principio a fin por alguien distinto del desarrollador.",
+      "sourceRef": "DOD_ORIGINAL / página 1",
+      "evidence": []
+    },
+    {
+      "id": "DOD-ORIG-4",
+      "kind": "original_po",
+      "text": "Los criterios de aceptación fueron revisados y validados por el Product Owner.",
+      "sourceRef": "DOD_ORIGINAL / página 1",
+      "evidence": []
+    },
+    {
+      "id": "DOD-ORIG-5",
+      "kind": "original_shared",
+      "text": "El incremento está implementado y comprobado en un ambiente compartido.",
+      "sourceRef": "DOD_ORIGINAL / página 1",
+      "evidence": []
+    },
+    {
+      "id": "DOD-1",
+      "kind": "applicable",
+      "text": "Hemos realizado las pruebas unitarias, de integración o de extremo a extremo que correspondan a las funcionalidades desarrolladas.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-2",
+      "kind": "peers",
+      "text": "Cada funcionalidad ha sido probada manualmente por al menos un integrante diferente de quien la desarrolló, aplicando pruebas cruzadas y casos negativos.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-3",
+      "kind": "regression",
+      "text": "Al finalizar cada Sprint, hemos ejecutado pruebas automatizadas con apoyo de Skills de inteligencia artificial para verificar las funcionalidades implementadas y detectar posibles regresiones.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-4",
+      "kind": "defects",
+      "text": "Hemos revisado los resultados de las pruebas, documentado los defectos encontrados y corregido los errores críticos que impidan cumplir los criterios de aceptación.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-5",
+      "kind": "shared",
+      "text": "Hemos comprobado que las funcionalidades principales operan correctamente en el ambiente compartido y no únicamente en el entorno local.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-6",
+      "kind": "po",
+      "text": "Hemos validado el cumplimiento de los criterios de aceptación con nuestro Product Owner antes de considerar terminado el incremento.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 3",
+      "evidence": []
+    },
+    {
+      "id": "DOD-7",
+      "kind": "branches",
+      "text": "Hemos integrado las funcionalidades desarrolladas en la rama developer, donde realizamos las pruebas unitarias, de integración, de extremo a extremo y las pruebas automatizadas con Skills de IA que correspondan. Una vez que todas las pruebas requeridas sean satisfactorias y los criterios de aceptación estén validados, fusionamos los cambios con la rama main, garantizando que esta contenga únicamente versiones estables del sistema.",
+      "sourceRef": "ESTRATEGIA / sección 5 / página 4",
+      "evidence": []
+    }
+  ],
+  "regression": {
+    "description": "Se vuelven a ejecutar todas las suites de Hachi. Esta lista histórica clasifica regresión, no certifica cobertura completa.",
+    "testRefs": [
+      {
+        "id": "UNIT-001",
+        "suite": "unit",
+        "name": "universidad: nombre vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-002",
+        "suite": "unit",
+        "name": "universidad: ubicacion vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-003",
+        "suite": "unit",
+        "name": "universidad: correo_contacto vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-004",
+        "suite": "unit",
+        "name": "universidad: telefono_contacto vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-005",
+        "suite": "unit",
+        "name": "universidad: correo vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-006",
+        "suite": "unit",
+        "name": "universidad: contrasena vacío devuelve 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-007",
+        "suite": "unit",
+        "name": "universidad: tipo 123 debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-008",
+        "suite": "unit",
+        "name": "universidad: tipo true debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-009",
+        "suite": "unit",
+        "name": "universidad: tipo {} debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-010",
+        "suite": "unit",
+        "name": "universidad: tipo [] debe producir error de validación",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-011",
+        "suite": "unit",
+        "name": "universidad: datos válidos crean usuario y universidad",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-012",
+        "suite": "unit",
+        "name": "universidad: duplicada",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-013",
+        "suite": "unit",
+        "name": "universidad: error de búsqueda",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-014",
+        "suite": "unit",
+        "name": "universidad: error de Auth",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-015",
+        "suite": "unit",
+        "name": "equivalencia: falta id_materia_origen",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-016",
+        "suite": "unit",
+        "name": "equivalencia: falta id_materia_destino",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-017",
+        "suite": "unit",
+        "name": "equivalencia: falta descripcion",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-018",
+        "suite": "unit",
+        "name": "equivalencia: falta id_universidad",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-019",
+        "suite": "unit",
+        "name": "equivalencia: materias iguales deben devolver HTTP 400",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-020",
+        "suite": "unit",
+        "name": "equivalencia: origen inexistente",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-021",
+        "suite": "unit",
+        "name": "equivalencia: destino inexistente",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-022",
+        "suite": "unit",
+        "name": "equivalencia: identificador rechazado por persistencia",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-023",
+        "suite": "unit",
+        "name": "equivalencia: universidad sin permiso",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-024",
+        "suite": "unit",
+        "name": "equivalencia: archivos faltantes impiden insertar",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-025",
+        "suite": "unit",
+        "name": "equivalencia: datos válidos quedan PENDIENTE",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-026",
+        "suite": "unit",
+        "name": "archivo: vacío",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-027",
+        "suite": "unit",
+        "name": "archivo: formato incompatible",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-028",
+        "suite": "unit",
+        "name": "archivo: PDF truncado",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-029",
+        "suite": "unit",
+        "name": "archivo: DOCX truncado",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-030",
+        "suite": "unit",
+        "name": "archivo: PDF válido",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "UNIT-031",
+        "suite": "unit",
+        "name": "archivo: DOCX válido",
+        "file": "tests/unit/validaciones.test.cjs"
+      },
+      {
+        "id": "API-001",
+        "suite": "api",
+        "name": "/universidades: campos ausentes, 400 JSON en español",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-002",
+        "suite": "api",
+        "name": "/equivalencias: campos ausentes, 400 JSON en español",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-003",
+        "suite": "api",
+        "name": "universidades: tipo incorrecto debe devolver 400 JSON",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-004",
+        "suite": "api",
+        "name": "universidades: duplicada devuelve 409",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-005",
+        "suite": "api",
+        "name": "universidades: registro válido devuelve 201 y universidad",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-006",
+        "suite": "api",
+        "name": "equivalencias: materias iguales deben devolver 400 y mensaje en español",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-007",
+        "suite": "api",
+        "name": "equivalencias: origen inexistente devuelve 400",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-008",
+        "suite": "api",
+        "name": "equivalencias: error del servicio se propaga como 500",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-009",
+        "suite": "api",
+        "name": "equivalencias: registro válido devuelve 201",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-010",
+        "suite": "api",
+        "name": "archivos: solicitud sin archivo devuelve 400",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-011",
+        "suite": "api",
+        "name": "archivos: vacío",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-012",
+        "suite": "api",
+        "name": "archivos: MIME incompatible",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-013",
+        "suite": "api",
+        "name": "archivos: contenido incompatible",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-014",
+        "suite": "api",
+        "name": "archivos: más de 20 MB",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-015",
+        "suite": "api",
+        "name": "archivos: PDF válido devuelve 201",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-016",
+        "suite": "api",
+        "name": "archivos: DOCX válido devuelve 201",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-017",
+        "suite": "api",
+        "name": "archivos: Debe indicar el tipo de documento: pensum o programa.",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-018",
+        "suite": "api",
+        "name": "archivos: Falta id_carrera para subir el pensum.",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-019",
+        "suite": "api",
+        "name": "archivos: Falta id_materia para subir el programa.",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "API-020",
+        "suite": "api",
+        "name": "archivos: error de almacenamiento devuelve 500",
+        "file": "tests/api/endpoints.test.cjs"
+      },
+      {
+        "id": "HU6-01",
+        "suite": "api",
+        "name": "HU6-01 CA1: MINED ACTIVO obtiene HTTP 200 y token ficticio",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-02",
+        "suite": "api",
+        "name": "HU6-02: credenciales incompletas {} devuelven 400 sin consultar Auth",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-03",
+        "suite": "api",
+        "name": "HU6-03: credenciales incompletas {\"correo\":\"qa@example.test\"} devuelven 400 sin consultar Auth",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-04",
+        "suite": "api",
+        "name": "HU6-04: credenciales incompletas {\"contrasena\":\"clave-ficticia\"} devuelven 400 sin consultar Auth",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-05",
+        "suite": "api",
+        "name": "HU6-05: credenciales incompletas {\"correo\":\" \",\"contrasena\":\"clave-ficticia\"} devuelven 400 sin consultar Auth",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-06",
+        "suite": "api",
+        "name": "HU6-06: credenciales incompletas {\"correo\":\"qa@example.test\",\"contrasena\":\"\"} devuelven 400 sin consultar Auth",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-15",
+        "suite": "api",
+        "name": "HU6-15 RN1: MINED INACTIVO no obtiene token",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-17",
+        "suite": "api",
+        "name": "HU6-17 RN4: GET /panel rechaza sin sesión",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-18",
+        "suite": "api",
+        "name": "HU6-18 RN4: GET /panel rechaza token inválido",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-19",
+        "suite": "api",
+        "name": "HU6-19 RN4: GET /panel rechaza rol incorrecto",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-20",
+        "suite": "api",
+        "name": "HU6-20 RN4: GET /panel rechaza cuenta inactiva",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-21",
+        "suite": "api",
+        "name": "HU6-21 RN4: GET /casos/1 rechaza sin sesión",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-22",
+        "suite": "api",
+        "name": "HU6-22 RN4: GET /casos/1 rechaza token inválido",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-23",
+        "suite": "api",
+        "name": "HU6-23 RN4: GET /casos/1 rechaza rol incorrecto",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-24",
+        "suite": "api",
+        "name": "HU6-24 RN4: GET /casos/1 rechaza cuenta inactiva",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-25",
+        "suite": "api",
+        "name": "HU6-25 RN4: PATCH /casos/1/revision rechaza sin sesión",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-26",
+        "suite": "api",
+        "name": "HU6-26 RN4: PATCH /casos/1/revision rechaza token inválido",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-27",
+        "suite": "api",
+        "name": "HU6-27 RN4: PATCH /casos/1/revision rechaza rol incorrecto",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-28",
+        "suite": "api",
+        "name": "HU6-28 RN4: PATCH /casos/1/revision rechaza cuenta inactiva",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-29",
+        "suite": "api",
+        "name": "HU6-29 RN1: middleware permite MINED ACTIVO y propaga identidad verificada",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-07",
+        "suite": "api",
+        "name": "HU6-07 CA2: intento fallido 1, mensaje y estado HTTP",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-08",
+        "suite": "api",
+        "name": "HU6-08 CA2: intento fallido 2, mensaje y estado HTTP",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-09",
+        "suite": "api",
+        "name": "HU6-09 CA2: intento fallido 3, mensaje y estado HTTP",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-10",
+        "suite": "api",
+        "name": "HU6-10 CA2: bloqueo hasta 299999 ms, sin llamadas a Auth; acceso a 300000 ms",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-11",
+        "suite": "api",
+        "name": "HU6-11 RN2: después del bloqueo un nuevo fallo reinicia el contador",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-12",
+        "suite": "api",
+        "name": "HU6-12 RN2: acceso exitoso interrumpe la secuencia de fallos",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-13",
+        "suite": "api",
+        "name": "HU6-13 CA3 propuesto: correo inexistente rechaza sin revelar cuenta ni rol",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-14",
+        "suite": "api",
+        "name": "HU6-14 CA3 propuesto: rol UNIVERSIDAD rechaza sin revelar cuenta ni rol",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU6-16",
+        "suite": "api",
+        "name": "HU6-16 RN3: inexistente y rol incorrecto no revelan cuál dato fue rechazado",
+        "file": "tests/api/hu6-auth.test.cjs"
+      },
+      {
+        "id": "HU8-01",
+        "suite": "api",
+        "name": "HU8-01 CA1: reporte completo, cuatro enlaces de 3600 segundos y solo lectura",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-04",
+        "suite": "api",
+        "name": "HU8-04 CA1: sin sesión no consulta datos",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-05",
+        "suite": "api",
+        "name": "HU8-05 CA1: otro perfil no accede al reporte",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-06",
+        "suite": "api",
+        "name": "HU8-06 CA1: MINED inactivo no accede al reporte",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-08",
+        "suite": "api",
+        "name": "HU8-08 CA1: error de lectura devuelve 500 sin datos parciales",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-07",
+        "suite": "api",
+        "name": "HU8-07 CA2: fallo de Storage mantiene reporte y no expone rutas internas",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F00",
+        "suite": "api",
+        "name": "HU8-F00 CA2: documentos disponibles máscara 0",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F01",
+        "suite": "api",
+        "name": "HU8-F01 CA2: documentos disponibles máscara 1",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F02",
+        "suite": "api",
+        "name": "HU8-F02 CA2: documentos disponibles máscara 2",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F03",
+        "suite": "api",
+        "name": "HU8-F03 CA2: documentos disponibles máscara 3",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F04",
+        "suite": "api",
+        "name": "HU8-F04 CA2: documentos disponibles máscara 4",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F05",
+        "suite": "api",
+        "name": "HU8-F05 CA2: documentos disponibles máscara 5",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F06",
+        "suite": "api",
+        "name": "HU8-F06 CA2: documentos disponibles máscara 6",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F07",
+        "suite": "api",
+        "name": "HU8-F07 CA2: documentos disponibles máscara 7",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F08",
+        "suite": "api",
+        "name": "HU8-F08 CA2: documentos disponibles máscara 8",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F09",
+        "suite": "api",
+        "name": "HU8-F09 CA2: documentos disponibles máscara 9",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F10",
+        "suite": "api",
+        "name": "HU8-F10 CA2: documentos disponibles máscara 10",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F11",
+        "suite": "api",
+        "name": "HU8-F11 CA2: documentos disponibles máscara 11",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F12",
+        "suite": "api",
+        "name": "HU8-F12 CA2: documentos disponibles máscara 12",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F13",
+        "suite": "api",
+        "name": "HU8-F13 CA2: documentos disponibles máscara 13",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-F14",
+        "suite": "api",
+        "name": "HU8-F14 CA2: documentos disponibles máscara 14",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-02",
+        "suite": "api",
+        "name": "HU8-02 CA3: UUID inválido devuelve 404 sin consulta ni datos parciales",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU8-03",
+        "suite": "api",
+        "name": "HU8-03 CA3: caso inexistente devuelve 404 sin datos parciales",
+        "file": "tests/api/hu8-reporte.test.cjs"
+      },
+      {
+        "id": "HU9-01",
+        "suite": "api",
+        "name": "HU9-01 CA1: aceptar persiste estado, revisor autenticado y fecha",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-13",
+        "suite": "api",
+        "name": "HU9-13 CA1: actualización concurrente no sobrescribe revisión ajena",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-14",
+        "suite": "api",
+        "name": "HU9-14 CA1: caso inexistente devuelve 404 sin escritura",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-15",
+        "suite": "api",
+        "name": "HU9-15 CA1: error de lectura devuelve 500 sin escritura",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-16",
+        "suite": "api",
+        "name": "HU9-16 CA1: error de escritura conserva resultado fallido del servicio",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-17",
+        "suite": "api",
+        "name": "HU9-17 CA1: sin sesión no puede revisar",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-18",
+        "suite": "api",
+        "name": "HU9-18 CA1: otro perfil no puede revisar",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-19",
+        "suite": "api",
+        "name": "HU9-19 CA1: MINED inactivo no puede revisar",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-11",
+        "suite": "api",
+        "name": "HU9-11 CA1: caso ACEPTADO rechaza segunda revisión",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-02",
+        "suite": "api",
+        "name": "HU9-02 CA2: advertencia de diez caracteres persiste observación y auditoría",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-03",
+        "suite": "api",
+        "name": "HU9-03 CA2: observación inválida \"\" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-04",
+        "suite": "api",
+        "name": "HU9-04 CA2: observación inválida \"123456789\" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-05",
+        "suite": "api",
+        "name": "HU9-05 CA2: observación inválida \"          \" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-06",
+        "suite": "api",
+        "name": "HU9-06 CA2: observación inválida 1234567890 no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-12",
+        "suite": "api",
+        "name": "HU9-12 CA2: caso ADVERTENCIA rechaza segunda revisión",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-20",
+        "suite": "api",
+        "name": "HU9-20 CA3: decisión heredada constructor se rechaza antes de persistencia",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-07",
+        "suite": "api",
+        "name": "HU9-07 CA3: decisión inválida null no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-08",
+        "suite": "api",
+        "name": "HU9-08 CA3: decisión inválida \"\" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-09",
+        "suite": "api",
+        "name": "HU9-09 CA3: decisión inválida \"RECHAZAR\" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "HU9-10",
+        "suite": "api",
+        "name": "HU9-10 CA3: decisión inválida \"aceptar\" no modifica datos",
+        "file": "tests/api/hu9-revision.test.cjs"
+      },
+      {
+        "id": "S3-PRE-01",
+        "suite": "api",
+        "name": "S3-PRE-01: registro rechaza documentos incompletos máscara 0 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-02",
+        "suite": "api",
+        "name": "S3-PRE-02: registro rechaza documentos incompletos máscara 1 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-03",
+        "suite": "api",
+        "name": "S3-PRE-03: registro rechaza documentos incompletos máscara 2 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-04",
+        "suite": "api",
+        "name": "S3-PRE-04: registro rechaza documentos incompletos máscara 3 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-05",
+        "suite": "api",
+        "name": "S3-PRE-05: registro rechaza documentos incompletos máscara 4 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-06",
+        "suite": "api",
+        "name": "S3-PRE-06: registro rechaza documentos incompletos máscara 5 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-07",
+        "suite": "api",
+        "name": "S3-PRE-07: registro rechaza documentos incompletos máscara 6 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-08",
+        "suite": "api",
+        "name": "S3-PRE-08: registro rechaza documentos incompletos máscara 7 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-09",
+        "suite": "api",
+        "name": "S3-PRE-09: registro rechaza documentos incompletos máscara 8 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-10",
+        "suite": "api",
+        "name": "S3-PRE-10: registro rechaza documentos incompletos máscara 9 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-11",
+        "suite": "api",
+        "name": "S3-PRE-11: registro rechaza documentos incompletos máscara 10 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-12",
+        "suite": "api",
+        "name": "S3-PRE-12: registro rechaza documentos incompletos máscara 11 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-13",
+        "suite": "api",
+        "name": "S3-PRE-13: registro rechaza documentos incompletos máscara 12 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-14",
+        "suite": "api",
+        "name": "S3-PRE-14: registro rechaza documentos incompletos máscara 13 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      },
+      {
+        "id": "S3-PRE-15",
+        "suite": "api",
+        "name": "S3-PRE-15: registro rechaza documentos incompletos máscara 14 sin insertar",
+        "file": "tests/api/sprint3-precondiciones.test.cjs"
+      }
+    ]
+  },
+  "openQuestions": [
+    "No se acreditó E2E real contra el despliegue ni regresión con BD real.",
+    "No consta aceptación formal del Product Owner para los 22 criterios.",
+    "HU-12: los ciclos provienen de pénsums y no de una columna materia.ciclo.",
+    "HU-11: revisar la política documentada de compensación en estados inciertos de RPC/ Auth."
+  ],
+  "outOfScope": [
+    "Aprobaciones humanas y firmas: se registrarán como evidencia independiente, no como PASS automático.",
+    "No se realizan escrituras contra Supabase real durante Hachi."
+  ],
+  "planning": {
+    "note": "Configuración generada para auditoría; toda cobertura declarada incompleta deliberadamente."
+  }
+}
