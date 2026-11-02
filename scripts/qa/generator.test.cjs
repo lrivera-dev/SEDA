@@ -272,3 +272,68 @@ for (const [label, passes, failures] of [['sin fallos', 123, 0], ['un defecto', 
         assert.ok(fs.readFileSync(path.join(folder, 'informe.md'), 'utf8').includes(`PASS ficticio ${passes - 1}`));
     });
 }
+
+
+test('Sprint 4 conserva 4 HU, 22 criterios y 12 DoD sin aprobarlos automáticamente', () => {
+    const config = loadSprint('sprint-4');
+    assert.equal(config.stories.length, 4);
+    assert.deepEqual(config.stories.map(s => [s.id, s.criteria.length]), [['HU-05', 5], ['HU-10', 5], ['HU-11', 6], ['HU-12', 6]]);
+    assert.equal(config.dod.length, 12);
+    assert.ok(config.stories.flatMap(s => s.criteria).every(c => c.verification === 'SIN_EVIDENCIA' && !c.coverageComplete));
+    const m = applyTraceability(model([event('archivo: PDF válido')]), config);
+    assert.equal(m.traceability.dod.length, 12);
+    assert.ok(m.traceability.dod.every(d => d.status === 'SIN_EVIDENCIA'));
+    assert.ok(m.traceability.rows.every(r => r.status !== 'PASS'));
+});
+
+test('Sprint 4 solo registra referencias a nombres de pruebas literales y archivos existentes', () => {
+    const fs = require('node:fs');
+    const config = loadSprint('sprint-4');
+    for (const row of config.stories.flatMap(s => s.criteria)) for (const ref of row.testRefs) {
+        const contents = fs.readFileSync(require('node:path').join(root, ref.file), 'utf8');
+        assert.ok(contents.includes(ref.name), `${row.id}: ${ref.name}`);
+        assert.ok(['unit','api'].includes(ref.suite));
+    }
+});
+
+
+test('Hachi reconoce suite team sin confundirla con unit o api', () => {
+    const { execute } = require('./run.cjs');
+    assert.equal(typeof execute, 'function');
+    const fs = require('node:fs');
+    for (const file of ['exportaciones.test.js','rutas.test.js','validar-archivos.test.js','coincidencia.test.js']) {
+        assert.ok(fs.existsSync(require('node:path').join(__dirname, '../../tests', file)));
+    }
+});
+
+test('la trazabilidad admite referencias a la suite team con nombre y archivo exactos', () => {
+    const { matchRef } = require('./traceability.cjs');
+    const ref = {suite:'team',name:'prueba existente',file:'tests/rutas.test.js'};
+    const cases = [{suite:'team',name:'prueba existente',location:'tests/rutas.test.js:42'}];
+    assert.equal(matchRef(ref,cases),cases[0]);
+    assert.equal(matchRef({...ref,name:'otra prueba'},cases),undefined);
+});
+
+
+test('Sprint 4 explica pendientes distintos y específicos para los 22 CA', () => {
+    const c = loadSprint('sprint-4');
+    const rows = c.stories.flatMap(s => s.criteria);
+    assert.equal(rows.length, 22);
+    assert.equal(new Set(rows.map(r => r.pending[0])).size, 22);
+    assert.ok(rows.find(r => r.id === 'HU-10-CA5').pending.join(' ').includes('cerrarSesion'));
+});
+
+test('Hachi informa evidencia técnica parcial sin aprobar artificialmente criterios', () => {
+    const c = loadSprint('sprint-4');
+    const criterion = c.stories[0].criteria[0];
+    const ref = criterion.testRefs[0];
+    const data = model([event(ref.name)]);
+    const matchingCase = data.cases.find(x => x.name === ref.name);
+    if (matchingCase) { matchingCase.suite = ref.suite; matchingCase.location = `${ref.file}:1`; }
+    const t = applyTraceability(data, c);
+    const row = t.traceability.rows.find(x => x.id === criterion.id);
+    assert.equal(row.status, 'SIN_EVIDENCIA');
+    assert.equal(row.coverageComplete, false);
+    assert.ok(['PARCIAL_CON_PRUEBAS_PASS','SIN_PRUEBAS_APROBADAS'].includes(row.technicalEvidence));
+    assert.ok(row.observations.includes('pruebas vinculadas'));
+});

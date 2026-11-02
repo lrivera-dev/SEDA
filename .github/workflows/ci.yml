@@ -92,6 +92,7 @@ jobs:
             ${{ steps.regresion.outputs.report-directory }}/report-error.json
             ${{ steps.regresion.outputs.report-directory }}/unit.jsonl
             ${{ steps.regresion.outputs.report-directory }}/api.jsonl
+            ${{ steps.regresion.outputs.report-directory }}/team.jsonl
           include-hidden-files: false
           if-no-files-found: error
           retention-days: 14

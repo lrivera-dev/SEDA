@@ -45,8 +45,8 @@ function executiveBlocks(m) {
     for (const r of (t?.rows || []).filter(r => r.proposal).slice(0, 3)) p(`${r.id}: ${r.proposal.status}. La propuesta no aprueba retroactivamente el criterio original; requiere validación formal del Product Owner.`);
     p('Pendientes comunes: navegación y mensajes en navegador, tiempos E2E, ambiente compartido autorizado, revisión por pares y Product Owner.');
     title('Definition of Done y próximos pasos');
-    table(['Criterio de la estrategia', 'Evaluación'], (t?.dod || []).slice(0, 8).map(d => [brief(d.text, 160), `${d.status === 'PASS' ? 'Cumplido' : d.status === 'FAIL' ? 'No cumplido' : 'Sin evidencia completa'}. ${brief(d.evaluation, 170)}`]));
-    if ((t?.dod.length || 0) > 8) p(`${t.dod.length - 8} criterios DoD adicionales en Markdown.`);
+    table(['Criterio de la estrategia', 'Evaluación'], (t?.dod || []).slice(0, 12).map(d => [brief(d.text, 160), `${d.status === 'PASS' ? 'Cumplido' : d.status === 'FAIL' ? 'No cumplido' : 'Sin evidencia completa'}. ${brief(d.evaluation, 170)}`]));
+    if ((t?.dod.length || 0) > 12) p(`${t.dod.length - 12} criterios DoD adicionales en Markdown.`);
     p(brief(t?.closure || 'Sprint no acreditado: faltan evidencias de cobertura y aceptación.', 240));
     p('Acciones: revisar fallos y bloqueos, validar correcciones por pares, repetir pruebas afectadas, completar E2E y solicitar aceptación del PO. No se modifica producción automáticamente.');
     p('Evidencia completa: informe.md, results.json, execution.json, unit.jsonl y api.jsonl. Esta síntesis omite el listado individual de PASS; no elimina ningún resultado.');

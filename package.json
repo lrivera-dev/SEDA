@@ -13,7 +13,8 @@
     "test:isolation": "node --test tests/isolation/supabase.test.cjs tests/isolation/equipo.test.cjs",
     "test:load": "npm run test:isolation && node --test tests/isolation/carga.test.cjs",
     "test:team": "node --require ./tests/helpers/equipo-bootstrap.cjs --test tests/exportaciones.test.js tests/rutas.test.js tests/validar-archivos.test.js tests/coincidencia.test.js",
-    "lint": "node scripts/revisar-sintaxis.js"
+    "lint": "node scripts/revisar-sintaxis.js",
+    "test:qa-team": "node scripts/qa/run.cjs team"
   },
   "keywords": [],
   "author": "",
