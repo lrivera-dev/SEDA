@@ -5,52 +5,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acceso al Sistema</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/tema.css">
   <link rel="stylesheet" href="css/index.css">
 </head>
 
 <body>
 
-  <main class="login-container">
+  <div class="barra-gobierno">Ministerio de Educación, Ciencia y Tecnología · El Salvador</div>
+  <div class="franja-bandera"></div>
 
-    <div class="logo">
-      <div class="logo-icon">↗</div>
+  <header class="encabezado-sitio">
+    <div class="encabezado-sitio__seda">
+      <img class="encabezado-sitio__logo-seda" src="img/logo-seda-blanco.svg" alt="" width="64" height="64">
       <div>
-        <strong>SEDA</strong>
-        <small>Sistema de Equivalencias y Documentación Académica</small>
+        <strong class="encabezado-sitio__nombre">SEDA</strong>
+        <small class="encabezado-sitio__descripcion">Sistema de Equivalencias y Documentación Académica</small>
       </div>
     </div>
+  </header>
 
-    <h1>Acceso al Sistema</h1>
+  <main class="acceso">
 
-    <form id="loginForm">
-      <label for="email">Correo electrónico institucional</label>
+    <section class="acceso__presentacion">
+      <p class="acceso__antetitulo">SEDA</p>
+      <p class="acceso__lema">Sistema de Equivalencias y Documentación Académica</p>
+    </section>
 
-      <div class="input">
-        <span>@</span>
-        <input type="email" id="email" name="correo" placeholder="Ingresa tu correo institucional"
-          autocomplete="username" required>
+    <section class="acceso__panel">
+      <div class="tarjeta tarjeta--destacada acceso__tarjeta">
+        <img class="acceso__logo" src="img/logo-seda.svg" alt="" width="64" height="64">
+
+        <h1>Acceso al Sistema</h1>
+
+        <form id="loginForm">
+          <div class="campo">
+            <label for="email">Correo electrónico institucional</label>
+            <input type="email" id="email" name="correo" placeholder="Ingresa tu correo institucional"
+              autocomplete="username" required>
+          </div>
+
+          <div class="campo">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="contrasena" placeholder="••••••••••••"
+              autocomplete="current-password" required>
+          </div>
+
+          <p id="loginError" class="mensaje mensaje--error" role="alert" hidden></p>
+
+          <button id="loginButton" class="btn btn--bloque" type="submit">
+            Ingresar →
+          </button>
+        </form>
+
+        <p class="acceso__registro">
+          ¿Tu universidad aún no está registrada?
+          <a href="registro.html">Registrarse como universidad</a>
+        </p>
       </div>
-
-      <label for="password">Contraseña</label>
-
-      <div class="input">
-        <span>♙</span>
-        <input type="password" id="password" name="contrasena" placeholder="••••••••••••"
-          autocomplete="current-password" required>
-      </div>
-
-      <p id="loginError" role="alert" hidden></p>
-
-      <button id="loginButton" type="submit">
-        Ingresar →
-      </button>
-    </form>
-    <div class="register">
-      <span>¿Tu universidad aún no está registrada?</span>
-      <a href="registro.html">Registrarse como universidad</a>
-    </div>
+    </section>
 
   </main>
+
+  <footer class="pie-sitio">
+    <span>Ministerio de Educación, Ciencia y Tecnología · San Salvador, El Salvador</span>
+    <span>SEDA · Proyecto académico</span>
+  </footer>
 
   <script src="js/login.js"></script>
 </body>
