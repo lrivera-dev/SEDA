@@ -1,175 +1,157 @@
-.universidades {
-    margin-top: 35px;
-}
+/* Pantallas: universidades del MINED y su detalle.
+   La estructura común y los componentes vienen de tema.css.
+   mined-universidad.js reescribe la clase de .detalle-universidad: su estilo debe vivir aquí. */
 
-.universidades>#estadoUniversidades {
-    color: #626b7b;
-    margin: 18px 0;
-}
-
-#totalUniversidades {
-    color: #626b7b;
-    font-size: 13px;
-    white-space: nowrap;
-}
-
-.tabla-contenedor {
-    overflow-x: auto;
-    margin-top: 18px;
-    background: #fff;
-    border: 1px solid #e7eaf0;
-    border-radius: 10px;
-}
-
-.tabla-contenedor table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 680px;
-}
-
-.tabla-contenedor th,
-.tabla-contenedor td {
-    padding: 15px 18px;
-    text-align: left;
-    border-bottom: 1px solid #e8ebf2;
-}
-
-.tabla-contenedor th {
-    background: #f5f7ff;
-    color: #626b7b;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.tabla-contenedor td {
+#estadoUniversidades,
+#estadoDetalle {
+    margin: 0 0 12px;
+    color: var(--texto-suave);
     font-size: 14px;
 }
 
-.tabla-contenedor tbody tr:last-child td {
-    border-bottom: 0;
+#estadoUniversidades:empty,
+#estadoDetalle:empty {
+    display: none;
+}
+
+#totalUniversidades {
+    color: var(--texto-suave);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* Tabla */
+
+.universidades-tabla {
+    min-width: 540px;
 }
 
 .estado-universidad {
     display: inline-block;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
+    padding: 4px 10px;
+    background: var(--neutro-fondo);
+    border-radius: var(--radio);
+    color: var(--neutro);
+    font-size: 13px;
     font-weight: 700;
 }
 
 .estado-universidad--activa {
-    background: #e6f5ec;
-    color: #247343;
+    background: var(--exito-fondo);
+    color: var(--exito);
 }
 
 .estado-universidad--inactiva {
-    background: #fce9e9;
-    color: #a22d36;
+    background: var(--error-fondo);
+    color: var(--error);
 }
 
 .boton-detalle {
-    padding: 8px 12px;
-    border: 1px solid #dfe3eb;
-    border-radius: 7px;
-    background: #fff;
-    color: #2867df;
-    font: inherit;
-    font-size: 13px;
     font-weight: 600;
-    cursor: pointer;
-    display: inline-block;
-    text-decoration: none;
+    white-space: nowrap;
 }
 
-.boton-detalle:hover {
-    background: #f0f4ff;
-}
+
+/* Detalle de la universidad */
 
 .detalle-universidad {
-    padding: 20px;
-    background: #f8f9fd;
-    border-radius: 8px;
+    padding: 28px;
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-top: 4px solid var(--azul);
+    border-radius: var(--radio);
+}
+
+.detalle-universidad > .estado-universidad {
+    margin: 12px 0 0;
 }
 
 .detalle-universidad h3 {
-    margin: 0 0 14px;
+    margin: 24px 0 12px;
     font-size: 18px;
-}
-
-.detalle-universidad h4 {
-    margin: 20px 0 12px;
-    font-size: 15px;
 }
 
 .detalle-contacto {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 28px;
-    color: #626b7b;
-    font-size: 13px;
+    gap: 6px 28px;
+    color: var(--texto-suave);
+    font-size: 14px;
 }
 
 .detalle-contacto p {
     margin: 0;
+    overflow-wrap: anywhere;
 }
 
 .detalle-carreras {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 12px;
 }
 
+.detalle-carreras > p {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 14px;
+}
+
 .detalle-carrera {
-    padding: 14px;
-    border: 1px solid #e3e7ef;
-    border-radius: 8px;
-    background: #fff;
+    min-width: 0;
+    padding: 14px 16px;
+    background: var(--fondo-suave);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
 }
 
 .detalle-carrera h5 {
-    margin: 0 0 8px;
-    font-size: 14px;
+    margin: 0 0 6px;
+    font-size: 15px;
+    overflow-wrap: anywhere;
 }
 
 .detalle-carrera p,
 .detalle-carrera ul {
-    margin: 8px 0 0;
-    color: #626b7b;
-    font-size: 13px;
+    margin: 6px 0 0;
+    color: var(--texto-suave);
+    font-size: 14px;
 }
 
 .detalle-carrera ul {
     padding-left: 20px;
 }
 
-.detalle-carrera li+li {
-    margin-top: 5px;
+.detalle-carrera li + li {
+    margin-top: 4px;
 }
 
-.enlace-volver {
-    display: inline-block;
-    margin: 20px 0;
-    color: #2867df;
-    font-weight: 600;
-    text-decoration: none;
-}
 
-.enlace-volver:hover {
-    text-decoration: underline;
-}
+/* Celular: los títulos van aquí porque las celdas las crea el JS */
 
-@media (max-width: 700px) {
-    #totalUniversidades {
-        white-space: normal;
-        text-align: right;
-    }
-
-    .tabla-contenedor th,
-    .tabla-contenedor td {
-        padding: 12px;
-    }
-
+@media (max-width: 640px) {
     .detalle-universidad {
-        padding: 14px;
+        padding: 20px 16px;
+    }
+
+    #universidadesBody td:nth-child(1)::before {
+        content: "Universidad";
+    }
+
+    #universidadesBody td:nth-child(2)::before {
+        content: "Ubicación";
+    }
+
+    #universidadesBody td:nth-child(3)::before {
+        content: "Carreras registradas";
+    }
+
+    #universidadesBody td:nth-child(4)::before {
+        content: "Estado";
+    }
+
+    #universidadesBody td:nth-child(5)::before {
+        content: "Acción";
     }
 }
