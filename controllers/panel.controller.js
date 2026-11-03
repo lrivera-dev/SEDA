@@ -8,6 +8,10 @@ async function obtenerPanel(req, res) {
             descripcion,
             estado,
             porcentaje_coincidencia,
+            porcentaje_propuesto,
+            solicitud:solicitud_equivalencia!fk_caso_solicitud_equivalencia (
+                modalidad
+            ),
             fecha_registro,
             materia_origen:materia!caso_equivalencia_id_materia_origen_fkey (
                 nombre,

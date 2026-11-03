@@ -2,181 +2,185 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>MINED - Equivalencias</title>
+  <title>MINED - Equivalencias</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap">
-    <link rel="stylesheet" href="css/tema.css">
-    <link rel="stylesheet" href="css/casos-mined.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/tema.css">
+  <link rel="stylesheet" href="css/casos-mined.css">
 </head>
 
 <body>
 
-    <div class="barra-gobierno">Ministerio de Educación, Ciencia y Tecnología · El Salvador</div>
-    <div class="franja-bandera"></div>
+  <div class="barra-gobierno">Ministerio de Educación, Ciencia y Tecnología · El Salvador</div>
+  <div class="franja-bandera"></div>
 
-    <header class="encabezado-sitio">
-        <div class="encabezado-sitio__seda">
-            <img class="encabezado-sitio__logo-seda" src="img/logo-seda-blanco.svg" alt="" width="64" height="64">
-            <div>
-                <strong class="encabezado-sitio__nombre">SEDA</strong>
-                <small class="encabezado-sitio__descripcion">Sistema de Equivalencias y Documentación Académica</small>
-            </div>
+  <header class="encabezado-sitio">
+    <div class="encabezado-sitio__seda">
+      <img class="encabezado-sitio__logo-seda" src="img/logo-seda-blanco.svg" alt="" width="64" height="64">
+      <div>
+        <strong class="encabezado-sitio__nombre">SEDA</strong>
+        <small class="encabezado-sitio__descripcion">Sistema de Equivalencias y Documentación Académica</small>
+      </div>
+    </div>
+
+    <nav class="navegacion-sitio" aria-label="Navegación principal">
+      <a href="/mined.html" class="active" aria-current="page">Dashboard</a>
+      <a href="/mined-universidades.html">Universidades</a>
+      <button class="logout" id="logoutButton" type="button">Cerrar sesión</button>
+    </nav>
+  </header>
+
+
+  <!-- CONTENIDO -->
+  <main class="contenido">
+
+    <p class="antetitulo">Panel de administración</p>
+    <h1>Equivalencias académicas</h1>
+    <p class="lead">MINED · Administrador</p>
+
+
+    <!-- RESUMEN -->
+    <section class="metricas">
+
+      <div class="metrica">
+        <p class="metrica__etiqueta">Total de casos</p>
+        <p class="metrica__valor" id="totalCasos">0</p>
+      </div>
+
+      <div class="metrica metrica--arena">
+        <p class="metrica__etiqueta">Pendientes</p>
+        <p class="metrica__valor" id="casosPendientes">0</p>
+      </div>
+
+      <div class="metrica metrica--exito">
+        <p class="metrica__etiqueta">Aprobados</p>
+        <p class="metrica__valor" id="casosAprobados">0</p>
+      </div>
+
+    </section>
+
+
+    <!-- EQUIVALENCIAS -->
+    <section class="equivalencias" id="equivalencias">
+
+      <div class="seccion-encabezado">
+
+        <div>
+          <h2>Casos de equivalencia</h2>
+
+          <p>
+            Casos registrados por las universidades
+          </p>
         </div>
 
-        <nav class="navegacion-sitio" aria-label="Navegación principal">
-            <a href="/mined.html" class="active" aria-current="page">Dashboard</a>
-            <a href="/mined.html#equivalencias">Equivalencias</a>
-            <a href="/mined-universidades.html">Universidades</a>
-            <button class="logout" id="logoutButton" type="button">Cerrar sesión</button>
-        </nav>
-    </header>
+        <button class="btn btn--secundario filter">
+          Todos
+        </button>
+
+      </div>
 
 
-    <!-- CONTENIDO -->
-    <main class="contenido">
+      <div id="casosContainer" class="casos-container">
 
-        <p class="antetitulo">Panel de administración</p>
-        <h1>Equivalencias académicas</h1>
-        <p class="lead">MINED · Administrador</p>
+        <!-- Los casos se cargarán aquí -->
 
+        <div class="loading">
+          Cargando equivalencias...
+        </div>
 
-        <!-- RESUMEN -->
-        <section class="metricas">
+      </div>
 
-            <div class="metrica">
-                <p class="metrica__etiqueta">Total de casos</p>
-                <p class="metrica__valor" id="totalCasos">0</p>
-            </div>
+    </section>
 
-            <div class="metrica metrica--arena">
-                <p class="metrica__etiqueta">Pendientes</p>
-                <p class="metrica__valor" id="casosPendientes">0</p>
-            </div>
+  </main>
 
-            <div class="metrica metrica--exito">
-                <p class="metrica__etiqueta">Aprobados</p>
-                <p class="metrica__valor" id="casosAprobados">0</p>
-            </div>
-
-        </section>
+  <footer class="pie-sitio">
+    <span>Ministerio de Educación, Ciencia y Tecnología · San Salvador, El Salvador</span>
+    <span>SEDA · Proyecto académico</span>
+  </footer>
 
 
-        <!-- EQUIVALENCIAS -->
-        <section class="equivalencias" id="equivalencias">
+  <script>
 
-            <div class="seccion-encabezado">
+    async function cargarCasos() {
 
-                <div>
-                    <h2>Casos de equivalencia</h2>
+      const container = document.getElementById('casosContainer');
 
-                    <p>
-                        Casos registrados por las universidades
-                    </p>
-                </div>
+      try {
 
-                <button class="btn btn--secundario filter">
-                    Todos
-                </button>
+        const token = sessionStorage.getItem('seda_access_token');
 
-            </div>
+        if (!token) {
+          window.location.replace('/index.html');
+          return;
+        }
 
+        const response = await fetch('/panel', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
 
-            <div id="casosContainer" class="casos-container">
+        if (response.status === 401) {
+          sessionStorage.removeItem('seda_access_token');
+          window.location.replace('/');
+          return;
+        }
 
-                <!-- Los casos se cargarán aquí -->
-
-                <div class="loading">
-                    Cargando equivalencias...
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-    <footer class="pie-sitio">
-        <span>Ministerio de Educación, Ciencia y Tecnología · San Salvador, El Salvador</span>
-        <span>SEDA · Proyecto académico</span>
-    </footer>
+        if (!response.ok) {
+          throw new Error(data.error || 'Error al obtener los casos');
+        }
 
 
-    <script>
-
-        async function cargarCasos() {
-
-            const container = document.getElementById('casosContainer');
-
-            try {
-
-                const token = sessionStorage.getItem('seda_access_token');
-
-                if (!token) {
-                    window.location.replace('/index.html');
-                    return;
-                }
-
-                const response = await fetch('/panel', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                const data = await response.json();
-
-                if (response.status === 401) {
-                    sessionStorage.removeItem('seda_access_token');
-                    window.location.replace('/');
-                    return;
-                }
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Error al obtener los casos');
-                }
-
-
-                const casos = data.casos || [];
+        const casos = data.casos || [];
 
 
 
 
-                document.getElementById('totalCasos').textContent = casos.length;
+        document.getElementById('totalCasos').textContent = casos.length;
 
 
-                const pendientes = casos.filter(
-                    caso => caso.estado === 'pendiente'
-                ).length;
+        const normalizarEstado = caso =>
+          String(caso.estado || '').trim().toUpperCase();
 
-                document.getElementById('casosPendientes').textContent = pendientes;
+        const pendientes = casos.filter(
+          caso => normalizarEstado(caso) === 'PENDIENTE'
+        ).length;
 
+        document.getElementById('casosPendientes').textContent = pendientes;
 
-                const aprobados = casos.filter(
-                    caso => caso.estado === 'aprobado'
-                ).length;
+        const aprobados = casos.filter(
+          caso => normalizarEstado(caso) === 'ACEPTADO'
+        ).length;
 
-                document.getElementById('casosAprobados').textContent = aprobados;
+        document.getElementById('casosAprobados').textContent = aprobados;
 
-
-                if (casos.length === 0) {
-                    container.innerHTML = `
+        if (casos.length === 0) {
+          container.innerHTML = `
         <div class="empty">
             <p>${data.mensaje || 'No hay casos disponibles para mostrar'}</p>
         </div>
     `;
-                    return;
-                }
+          return;
+        }
 
-                const filas = casos.map(caso => {
+        const filas = casos.map(caso => {
 
-                    const materiaOrigen = caso.materia_origen;
-                    const materiaDestino = caso.materia_destino;
+          const materiaOrigen = caso.materia_origen;
+          const materiaDestino = caso.materia_destino;
+          const esManual = caso.solicitud?.modalidad === 'MANUAL';
+          const porcentaje = esManual
+            ? caso.porcentaje_propuesto
+            : caso.porcentaje_coincidencia;
 
-                    return `
+          return `
 
             <tr>
 
@@ -232,14 +236,14 @@
               <td data-etiqueta="Coincidencia">
 
                 <strong class="coincidencia">
-                  ${caso.porcentaje_coincidencia ?? 0}%
+                  ${porcentaje ?? 0}%
                 </strong>
 
                 <div class="progress">
 
                   <div
                     class="progress-bar"
-                    style="width: ${caso.porcentaje_coincidencia ?? 0}%"
+                    style="width: ${porcentaje ?? 0}%"
                   ></div>
 
                 </div>
@@ -271,10 +275,10 @@
 
           `;
 
-                }).join('');
+        }).join('');
 
 
-                container.innerHTML = `
+        container.innerHTML = `
 
           <div class="tabla-contenedor tabla-contenedor--apilable">
 
@@ -302,28 +306,28 @@
         `;
 
 
-            } catch (error) {
+      } catch (error) {
 
-                container.innerHTML = `
+        container.innerHTML = `
           <div class="error">
             <h3>No se pudieron cargar las equivalencias</h3>
             <p>${error.message}</p>
           </div>
         `;
 
-            }
+      }
 
-        }
+    }
 
 
-        document.getElementById('logoutButton').addEventListener('click', () => {
-            sessionStorage.removeItem('seda_access_token');
-            window.location.replace('/');
-        });
+    document.getElementById('logoutButton').addEventListener('click', () => {
+      sessionStorage.removeItem('seda_access_token');
+      window.location.replace('/');
+    });
 
-        cargarCasos();
+    cargarCasos();
 
-    </script>
+  </script>
 
 </body>
 
