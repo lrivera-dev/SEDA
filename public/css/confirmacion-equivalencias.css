@@ -1,50 +1,43 @@
 /* ==========================================
    SEDA - HU-5
-   Confirmación formal de equivalencias
+   Confirmación formal de equivalencias.
+   Estas clases las generan o buscan checklist.js.
    ========================================== */
-
-.barra-confirmacion[hidden],
-.mensaje-confirmacion[hidden],
-.dialogo-confirmacion__aviso[hidden] {
-    display: none;
-}
 
 /* Estado de confirmación en cada tarjeta */
 
 .hu5-confirmacion {
-    margin: 0 0 16px;
+    margin-bottom: 16px;
 }
 
 .hu5-estado {
     display: inline-flex;
     align-items: center;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.4;
+    padding: 4px 10px;
+    border-radius: var(--radio);
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .hu5-estado--pendiente {
-    background: #eef0f4;
-    color: #555f70;
+    background: var(--neutro-fondo);
+    color: var(--neutro);
 }
 
 .hu5-estado--confirmada {
-    background: #e5f5eb;
-    color: #237a47;
+    background: var(--exito-fondo);
+    color: var(--exito);
 }
 
 .hu5-estado--revisada {
-    background: #e8f0ff;
-    color: #245bc4;
+    background: var(--info-fondo);
+    color: var(--info);
 }
 
 .hu5-detalle {
     margin: 8px 0 0;
-    color: #56637a;
-    font-size: 12px;
-    line-height: 1.5;
+    color: var(--texto-suave);
+    font-size: 13px;
     overflow-wrap: anywhere;
 }
 
@@ -59,10 +52,11 @@
     bottom: 16px;
     margin-top: 24px;
     padding: 16px 20px;
-    background: #ffffff;
-    border: 1px solid #e1e6ef;
-    border-radius: 12px;
-    box-shadow: 0 6px 24px rgba(23, 35, 59, 0.12);
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-top: 4px solid var(--azul);
+    border-radius: var(--radio);
+    box-shadow: 0 6px 20px var(--sombra);
 }
 
 .barra-confirmacion__accion {
@@ -75,7 +69,6 @@
 
 .barra-confirmacion__contador {
     margin: 0;
-    color: #42536e;
     font-size: 14px;
 }
 
@@ -83,71 +76,21 @@
 
 .mensaje-confirmacion {
     margin: 0 0 14px;
-    padding: 12px 15px;
+    padding: 12px 16px;
     border-left: 4px solid;
-    border-radius: 7px;
-    font-size: 13px;
-    line-height: 1.6;
+    border-radius: var(--radio);
+    font-size: 14px;
     overflow-wrap: anywhere;
 }
 
 .mensaje-confirmacion--exito {
-    background: #e5f5eb;
-    border-color: #2f9e5f;
-    color: #1d6a3e;
+    background: var(--exito-fondo);
+    color: var(--exito);
 }
 
 .mensaje-confirmacion--error {
-    background: #fff0f0;
-    border-color: #d74350;
-    color: #a52b37;
-}
-
-/* Botones */
-
-.boton-confirmar,
-.boton-secundario {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 11px 19px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.boton-confirmar {
-    background: #2867df;
-    color: #ffffff;
-    border: 1px solid transparent;
-}
-
-.boton-confirmar:hover:not(:disabled) {
-    background: #1c52b8;
-}
-
-.boton-secundario {
-    background: #ffffff;
-    color: #293a56;
-    border: 1px solid #c9d2e3;
-}
-
-.boton-secundario:hover:not(:disabled) {
-    background: #f3f6fb;
-}
-
-.boton-confirmar:focus-visible,
-.boton-secundario:focus-visible {
-    outline: 3px solid #94b8ff;
-    outline-offset: 3px;
-}
-
-.boton-confirmar:disabled,
-.boton-secundario:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    background: var(--error-fondo);
+    color: var(--error);
 }
 
 /* Diálogo con el resumen de la selección */
@@ -156,26 +99,26 @@
     width: min(560px, calc(100% - 32px));
     max-height: calc(100vh - 48px);
     padding: 24px;
-    border: none;
-    border-radius: 14px;
-    box-shadow: 0 20px 50px rgba(23, 35, 59, 0.3);
-    color: #293a56;
+    background: var(--blanco);
+    border: 0;
+    border-top: 4px solid var(--azul);
+    border-radius: var(--radio);
+    box-shadow: 0 20px 50px var(--sombra);
+    color: var(--texto);
 }
 
 .dialogo-confirmacion::backdrop {
-    background: rgba(23, 35, 59, 0.5);
+    background: var(--velo);
 }
 
 .dialogo-confirmacion h2 {
-    margin: 0 0 8px;
-    font-size: 18px;
-    color: #17233b;
+    margin-bottom: 8px;
 }
 
 .dialogo-confirmacion__texto {
     margin: 0 0 12px;
-    font-size: 13px;
-    color: #56637a;
+    color: var(--texto-suave);
+    font-size: 14px;
 }
 
 .dialogo-confirmacion__lista {
@@ -183,6 +126,8 @@
     margin: 0 0 16px;
     padding: 0;
     overflow-y: auto;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
     list-style: none;
 }
 
@@ -192,8 +137,12 @@
     align-items: center;
     gap: 4px 10px;
     padding: 10px 12px;
-    border-bottom: 1px solid #edf0f5;
-    font-size: 13px;
+    border-bottom: 1px solid var(--borde);
+    font-size: 14px;
+}
+
+.dialogo-confirmacion__item:last-child {
+    border-bottom: 0;
 }
 
 .dialogo-confirmacion__materia {
@@ -201,28 +150,23 @@
     overflow-wrap: anywhere;
 }
 
-.dialogo-confirmacion__porcentaje {
-    color: #17233b;
-}
-
 .dialogo-confirmacion__etiqueta {
     padding: 2px 8px;
-    border-radius: 12px;
-    background: #fff8e6;
-    color: #865c11;
-    font-size: 11px;
-    font-weight: 600;
+    background: var(--advertencia-fondo);
+    border-radius: var(--radio);
+    color: var(--advertencia);
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .dialogo-confirmacion__aviso {
-    margin: 0 0 14px;
-    padding: 13px 16px;
-    background: #fff8e6;
-    border-left: 4px solid #e9ac38;
-    border-radius: 7px;
-    color: #865c11;
-    font-size: 13px;
-    line-height: 1.6;
+    margin-bottom: 14px;
+    padding: 12px 16px;
+    background: var(--advertencia-fondo);
+    border-left: 4px solid var(--advertencia);
+    border-radius: var(--radio);
+    color: var(--advertencia);
+    font-size: 14px;
 }
 
 .dialogo-confirmacion__aviso p {
@@ -233,49 +177,43 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    cursor: pointer;
     font-weight: 600;
+    cursor: pointer;
 }
 
 .dialogo-confirmacion__acepto input {
-    width: 17px;
-    height: 17px;
-    accent-color: #2867df;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--azul);
 }
 
 .dialogo-confirmacion__nota {
     margin: 0 0 18px;
-    color: #56637a;
-    font-size: 12px;
-    line-height: 1.5;
+    color: var(--texto-suave);
+    font-size: 13px;
 }
 
 .dialogo-confirmacion__acciones {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
     gap: 10px;
 }
 
-@media (max-width: 600px) {
+/* Celular */
+
+@media (max-width: 640px) {
     .barra-confirmacion {
         padding: 14px;
     }
 
-    .barra-confirmacion .boton-confirmar,
-    .dialogo-confirmacion__acciones button {
+    .barra-confirmacion .btn,
+    .dialogo-confirmacion__acciones .btn {
         flex: 1 1 100%;
-        min-height: 44px;
     }
 
     .dialogo-confirmacion {
         padding: 18px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .boton-confirmar,
-    .boton-secundario {
-        transition: none;
     }
 }
