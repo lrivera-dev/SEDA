@@ -5,60 +5,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MINED | Detalle de universidad</title>
-    <link rel="stylesheet" href="/css/mined.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap">
+    <link rel="stylesheet" href="/css/tema.css">
     <link rel="stylesheet" href="/css/mined-universidades.css">
 </head>
 
 <body>
-    <div class="dashboard">
-        <aside class="sidebar">
-            <div class="logo">
-                <div class="logo-icon">↗</div>
-                <div>
-                    <strong>SEDA</strong>
-                    <small>Sistema de Equivalencias y Documentación Académica</small>
-                </div>
+
+    <div class="barra-gobierno">Ministerio de Educación, Ciencia y Tecnología · El Salvador</div>
+    <div class="franja-bandera"></div>
+
+    <header class="encabezado-sitio">
+        <div class="encabezado-sitio__seda">
+            <img class="encabezado-sitio__logo-seda" src="/img/logo-seda-blanco.svg" alt="" width="64" height="64">
+            <div>
+                <strong class="encabezado-sitio__nombre">SEDA</strong>
+                <small class="encabezado-sitio__descripcion">Sistema de Equivalencias y Documentación Académica</small>
             </div>
+        </div>
 
-            <nav>
-                <a href="/mined.html">Dashboard</a>
-                <a href="/mined.html#equivalencias">Equivalencias</a>
-                <a href="/mined-universidades.html" class="active" aria-current="page">
-                    Universidades
-                </a>
-            </nav>
+        <nav class="navegacion-sitio" aria-label="Navegación principal">
+            <a href="/mined.html">Dashboard</a>
+            <a href="/mined.html#equivalencias">Equivalencias</a>
+            <a href="/mined-universidades.html" class="active" aria-current="true">Universidades</a>
+            <button class="logout" id="logoutButton" type="button">Cerrar sesión</button>
+        </nav>
+    </header>
 
-            <div class="user">
-                <div class="user-icon">M</div>
-                <div>
-                    <strong>MINED</strong>
-                    <small>Administrador</small>
-                </div>
-            </div>
-        </aside>
+    <main class="contenido">
+        <a class="enlace-volver" href="/mined-universidades.html">
+            ← Volver a universidades
+        </a>
 
-        <main class="content">
-            <header>
-                <div>
-                    <p>Universidades registradas</p>
-                    <h1 id="tituloUniversidad">Detalle de universidad</h1>
-                </div>
-                <button class="logout" id="logoutButton" type="button">
-                    Cerrar sesión
-                </button>
-            </header>
+        <p class="antetitulo">Universidades registradas</p>
+        <h1 id="tituloUniversidad">Detalle de universidad</h1>
+        <p class="lead">MINED · Administrador</p>
 
-            <a class="enlace-volver" href="/mined-universidades.html">
-                ← Volver a universidades
-            </a>
+        <p id="estadoDetalle" role="status" aria-live="polite">
+            Cargando información de la universidad...
+        </p>
 
-            <p id="estadoDetalle" role="status" aria-live="polite">
-                Cargando información de la universidad...
-            </p>
+        <section id="detalleUniversidad" hidden></section>
+    </main>
 
-            <section id="detalleUniversidad" hidden></section>
-        </main>
-    </div>
+    <footer class="pie-sitio">
+        <span>Ministerio de Educación, Ciencia y Tecnología · San Salvador, El Salvador</span>
+        <span>SEDA · Proyecto académico</span>
+    </footer>
 
     <script src="/js/mined-universidad.js"></script>
 </body>

@@ -5,88 +5,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEDA | Equivalencias registradas</title>
-    <link rel="stylesheet" href="/css/dashboard.css">
-    <link rel="stylesheet" href="/css/gestion-academica.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap">
+    <link rel="stylesheet" href="/css/tema.css">
     <link rel="stylesheet" href="/css/equivalencias-tabla.css">
     <script src="/js/proteger-universidad.js"></script>
 </head>
 
 <body>
-    <div class="dashboard">
-        <aside class="sidebar">
-            <div class="logo">
-                <div class="logo-icon">↗</div>
+
+    <div class="barra-gobierno">Ministerio de Educación, Ciencia y Tecnología · El Salvador</div>
+    <div class="franja-bandera"></div>
+
+    <header class="encabezado-sitio">
+        <div class="encabezado-sitio__seda">
+            <img class="encabezado-sitio__logo-seda" src="/img/logo-seda-blanco.svg" alt="" width="64" height="64">
+            <div>
+                <strong class="encabezado-sitio__nombre">SEDA</strong>
+                <small class="encabezado-sitio__descripcion">Sistema de Equivalencias y Documentación Académica</small>
+            </div>
+        </div>
+
+        <nav class="navegacion-sitio" aria-label="Navegación principal">
+            <a href="/universidades.html">Dashboard</a>
+            <a href="/carreras.html">Carreras</a>
+            <a href="/materias.html">Materias</a>
+            <a href="/equivalencias.html" class="active" aria-current="page">Equivalencias</a>
+            <a href="/checklist.html">Checklist de coincidencia</a>
+            <button class="logout" type="button">Cerrar sesión</button>
+        </nav>
+    </header>
+
+    <main class="contenido">
+        <p class="antetitulo">Gestión académica</p>
+        <h1>Equivalencias registradas</h1>
+
+        <section class="equivalencias-seccion">
+            <div class="seccion-encabezado">
                 <div>
-                    <strong>SEDA</strong>
-                    <small>Sistema de Equivalencias y Documentación Académica</small>
+                    <h2>Matriz de equivalencias</h2>
+                    <p>Consulta las solicitudes, sus porcentajes y los dictámenes finales.</p>
                 </div>
+                <a class="btn boton-registrar-equivalencia" href="/subir-equivalencia.html">
+                    Registrar equivalencia
+                </a>
             </div>
 
-            <nav>
-                <a href="/universidades.html">Dashboard</a>
-                <a href="/carreras.html">Carreras</a>
-                <a href="/materias.html">Materias</a>
-                <a href="/equivalencias.html" class="active" aria-current="page">
-                    Equivalencias
-                </a>
-                <a href="/checklist.html">Checklist de coincidencia</a>
-            </nav>
-        </aside>
+            <div class="campo equivalencias-filtros">
+                <label for="filtro-dictamen">Filtrar dictamen</label>
+                <select id="filtro-dictamen">
+                    <option value="TODAS">Todas</option>
+                    <option value="PENDIENTE">Pendientes</option>
+                    <option value="EN_REVISION">En revisión</option>
+                    <option value="ACEPTADO">Aceptadas</option>
+                    <option value="ADVERTENCIA">Con advertencia</option>
+                </select>
+            </div>
 
-        <main class="content">
-            <header>
-                <div>
-                    <p>Gestión académica</p>
-                    <h1>Equivalencias registradas</h1>
-                </div>
-                <button class="logout" type="button">Cerrar sesión</button>
-            </header>
+            <p id="estado-equivalencias" role="status" aria-live="polite">
+                Cargando equivalencias...
+            </p>
 
-            <section class="gestion-card">
-                <div class="gestion-encabezado">
-                    <div>
-                        <h2>Matriz de equivalencias</h2>
-                        <p>Consulta las solicitudes, sus porcentajes y los dictámenes finales.</p>
-                    </div>
-                    <a class="boton-registrar-equivalencia" href="/subir-equivalencia.html">
-                        Registrar equivalencia
-                    </a>
-                </div>
+            <div class="tabla-contenedor tabla-contenedor--apilable">
+                <table class="equivalencias-tabla">
+                    <thead>
+                        <tr>
+                            <th scope="col">Estudiante / código</th>
+                            <th scope="col">Materia de origen</th>
+                            <th scope="col">Materia de destino</th>
+                            <th scope="col">Modalidad</th>
+                            <th scope="col">Porcentaje</th>
+                            <th scope="col">Dictamen final</th>
+                            <th scope="col">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-equivalencias"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
-                <div class="equivalencias-filtros">
-                    <label for="filtro-dictamen">Filtrar dictamen</label>
-                    <select id="filtro-dictamen">
-                        <option value="TODAS">Todas</option>
-                        <option value="PENDIENTE">Pendientes</option>
-                        <option value="EN_REVISION">En revisión</option>
-                        <option value="ACEPTADO">Aceptadas</option>
-                        <option value="ADVERTENCIA">Con advertencia</option>
-                    </select>
-                </div>
-
-                <p id="estado-equivalencias" role="status" aria-live="polite">
-                    Cargando equivalencias...
-                </p>
-
-                <div class="tabla-contenedor">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th scope="col">Estudiante / código</th>
-                                <th scope="col">Materia de origen</th>
-                                <th scope="col">Materia de destino</th>
-                                <th scope="col">Modalidad</th>
-                                <th scope="col">Porcentaje</th>
-                                <th scope="col">Dictamen final</th>
-                                <th scope="col">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-equivalencias"></tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    </div>
+    <footer class="pie-sitio">
+        <span>Ministerio de Educación, Ciencia y Tecnología · San Salvador, El Salvador</span>
+        <span>SEDA · Proyecto académico</span>
+    </footer>
 
     <script src="/js/equivalencias-tabla.js"></script>
 </body>

@@ -7,8 +7,13 @@
 
     <title>SEDA | Checklist de coincidencia</title>
 
-    <!-- Diseño existente de SEDA -->
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap">
+
+    <!-- Tema institucional de SEDA -->
+    <link rel="stylesheet" href="css/tema.css">
 
     <!-- Estilos de nuestra HU-3 -->
     <link rel="stylesheet" href="css/estado-calculo.css">
@@ -19,75 +24,72 @@
 </head>
 
 <body>
-    <div class="dashboard">
 
-        <!-- Menú lateral -->
-        <aside class="sidebar">
-            <div class="logo">
-                <div class="logo-icon">↗</div>
-                <div>
-                    <strong>SEDA</strong>
-                    <small>
-                        Sistema de Equivalencias y
-                        Documentación Académica
-                    </small>
-                </div>
+    <div class="barra-gobierno">Ministerio de Educación, Ciencia y Tecnología · El Salvador</div>
+    <div class="franja-bandera"></div>
+
+    <header class="encabezado-sitio">
+        <div class="encabezado-sitio__seda">
+            <img class="encabezado-sitio__logo-seda" src="img/logo-seda-blanco.svg" alt="" width="64" height="64">
+            <div>
+                <strong class="encabezado-sitio__nombre">SEDA</strong>
+                <small class="encabezado-sitio__descripcion">Sistema de Equivalencias y Documentación Académica</small>
             </div>
+        </div>
 
-            <nav>
-                <a href="/universidades.html">Dashboard</a>
-                <a href="/carreras.html">Carreras</a>
-                <a href="/materias.html">Materias</a>
-                <a href="/equivalencias.html">Equivalencias</a>
-                <a href="/checklist.html" class="active" aria-current="page">
-                    Checklist de coincidencia
-                </a>
-            </nav>
-        </aside>
+        <nav class="navegacion-sitio" aria-label="Navegación principal">
+            <a href="/universidades.html">Dashboard</a>
+            <a href="/carreras.html">Carreras</a>
+            <a href="/materias.html">Materias</a>
+            <a href="/equivalencias.html">Equivalencias</a>
+            <a href="/checklist.html" class="active" aria-current="page">Checklist de coincidencia</a>
+            <button class="logout" type="button">Cerrar sesión</button>
+        </nav>
+    </header>
 
-        <!-- Contenido principal -->
-        <main class="content">
+    <!-- Contenido principal -->
+    <main class="contenido">
 
-            <header>
-                <div>
-                    <p>Gestión académica</p>
-                    <h1>Checklist de coincidencia</h1>
-                </div>
-            </header>
+        <p class="antetitulo">Gestión académica</p>
+        <h1>Checklist de coincidencia</h1>
 
-            <section class="welcome">
-                <h2>Evaluación de equivalencias</h2>
-                <p>
-                    Consulta el porcentaje de coincidencia,
-                    el resultado de la IA y el estado de
-                    evaluación de cada materia.
-                </p>
-            </section>
-
-            <!-- Mensajes generales -->
-            <p id="estado-checklist" role="status" aria-live="polite">
-                La lista de equivalencias todavía
-                no está cargada.
+        <section class="checklist__introduccion">
+            <h2>Evaluación de equivalencias</h2>
+            <p>
+                Consulta el porcentaje de coincidencia,
+                el resultado de la IA y el estado de
+                evaluación de cada materia.
             </p>
+        </section>
 
-            <!-- Aquí aparecerán los casos -->
-            <section id="lista-casos" aria-label="Casos de equivalencia">
-            </section>
+        <!-- Mensajes generales -->
+        <p id="estado-checklist" class="mensaje mensaje--info" role="status" aria-live="polite">
+            La lista de equivalencias todavía
+            no está cargada.
+        </p>
 
-            <!-- HU-5: confirmación formal de equivalencias -->
-            <section id="barra-confirmacion" class="barra-confirmacion"
-                aria-label="Confirmación de equivalencias" hidden>
-                <p id="mensaje-confirmacion" class="mensaje-confirmacion" hidden></p>
-                <div class="barra-confirmacion__accion">
-                    <p id="contador-seleccion" class="barra-confirmacion__contador"></p>
-                    <button type="button" id="boton-confirmar" class="boton-confirmar">
-                        Confirmar equivalencias
-                    </button>
-                </div>
-            </section>
+        <!-- Aquí aparecerán los casos -->
+        <section id="lista-casos" aria-label="Casos de equivalencia">
+        </section>
 
-        </main>
-    </div>
+        <!-- HU-5: confirmación formal de equivalencias -->
+        <section id="barra-confirmacion" class="barra-confirmacion"
+            aria-label="Confirmación de equivalencias" hidden>
+            <p id="mensaje-confirmacion" class="mensaje-confirmacion" hidden></p>
+            <div class="barra-confirmacion__accion">
+                <p id="contador-seleccion" class="barra-confirmacion__contador"></p>
+                <button type="button" id="boton-confirmar" class="btn boton-confirmar">
+                    Confirmar equivalencias
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="pie-sitio">
+        <span>Ministerio de Educación, Ciencia y Tecnología · San Salvador, El Salvador</span>
+        <span>SEDA · Proyecto académico</span>
+    </footer>
 
     <!-- HU-5: resumen de la selección antes de registrar -->
     <dialog id="dialogo-confirmacion" class="dialogo-confirmacion"
@@ -113,10 +115,10 @@
         </p>
 
         <div class="dialogo-confirmacion__acciones">
-            <button type="button" id="boton-cancelar-confirmacion" class="boton-secundario">
+            <button type="button" id="boton-cancelar-confirmacion" class="btn btn--secundario boton-secundario">
                 Cancelar
             </button>
-            <button type="button" id="boton-registrar-confirmacion" class="boton-confirmar">
+            <button type="button" id="boton-registrar-confirmacion" class="btn boton-confirmar">
                 Confirmar y registrar
             </button>
         </div>

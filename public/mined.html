@@ -7,159 +7,104 @@
 
     <title>MINED - Equivalencias</title>
 
-    <link rel="stylesheet" href="css/mined.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap">
+    <link rel="stylesheet" href="css/tema.css">
+    <link rel="stylesheet" href="css/casos-mined.css">
 </head>
 
 <body>
 
-    <div class="dashboard">
+    <div class="barra-gobierno">Ministerio de Educación, Ciencia y Tecnología · El Salvador</div>
+    <div class="franja-bandera"></div>
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
+    <header class="encabezado-sitio">
+        <div class="encabezado-sitio__seda">
+            <img class="encabezado-sitio__logo-seda" src="img/logo-seda-blanco.svg" alt="" width="64" height="64">
+            <div>
+                <strong class="encabezado-sitio__nombre">SEDA</strong>
+                <small class="encabezado-sitio__descripcion">Sistema de Equivalencias y Documentación Académica</small>
+            </div>
+        </div>
 
-            <div class="logo">
+        <nav class="navegacion-sitio" aria-label="Navegación principal">
+            <a href="/mined.html" class="active" aria-current="page">Dashboard</a>
+            <a href="/mined.html#equivalencias">Equivalencias</a>
+            <a href="/mined-universidades.html">Universidades</a>
+            <button class="logout" id="logoutButton" type="button">Cerrar sesión</button>
+        </nav>
+    </header>
 
-                <div class="logo-icon">
-                    ↗
-                </div>
 
-                <div>
-                    <strong>SEDA</strong>
-                    <small>Sistema de Equivalencias y Documentación Académica</small>
-                </div>
+    <!-- CONTENIDO -->
+    <main class="contenido">
 
+        <p class="antetitulo">Panel de administración</p>
+        <h1>Equivalencias académicas</h1>
+        <p class="lead">MINED · Administrador</p>
+
+
+        <!-- RESUMEN -->
+        <section class="metricas">
+
+            <div class="metrica">
+                <p class="metrica__etiqueta">Total de casos</p>
+                <p class="metrica__valor" id="totalCasos">0</p>
             </div>
 
-
-            <nav>
-                <a href="/mined.html" class="active" aria-current="page">Dashboard</a>
-                <a href="/mined.html#equivalencias">Equivalencias</a>
-                <a href="/mined-universidades.html">
-                    Universidades
-                </a>
-            </nav>
-
-
-            <div class="user">
-
-                <div class="user-icon">
-                    M
-                </div>
-
-                <div>
-                    <strong>MINED</strong>
-                    <small>Administrador</small>
-                </div>
-
+            <div class="metrica metrica--arena">
+                <p class="metrica__etiqueta">Pendientes</p>
+                <p class="metrica__valor" id="casosPendientes">0</p>
             </div>
 
-        </aside>
+            <div class="metrica metrica--exito">
+                <p class="metrica__etiqueta">Aprobados</p>
+                <p class="metrica__valor" id="casosAprobados">0</p>
+            </div>
+
+        </section>
 
 
-        <!-- CONTENIDO -->
-        <main class="content">
+        <!-- EQUIVALENCIAS -->
+        <section class="equivalencias" id="equivalencias">
 
-            <header>
+            <div class="seccion-encabezado">
 
                 <div>
+                    <h2>Casos de equivalencia</h2>
 
-                    <p>Panel de administración</p>
-
-                    <h1>
-                        Equivalencias académicas
-                    </h1>
-
+                    <p>
+                        Casos registrados por las universidades
+                    </p>
                 </div>
 
-                <button class="logout" id="logoutButton" type="button">
-                    Cerrar sesión
+                <button class="btn btn--secundario filter">
+                    Todos
                 </button>
 
-            </header>
+            </div>
 
 
-            <!-- RESUMEN -->
-            <section class="summary">
+            <div id="casosContainer" class="casos-container">
 
-                <div class="summary-card">
+                <!-- Los casos se cargarán aquí -->
 
-                    <div>
-                        <p>Total de casos</p>
-                        <h2 id="totalCasos">0</h2>
-                    </div>
-
-                    <div class="summary-icon">
-                        #
-                    </div>
-
+                <div class="loading">
+                    Cargando equivalencias...
                 </div>
 
+            </div>
 
-                <div class="summary-card">
+        </section>
 
-                    <div>
-                        <p>Pendientes</p>
-                        <h2 id="casosPendientes">0</h2>
-                    </div>
+    </main>
 
-                    <div class="summary-icon">
-                        !
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <div>
-                        <p>Aprobados</p>
-                        <h2 id="casosAprobados">0</h2>
-                    </div>
-
-                    <div class="summary-icon">
-                        ✓
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- EQUIVALENCIAS -->
-            <section class="equivalencias" id="equivalencias">
-
-                <div class="section-header">
-
-                    <div>
-                        <h2>Casos de equivalencia</h2>
-
-                        <p>
-                            Casos registrados por las universidades
-                        </p>
-                    </div>
-
-                    <button class="filter">
-                        Todos
-                    </button>
-
-                </div>
-
-
-                <div id="casosContainer" class="casos-container">
-
-                    <!-- Los casos se cargarán aquí -->
-
-                    <div class="loading">
-                        Cargando equivalencias...
-                    </div>
-
-                </div>
-
-            </section>
-
-        </main>
-
-    </div>
+    <footer class="pie-sitio">
+        <span>Ministerio de Educación, Ciencia y Tecnología · San Salvador, El Salvador</span>
+        <span>SEDA · Proyecto académico</span>
+    </footer>
 
 
     <script>
@@ -226,102 +171,69 @@
                     return;
                 }
 
-                container.innerHTML = casos.map(caso => {
+                const filas = casos.map(caso => {
 
                     const materiaOrigen = caso.materia_origen;
                     const materiaDestino = caso.materia_destino;
 
                     return `
 
-            <article class="caso">
+            <tr>
 
-              <div class="caso-header">
+              <td data-etiqueta="Caso">
 
-                <div>
-
-                  <span class="caso-id">
-                    Caso #${caso.id_caso}
-                  </span>
-
-                  <span class="estado ${caso.estado}">
-                    ${caso.estado}
-                  </span>
-
-                </div>
+                <span class="caso-id">
+                  Caso #${caso.id_caso}
+                </span>
 
                 <span class="fecha">
                   ${new Date(caso.fecha_registro).toLocaleDateString()}
                 </span>
 
-              </div>
+              </td>
 
 
-              <div class="materias">
+              <!-- Materia origen -->
+              <td data-etiqueta="Materia origen">
 
-                <!-- Materia origen -->
-                <div class="materia">
+                <span class="materia-nombre">
+                  ${materiaOrigen?.nombre || 'Sin información'}
+                </span>
 
-                  <span class="materia-label">
-                    MATERIA ORIGEN
-                  </span>
+                <span class="materia-detalle">
+                  ${materiaOrigen?.carrera?.nombre || 'Sin carrera'}
+                </span>
 
-                  <h3>
-                    ${materiaOrigen?.nombre || 'Sin información'}
-                  </h3>
+                <span class="materia-detalle">
+                  ${materiaOrigen?.carrera?.universidad?.nombre || 'Sin universidad'}
+                </span>
 
-                  <p>
-                    ${materiaOrigen?.carrera?.nombre || 'Sin carrera'}
-                  </p>
-
-                  <small>
-                    ${materiaOrigen?.carrera?.universidad?.nombre || 'Sin universidad'}
-                  </small>
-
-                </div>
+              </td>
 
 
-                <div class="flecha">
-                  →
-                </div>
+              <!-- Materia destino -->
+              <td data-etiqueta="Materia destino">
+
+                <span class="materia-nombre">
+                  ${materiaDestino?.nombre || 'Sin información'}
+                </span>
+
+                <span class="materia-detalle">
+                  ${materiaDestino?.carrera?.nombre || 'Sin carrera'}
+                </span>
+
+                <span class="materia-detalle">
+                  ${materiaDestino?.carrera?.universidad?.nombre || 'Sin universidad'}
+                </span>
+
+              </td>
 
 
-                <!-- Materia destino -->
-                <div class="materia">
+              <td data-etiqueta="Coincidencia">
 
-                  <span class="materia-label">
-                    MATERIA DESTINO
-                  </span>
-
-                  <h3>
-                    ${materiaDestino?.nombre || 'Sin información'}
-                  </h3>
-
-                  <p>
-                    ${materiaDestino?.carrera?.nombre || 'Sin carrera'}
-                  </p>
-
-                  <small>
-                    ${materiaDestino?.carrera?.universidad?.nombre || 'Sin universidad'}
-                  </small>
-
-                </div>
-
-              </div>
-
-
-              <div class="caso-footer">
-
-                <div>
-
-                  <span>
-                    Coincidencia
-                  </span>
-
-                  <strong>
-                    ${caso.porcentaje_coincidencia ?? 0}%
-                  </strong>
-
-                </div>
+                <strong class="coincidencia">
+                  ${caso.porcentaje_coincidencia ?? 0}%
+                </strong>
 
                 <div class="progress">
 
@@ -332,6 +244,19 @@
 
                 </div>
 
+              </td>
+
+
+              <td data-etiqueta="Estado">
+
+                <span class="etiqueta estado ${caso.estado}">
+                  ${caso.estado}
+                </span>
+
+              </td>
+
+
+              <td data-etiqueta="Acción">
 
                 <a
                     class="ver-caso"
@@ -340,13 +265,41 @@
                     Ver reporte
                 </a>
 
-              </div>
+              </td>
 
-            </article>
+            </tr>
 
           `;
 
                 }).join('');
+
+
+                container.innerHTML = `
+
+          <div class="tabla-contenedor tabla-contenedor--apilable">
+
+            <table class="casos-tabla">
+
+              <thead>
+                <tr>
+                  <th scope="col">Caso</th>
+                  <th scope="col">Materia origen</th>
+                  <th scope="col">Materia destino</th>
+                  <th scope="col">Coincidencia</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Acción</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                ${filas}
+              </tbody>
+
+            </table>
+
+          </div>
+
+        `;
 
 
             } catch (error) {
