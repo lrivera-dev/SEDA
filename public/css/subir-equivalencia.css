@@ -78,6 +78,54 @@
   grid-column: 1 / -1;
 }
 
+.documentos-comparacion {
+  padding: 18px;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--azul);
+  border-radius: var(--radio);
+}
+
+.documentos-comparacion h3,
+.documentos-comparacion h4 {
+  margin: 0 0 8px;
+  color: var(--azul-marino);
+}
+
+.documentos-comparacion__ayuda,
+.documentos-comparacion__estado,
+.documentos-comparacion__lado p {
+  margin: 0 0 12px;
+  color: var(--texto-suave);
+}
+
+.documentos-comparacion__columnas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.documentos-comparacion__lado {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  background: var(--fondo-suave);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+.documentos-comparacion__lado p {
+  margin-bottom: 4px;
+}
+
+.documentos-comparacion__lado a {
+  width: fit-content;
+  color: var(--azul);
+  font-weight: 600;
+}
+
 .datos-manuales label:not(:first-child) {
   margin-top: 10px;
 }
@@ -198,7 +246,8 @@
 @media (max-width: 760px) {
   .fila-origen,
   .fila-destino,
-  .fila-nota {
+  .fila-nota,
+  .documentos-comparacion__columnas {
     grid-template-columns: minmax(0, 1fr);
   }
 }

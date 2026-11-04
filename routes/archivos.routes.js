@@ -4,10 +4,17 @@ const upload = require('../middlewares/upload');
 const validarArchivo = require('../middlewares/validarArchivo');
 const {
     subirArchivo,
-    obtenerEnlaceDocumento
+    obtenerEnlaceDocumento,
+    obtenerDocumentosComparacion
 } = require('../controllers/archivos.controller');
 
 const validarUniversidad = require('../middlewares/validarUniversidad');
+
+router.post(
+    '/comparacion',
+    validarUniversidad,
+    obtenerDocumentosComparacion
+);
 
 router.get(
     '/:tipo/:id_registro/enlace',

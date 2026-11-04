@@ -423,10 +423,7 @@ async function registrarSolicitudEquivalencia(req, res) {
             );
         }
 
-        if (
-            modalidad === 'AUTOMATICA' &&
-            Array.isArray(data?.ids_caso)
-        ) {
+        if (Array.isArray(data?.ids_caso)) {
             for (const idCaso of data.ids_caso) {
                 try {
                     colaEvaluacion.encolar(idCaso);

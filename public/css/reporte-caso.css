@@ -55,6 +55,19 @@
   margin-bottom: 0;
 }
 
+.reporte__ia-aviso {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-left: 4px solid var(--info);
+  border-radius: var(--radio);
+  background: var(--info-fondo);
+  color: var(--info);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+  white-space: normal;
+}
+
 
 .reporte__volver-error {
   margin-top: 16px;

@@ -1,5 +1,6 @@
 const supabase = require('../supabaseClient');
 const gestionarDocumentos = require('../servicios/gestionar-documentos');
+const { generarEnlacesDocumentos } = require('../servicios/documentos-caso');
 
 const EXTENSIONES_POR_MIME = {
     'application/pdf': 'pdf',
@@ -8,6 +9,97 @@ const EXTENSIONES_POR_MIME = {
 const REGEX_UUID =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DURACION_ENLACE_DOCUMENTO_SEGUNDOS = 3600;
+
+async function obtenerDocumentosComparacion(req, res) {
+    const idMateriaOrigen = req.body?.id_materia_origen;
+    const idMateriaDestino = req.body?.id_materia_destino;
+
+    if (
+        !REGEX_UUID.test(idMateriaOrigen || '') ||
+        !REGEX_UUID.test(idMateriaDestino || '') ||
+        idMateriaOrigen === idMateriaDestino
+    ) {
+        return res.status(400).json({
+            error: 'Las materias seleccionadas no son válidas.'
+        });
+    }
+
+    const seleccion = `
+        id_materia,
+        nombre,
+        programa_url,
+        carrera!inner (
+            nombre,
+            pensum_url,
+            id_universidad,
+            universidad!inner (
+                nombre,
+                estado
+            )
+        )
+    `;
+
+    const [
+        { data: materiaOrigen, error: errorOrigen },
+        { data: materiaDestino, error: errorDestino }
+    ] = await Promise.all([
+        supabase
+            .from('materia')
+            .select(seleccion)
+            .eq('id_materia', idMateriaOrigen)
+            .eq('carrera.id_universidad', req.usuario.id_universidad)
+            .maybeSingle(),
+        supabase
+            .from('materia')
+            .select(seleccion)
+            .eq('id_materia', idMateriaDestino)
+            .eq('carrera.universidad.estado', 'ACTIVA')
+            .maybeSingle()
+    ]);
+
+    if (errorOrigen || errorDestino) {
+        console.error(
+            'No se pudieron consultar los documentos de comparación:',
+            errorOrigen?.message || errorDestino?.message
+        );
+        return res.status(500).json({
+            error: 'No se pudieron consultar los documentos de comparación.'
+        });
+    }
+
+    // La materia de origen debe pertenecer a la universidad autenticada.
+    // El destino se limita al catálogo de universidades activas.
+    if (!materiaOrigen || !materiaDestino) {
+        return res.status(404).json({
+            error: 'No se encontraron las materias para comparar.'
+        });
+    }
+
+    const casoTemporal = {
+        materia_origen: materiaOrigen,
+        materia_destino: materiaDestino
+    };
+    const { enlaces, documentos_faltantes } =
+        await generarEnlacesDocumentos(casoTemporal);
+
+    if (documentos_faltantes.length > 0) {
+        return res.status(503).json({
+            error: 'No se pudieron preparar todos los documentos para comparar.'
+        });
+    }
+
+    const describirMateria = (materia) => ({
+        nombre: materia.nombre,
+        carrera: materia.carrera.nombre,
+        universidad: materia.carrera.universidad.nombre
+    });
+
+    return res.status(200).json({
+        origen: describirMateria(materiaOrigen),
+        destino: describirMateria(materiaDestino),
+        enlaces
+    });
+}
 
 async function obtenerEnlaceDocumento(req, res) {
     const { tipo, id_registro: idRegistro } = req.params;
@@ -236,4 +328,8 @@ async function subirArchivo(req, res) {
     return res.status(201).json(respuesta);
 }
 
-module.exports = { subirArchivo, obtenerEnlaceDocumento };
+module.exports = {
+    subirArchivo,
+    obtenerEnlaceDocumento,
+    obtenerDocumentosComparacion
+};

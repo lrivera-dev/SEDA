@@ -144,11 +144,134 @@
         return [...contFilas.querySelectorAll('.fila')];
     }
 
+    function limpiarDocumentosComparacion(fila) {
+        const panel = fila.querySelector('.documentos-comparacion');
+        const estado = panel.querySelector('.documentos-comparacion__estado');
+
+        panel.hidden = true;
+        estado.textContent = '';
+        panel.querySelector('.f-contexto-origen').textContent = '';
+        panel.querySelector('.f-contexto-destino').textContent = '';
+        panel.querySelectorAll('[data-documento]').forEach((enlace) => {
+            enlace.removeAttribute('href');
+            enlace.hidden = true;
+        });
+    }
+
+    async function actualizarDocumentosComparacion(fila) {
+        const panel = fila.querySelector('.documentos-comparacion');
+        const estado = panel.querySelector('.documentos-comparacion__estado');
+        const idMateriaOrigen = fila.querySelector('.f-origen').value;
+        const idMateriaDestino = fila.querySelector('.f-destino').value;
+        const numeroSolicitud = Number(fila.dataset.documentosSolicitud || 0) + 1;
+
+        fila.dataset.documentosSolicitud = String(numeroSolicitud);
+
+        if (
+            modalidadInput.value !== 'MANUAL' ||
+            !idMateriaOrigen ||
+            !idMateriaDestino
+        ) {
+            limpiarDocumentosComparacion(fila);
+            return;
+        }
+
+        panel.hidden = false;
+        estado.textContent = 'Preparando enlaces seguros a los documentos…';
+        panel.querySelector('.f-contexto-origen').textContent = '';
+        panel.querySelector('.f-contexto-destino').textContent = '';
+        panel.querySelectorAll('[data-documento]').forEach((enlace) => {
+            enlace.removeAttribute('href');
+            enlace.hidden = true;
+        });
+
+        const token = obtenerTokenUniversidad();
+
+        if (!token) {
+            cerrarSesionUniversidad();
+            return;
+        }
+
+        try {
+            const respuesta = await fetch('/archivos/comparacion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    id_materia_origen: idMateriaOrigen,
+                    id_materia_destino: idMateriaDestino
+                })
+            });
+
+            const datos = await respuesta.json().catch(() => ({}));
+
+            if (respuesta.status === 401) {
+                cerrarSesionUniversidad();
+                return;
+            }
+
+            if (!respuesta.ok) {
+                throw new Error(
+                    datos.error || 'No se pudieron preparar los documentos.'
+                );
+            }
+
+            const solicitudVigente =
+                fila.isConnected &&
+                fila.dataset.documentosSolicitud === String(numeroSolicitud) &&
+                modalidadInput.value === 'MANUAL' &&
+                fila.querySelector('.f-origen').value === idMateriaOrigen &&
+                fila.querySelector('.f-destino').value === idMateriaDestino;
+
+            if (!solicitudVigente) return;
+
+            const describirMateria = (materia) =>
+                `${materia.nombre} · ${materia.carrera} · ${materia.universidad}`;
+
+            panel.querySelector('.f-contexto-origen').textContent =
+                describirMateria(datos.origen);
+            panel.querySelector('.f-contexto-destino').textContent =
+                describirMateria(datos.destino);
+
+            panel.querySelectorAll('[data-documento]').forEach((enlace) => {
+                const url = datos.enlaces?.[enlace.dataset.documento];
+
+                if (typeof url !== 'string') return;
+
+                try {
+                    const protocolo = new URL(url).protocol;
+                    if (protocolo !== 'https:' && protocolo !== 'http:') return;
+                } catch {
+                    return;
+                }
+
+                enlace.href = url;
+                enlace.hidden = false;
+            });
+
+            estado.textContent = 'Documentos disponibles para consultar.';
+        } catch (error) {
+            const solicitudVigente =
+                fila.isConnected &&
+                fila.dataset.documentosSolicitud === String(numeroSolicitud) &&
+                modalidadInput.value === 'MANUAL' &&
+                fila.querySelector('.f-origen').value === idMateriaOrigen &&
+                fila.querySelector('.f-destino').value === idMateriaDestino;
+
+            if (solicitudVigente) {
+                estado.textContent = error.message ||
+                    'No se pudieron preparar los documentos.';
+            }
+        }
+    }
+
     function actualizarCamposModalidad() {
         const esManual = modalidadInput.value === 'MANUAL';
 
         ayudaModalidad.textContent = esManual
-            ? 'Propón un porcentaje y respáldalo con una justificación académica.'
+            ? 'Propón un porcentaje y respáldalo con una justificación académica. SEDA también generará un análisis de IA para apoyar la revisión del MINED.'
             : 'SEDA calculará el porcentaje y generará el análisis con IA.';
 
         filas().forEach((fila) => {
@@ -159,6 +282,7 @@
             camposManuales.hidden = !esManual;
             porcentaje.required = esManual;
             justificacion.required = esManual;
+            actualizarDocumentosComparacion(fila);
         });
     }
 
@@ -251,6 +375,8 @@
             (materia) => materia.id_materia,
             (materia) => materia.nombre
         );
+
+        actualizarDocumentosComparacion(fila);
     }
 
     function actualizarOpciones() {
@@ -306,6 +432,14 @@
         selectCarrera.addEventListener('change', () => {
             selectMateria.value = '';
             actualizarOpcionesFila(fila);
+        });
+
+        selectMateriaOrigen.addEventListener('change', () => {
+            actualizarDocumentosComparacion(fila);
+        });
+
+        selectMateria.addEventListener('change', () => {
+            actualizarDocumentosComparacion(fila);
         });
 
         contFilas.append(fila);
