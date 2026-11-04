@@ -7,6 +7,8 @@
 (() => {
     const lista = document.getElementById("lista-casos");
     const mensaje = document.getElementById("estado-checklist");
+    const filtroEnvioContenedor = document.getElementById("filtro-envio-contenedor");
+    const filtroEnvio = document.getElementById("filtro-envio");
 
     // HU-5: elementos de la confirmación.
     const barraConfirmacion = document.getElementById("barra-confirmacion");
@@ -30,6 +32,8 @@
 
     const selecciones = new Map();
     let ultimosCasos = [];
+    let casosVisibles = [];
+    let datosChecklist = null;
     let casosEnConfirmacion = [];
     let confirmando = false;
     let ultimaRespuesta = null;
@@ -115,29 +119,35 @@
     }
 
     function casosSeleccionados() {
-        return ultimosCasos.filter(
+        return casosVisibles.filter(
             (caso) => casoConfirmable(caso) && estaSeleccionado(caso)
         );
     }
 
-    function actualizarBarra() {
-        barraConfirmacion.hidden = ultimosCasos.length === 0;
-
-        const seleccionadas = casosSeleccionados().length;
-        botonConfirmar.hidden = seleccionadas === 0;
-        const confirmadas = ultimosCasos.filter(
-            (caso) => caso.confirmada_universidad === true
-        ).length;
-
-        let texto = seleccionadas === 1
-            ? "1 equivalencia seleccionada"
-            : `${seleccionadas} equivalencias seleccionadas`;
-
-        if (confirmadas > 0) {
-            texto += ` · ${confirmadas} ${confirmadas === 1 ? "ya enviada al MINED" : "ya enviadas al MINED"}`;
+    function filtrarCasos(casos) {
+        if (filtroEnvio.value === "PENDIENTES") {
+            return casos.filter((caso) => caso.confirmada_universidad !== true);
         }
 
-        contadorSeleccion.textContent = texto;
+        if (filtroEnvio.value === "ENVIADAS") {
+            return casos.filter((caso) => caso.confirmada_universidad === true);
+        }
+
+        return casos;
+    }
+
+    function actualizarBarra() {
+        const seleccionadas = casosSeleccionados().length;
+        const haySeleccion = seleccionadas > 0;
+
+        contadorSeleccion.hidden = !haySeleccion;
+        botonConfirmar.hidden = !haySeleccion;
+        barraConfirmacion.hidden = ultimosCasos.length === 0 ||
+            (!haySeleccion && mensajeConfirmacion.hidden);
+
+        contadorSeleccion.textContent = haySeleccion
+            ? `${seleccionadas} ${seleccionadas === 1 ? "equivalencia seleccionada" : "equivalencias seleccionadas"}`
+            : "";
     }
 
     function ocultarMensajeConfirmacion() {
@@ -234,15 +244,34 @@
         }
 
         // E2: la evaluación no está terminada.
-        const sinEvaluar = seleccion.filter((caso) =>
-            caso.estado_calculo !== "CALCULADO" ||
-            caso.porcentaje_coincidencia === null ||
-            caso.porcentaje_coincidencia === undefined
-        );
+        const sinEvaluar = seleccion.filter((caso) => {
+            if (caso.modalidad === "MANUAL") {
+                const valorPorcentaje = caso.porcentaje_propuesto;
+                const porcentaje = Number(valorPorcentaje);
+                return valorPorcentaje === null ||
+                    valorPorcentaje === undefined ||
+                    valorPorcentaje === "" ||
+                    !Number.isFinite(porcentaje) ||
+                    porcentaje < 0 ||
+                    porcentaje > 100 ||
+                    typeof caso.justificacion_manual !== "string" ||
+                    caso.justificacion_manual.trim() === "";
+            }
+
+            return caso.estado_calculo !== "CALCULADO" ||
+                caso.porcentaje_coincidencia === null ||
+                caso.porcentaje_coincidencia === undefined;
+        });
 
         if (sinEvaluar.length > 0) {
+            const hayManualIncompleta = sinEvaluar.some(
+                (caso) => caso.modalidad === "MANUAL"
+            );
+            const mensaje = hayManualIncompleta
+                ? "Completa el porcentaje propuesto y la justificación de la equivalencia manual"
+                : MENSAJE_EVALUACION_PENDIENTE;
             mostrarMensajeConfirmacion(
-                `${MENSAJE_EVALUACION_PENDIENTE} (${sinEvaluar.map(nombreCaso).join(", ")})`,
+                `${mensaje} (${sinEvaluar.map(nombreCaso).join(", ")})`,
                 "error"
             );
             return;
@@ -464,6 +493,7 @@
 
     function mostrarChecklist(datos) {
         lista.replaceChildren();
+        datosChecklist = datos;
 
         const casos = Array.isArray(datos.casos)
             ? datos.casos
@@ -477,6 +507,8 @@
 
         // HU-5: la barra de confirmación depende de los casos mostrados.
         ultimosCasos = casos;
+        casosVisibles = filtrarCasos(casos);
+        filtroEnvioContenedor.hidden = casos.length === 0;
         actualizarBarra();
 
         if (casos.length === 0 && incompletos.length === 0) {
@@ -492,8 +524,16 @@
             ? "Todas las materias están aprobadas"
             : `${aprobadas} aprobadas y ${pendientes} pendientes de análisis`;
 
-        for (const caso of casos) {
+        for (const caso of casosVisibles) {
             lista.appendChild(crearFila(caso));
+        }
+
+        if (casos.length > 0 && casosVisibles.length === 0) {
+            lista.appendChild(crearElemento(
+                "p",
+                "checklist-filtro__vacio",
+                "No hay equivalencias en esta categoría."
+            ));
         }
 
         // Los casos sin documentos no pueden seleccionarse.
@@ -605,6 +645,11 @@
     });
     // HU-5: eventos de la confirmación.
     botonConfirmar.addEventListener("click", abrirResumen);
+    filtroEnvio.addEventListener("change", () => {
+        if (datosChecklist) {
+            mostrarChecklist(datosChecklist);
+        }
+    });
     botonCancelar.addEventListener("click", () => dialogo.close());
     casillaAceptoBaja.addEventListener("change", actualizarBotonRegistrar);
     botonRegistrar.addEventListener("click", registrarConfirmacion);

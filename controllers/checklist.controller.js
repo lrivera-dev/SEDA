@@ -271,6 +271,7 @@ const ERRORES_CONFIRMACION = {
     CASO_YA_REVISADO: { estado: 409, mensaje: 'Uno o más casos ya fueron revisados por el MINED y no se pueden volver a enviar.' },
     CASO_YA_CONFIRMADO: { estado: 409, mensaje: 'Una o más equivalencias ya fueron enviadas al MINED.' },
     CALCULO_INCOMPLETO: { estado: 409, mensaje: 'Debes completar la evaluación antes de enviar esta equivalencia' },
+    PROPUESTA_MANUAL_INCOMPLETA: { estado: 409, mensaje: 'Completa el porcentaje propuesto y la justificación de la equivalencia manual.' },
     DOCUMENTOS_INCOMPLETOS: { estado: 409, mensaje: 'Uno o más casos no tienen sus 4 documentos cargados.' }
 };
 
