@@ -21,12 +21,12 @@
     const botonCancelar = document.getElementById("boton-cancelar-confirmacion");
     const botonRegistrar = document.getElementById("boton-registrar-confirmacion");
 
-    const MENSAJE_SIN_SELECCION = "Selecciona al menos una equivalencia para confirmar";
+    const MENSAJE_SIN_SELECCION = "Selecciona al menos una equivalencia para enviar al MINED";
     const MENSAJE_EVALUACION_PENDIENTE =
-        "Debes completar la evaluación antes de confirmar esta equivalencia";
+        "Debes completar la evaluación antes de enviar esta equivalencia";
     const MENSAJE_ERROR_GUARDADO =
-        "No se pudieron registrar las equivalencias. Intenta de nuevo";
-    const TEXTO_BOTON_REGISTRAR = "Confirmar y registrar";
+        "No se pudieron enviar las equivalencias al MINED. Intenta de nuevo";
+    const TEXTO_BOTON_REGISTRAR = "Enviar al MINED";
 
     const selecciones = new Map();
     let ultimosCasos = [];
@@ -124,6 +124,7 @@
         barraConfirmacion.hidden = ultimosCasos.length === 0;
 
         const seleccionadas = casosSeleccionados().length;
+        botonConfirmar.hidden = seleccionadas === 0;
         const confirmadas = ultimosCasos.filter(
             (caso) => caso.confirmada_universidad === true
         ).length;
@@ -133,7 +134,7 @@
             : `${seleccionadas} equivalencias seleccionadas`;
 
         if (confirmadas > 0) {
-            texto += ` · ${confirmadas} ${confirmadas === 1 ? "ya confirmada" : "ya confirmadas"}`;
+            texto += ` · ${confirmadas} ${confirmadas === 1 ? "ya enviada al MINED" : "ya enviadas al MINED"}`;
         }
 
         contadorSeleccion.textContent = texto;
@@ -154,38 +155,48 @@
 
     function crearEstadoConfirmacion(caso) {
         const contenedor = crearElemento("div", "hu5-confirmacion");
+        const estado = String(caso.estado_caso || "").toUpperCase();
+
+        if (estado === "EN_REVISION") {
+            contenedor.appendChild(crearElemento(
+                "span",
+                "hu5-estado hu5-estado--revisada",
+                "En revisión del MINED"
+            ));
+            return contenedor;
+        }
+
+        if (estado === "ACEPTADO" || estado === "ADVERTENCIA") {
+            contenedor.appendChild(crearElemento(
+                "span",
+                "hu5-estado hu5-estado--revisada",
+                "Revisada por el MINED"
+            ));
+            return contenedor;
+        }
 
         if (caso.confirmada_universidad === true) {
             contenedor.appendChild(crearElemento(
-                "span", "hu5-estado hu5-estado--confirmada", "Confirmada por la universidad"
+                "span",
+                "hu5-estado hu5-estado--confirmada",
+                "Enviada al MINED · pendiente de revisión"
             ));
 
             if (caso.fecha_confirmacion) {
                 contenedor.appendChild(crearElemento(
-                    "p", "hu5-detalle",
-                    `Fecha de confirmación: ${formatearFecha(caso.fecha_confirmacion)}`
+                    "p",
+                    "hu5-detalle",
+                    `Fecha de envío al MINED: ${formatearFecha(caso.fecha_confirmacion)}`
                 ));
             }
 
-            if (caso.id_usuario_confirmacion) {
-                contenedor.appendChild(crearElemento(
-                    "p", "hu5-detalle",
-                    `Usuario responsable: ${caso.id_usuario_confirmacion}`
-                ));
-            }
-
-            return contenedor;
-        }
-
-        if (casoRevisadoPorMined(caso)) {
-            contenedor.appendChild(crearElemento(
-                "span", "hu5-estado hu5-estado--revisada", "Revisada por el MINED"
-            ));
             return contenedor;
         }
 
         contenedor.appendChild(crearElemento(
-            "span", "hu5-estado hu5-estado--pendiente", "Pendiente de confirmar"
+            "span",
+            "hu5-estado hu5-estado--pendiente",
+            "Pendiente de envío al MINED"
         ));
 
         return contenedor;
@@ -269,8 +280,8 @@
         }
 
         textoResumen.textContent = seleccion.length === 1
-            ? "Vas a confirmar 1 equivalencia."
-            : `Vas a confirmar ${seleccion.length} equivalencias.`;
+            ? "Enviarás 1 equivalencia al MINED para revisión."
+            : `Enviarás ${seleccion.length} equivalencias al MINED para revisión.`;
 
         // A1: coincidencia menor al 80%, requiere confirmación explícita.
         avisoBajaCoincidencia.hidden = !hayBajas;
@@ -296,7 +307,7 @@
         confirmando = true;
         botonRegistrar.disabled = true;
         botonCancelar.disabled = true;
-        botonRegistrar.textContent = "Registrando...";
+        botonRegistrar.textContent = "Enviando...";
 
         let texto = MENSAJE_ERROR_GUARDADO;
         let tipo = "error";
@@ -325,7 +336,7 @@
             recargar = true;
 
             if (respuesta.ok) {
-                texto = datos.mensaje || "Equivalencias confirmadas y registradas exitosamente";
+                texto = datos.mensaje || "Equivalencias enviadas al MINED para revisión";
                 tipo = "exito";
 
                 for (const caso of casosEnConfirmacion) {
@@ -408,9 +419,9 @@
             "span",
             "",
             confirmada
-                ? "Equivalencia confirmada"
+                ? "Equivalencia enviada al MINED"
                 : revisada
-                    ? "Revisada por el MINED: ya no se puede confirmar"
+                    ? "Revisada por el MINED: ya no se puede enviar"
                     : "Seleccionar equivalencia"
         );
 
