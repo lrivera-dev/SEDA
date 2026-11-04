@@ -117,62 +117,6 @@
     color: var(--error);
 }
 
-.boton-observacion-mined {
-    display: block;
-    margin-top: 8px;
-    padding: 0;
-    color: var(--azul);
-    background: none;
-    border: 0;
-    font: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: left;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-.dialogo-observacion {
-    width: min(560px, calc(100% - 32px));
-    max-height: calc(100vh - 48px);
-    padding: 24px;
-    color: var(--texto);
-    background: var(--blanco);
-    border: 0;
-    border-top: 4px solid var(--error);
-    border-radius: var(--radio);
-    box-shadow: 0 20px 50px var(--sombra);
-}
-
-.dialogo-observacion::backdrop {
-    background: var(--velo);
-}
-
-.dialogo-observacion h2 {
-    margin-bottom: 8px;
-}
-
-.dialogo-observacion__contenido {
-    max-height: min(50vh, 360px);
-    margin-top: 16px;
-    padding: 16px;
-    overflow-y: auto;
-    background: var(--error-fondo);
-    border-radius: var(--radio);
-}
-
-.dialogo-observacion__contenido p {
-    margin: 0;
-    overflow-wrap: anywhere;
-    white-space: pre-wrap;
-}
-
-.dialogo-observacion__acciones {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-}
-
 .accion-equivalencia {
     font-weight: 600;
     white-space: nowrap;

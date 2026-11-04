@@ -5,10 +5,6 @@ const TOKEN_SESION = "seda_access_token";
 const tabla = document.getElementById("tabla-equivalencias");
 const estadoPagina = document.getElementById("estado-equivalencias");
 const filtroDictamen = document.getElementById("filtro-dictamen");
-const dialogoObservacion = document.getElementById("dialogo-observacion-mined");
-const contextoObservacion = document.getElementById("contexto-observacion-mined");
-const textoObservacion = document.getElementById("texto-observacion-mined");
-const botonCerrarObservacion = document.getElementById("cerrar-dialogo-observacion");
 
 let equivalencias = [];
 
@@ -191,30 +187,14 @@ function crearCeldaCoincidencia(caso) {
     return celda;
 }
 
-function crearCeldaDictamen(caso) {
+function crearCeldaDictamen(estado) {
     const celda = document.createElement("td");
-    const [etiqueta, clase] = ETIQUETAS_DICTAMEN[caso.estado] ||
+    const [etiqueta, clase] = ETIQUETAS_DICTAMEN[estado] ||
         ["Estado desconocido", "dictamen--pendiente"];
 
     celda.appendChild(
         crearElemento("span", `dictamen-badge ${clase}`, etiqueta)
     );
-
-    if (caso.estado === "ADVERTENCIA" && caso.observacion_revision) {
-        const botonObservacion = crearElemento(
-            "button",
-            "boton-observacion-mined",
-            "Ver observación"
-        );
-        botonObservacion.type = "button";
-        botonObservacion.addEventListener("click", () => {
-            contextoObservacion.textContent =
-                `${caso.materia_origen || "Materia de origen"} → ${caso.materia_destino || "Materia de destino"}`;
-            textoObservacion.textContent = caso.observacion_revision;
-            dialogoObservacion.showModal();
-        });
-        celda.appendChild(botonObservacion);
-    }
 
     return celda;
 }
@@ -277,7 +257,7 @@ function mostrarTabla() {
             ),
             crearCeldaModalidad(caso.modalidad),
             crearCeldaCoincidencia(caso),
-            crearCeldaDictamen(caso),
+            crearCeldaDictamen(caso.estado),
             crearCeldaAccion(caso)
         );
 
@@ -288,7 +268,6 @@ function mostrarTabla() {
 }
 
 filtroDictamen.addEventListener("change", mostrarTabla);
-botonCerrarObservacion.addEventListener("click", () => dialogoObservacion.close());
 
 solicitarEquivalencias().catch((error) => {
     estadoPagina.textContent = error.message;
