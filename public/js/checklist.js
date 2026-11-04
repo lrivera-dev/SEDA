@@ -7,6 +7,8 @@
 (() => {
     const lista = document.getElementById("lista-casos");
     const mensaje = document.getElementById("estado-checklist");
+    const filtroEnvioContenedor = document.getElementById("filtro-envio-contenedor");
+    const filtroEnvio = document.getElementById("filtro-envio");
 
     // HU-5: elementos de la confirmación.
     const barraConfirmacion = document.getElementById("barra-confirmacion");
@@ -21,15 +23,17 @@
     const botonCancelar = document.getElementById("boton-cancelar-confirmacion");
     const botonRegistrar = document.getElementById("boton-registrar-confirmacion");
 
-    const MENSAJE_SIN_SELECCION = "Selecciona al menos una equivalencia para confirmar";
+    const MENSAJE_SIN_SELECCION = "Selecciona al menos una equivalencia para enviar al MINED";
     const MENSAJE_EVALUACION_PENDIENTE =
-        "Debes completar la evaluación antes de confirmar esta equivalencia";
+        "Debes completar la evaluación antes de enviar esta equivalencia";
     const MENSAJE_ERROR_GUARDADO =
-        "No se pudieron registrar las equivalencias. Intenta de nuevo";
-    const TEXTO_BOTON_REGISTRAR = "Confirmar y registrar";
+        "No se pudieron enviar las equivalencias al MINED. Intenta de nuevo";
+    const TEXTO_BOTON_REGISTRAR = "Enviar al MINED";
 
     const selecciones = new Map();
     let ultimosCasos = [];
+    let casosVisibles = [];
+    let datosChecklist = null;
     let casosEnConfirmacion = [];
     let confirmando = false;
     let ultimaRespuesta = null;
@@ -115,28 +119,35 @@
     }
 
     function casosSeleccionados() {
-        return ultimosCasos.filter(
+        return casosVisibles.filter(
             (caso) => casoConfirmable(caso) && estaSeleccionado(caso)
         );
     }
 
-    function actualizarBarra() {
-        barraConfirmacion.hidden = ultimosCasos.length === 0;
-
-        const seleccionadas = casosSeleccionados().length;
-        const confirmadas = ultimosCasos.filter(
-            (caso) => caso.confirmada_universidad === true
-        ).length;
-
-        let texto = seleccionadas === 1
-            ? "1 equivalencia seleccionada"
-            : `${seleccionadas} equivalencias seleccionadas`;
-
-        if (confirmadas > 0) {
-            texto += ` · ${confirmadas} ${confirmadas === 1 ? "ya confirmada" : "ya confirmadas"}`;
+    function filtrarCasos(casos) {
+        if (filtroEnvio.value === "PENDIENTES") {
+            return casos.filter((caso) => caso.confirmada_universidad !== true);
         }
 
-        contadorSeleccion.textContent = texto;
+        if (filtroEnvio.value === "ENVIADAS") {
+            return casos.filter((caso) => caso.confirmada_universidad === true);
+        }
+
+        return casos;
+    }
+
+    function actualizarBarra() {
+        const seleccionadas = casosSeleccionados().length;
+        const haySeleccion = seleccionadas > 0;
+
+        contadorSeleccion.hidden = !haySeleccion;
+        botonConfirmar.hidden = !haySeleccion;
+        barraConfirmacion.hidden = ultimosCasos.length === 0 ||
+            (!haySeleccion && mensajeConfirmacion.hidden);
+
+        contadorSeleccion.textContent = haySeleccion
+            ? `${seleccionadas} ${seleccionadas === 1 ? "equivalencia seleccionada" : "equivalencias seleccionadas"}`
+            : "";
     }
 
     function ocultarMensajeConfirmacion() {
@@ -154,38 +165,48 @@
 
     function crearEstadoConfirmacion(caso) {
         const contenedor = crearElemento("div", "hu5-confirmacion");
+        const estado = String(caso.estado_caso || "").toUpperCase();
+
+        if (estado === "EN_REVISION") {
+            contenedor.appendChild(crearElemento(
+                "span",
+                "hu5-estado hu5-estado--revisada",
+                "En revisión del MINED"
+            ));
+            return contenedor;
+        }
+
+        if (estado === "ACEPTADO" || estado === "ADVERTENCIA") {
+            contenedor.appendChild(crearElemento(
+                "span",
+                "hu5-estado hu5-estado--revisada",
+                "Revisada por el MINED"
+            ));
+            return contenedor;
+        }
 
         if (caso.confirmada_universidad === true) {
             contenedor.appendChild(crearElemento(
-                "span", "hu5-estado hu5-estado--confirmada", "Confirmada por la universidad"
+                "span",
+                "hu5-estado hu5-estado--confirmada",
+                "Enviada al MINED · pendiente de revisión"
             ));
 
             if (caso.fecha_confirmacion) {
                 contenedor.appendChild(crearElemento(
-                    "p", "hu5-detalle",
-                    `Fecha de confirmación: ${formatearFecha(caso.fecha_confirmacion)}`
+                    "p",
+                    "hu5-detalle",
+                    `Fecha de envío al MINED: ${formatearFecha(caso.fecha_confirmacion)}`
                 ));
             }
 
-            if (caso.id_usuario_confirmacion) {
-                contenedor.appendChild(crearElemento(
-                    "p", "hu5-detalle",
-                    `Usuario responsable: ${caso.id_usuario_confirmacion}`
-                ));
-            }
-
-            return contenedor;
-        }
-
-        if (casoRevisadoPorMined(caso)) {
-            contenedor.appendChild(crearElemento(
-                "span", "hu5-estado hu5-estado--revisada", "Revisada por el MINED"
-            ));
             return contenedor;
         }
 
         contenedor.appendChild(crearElemento(
-            "span", "hu5-estado hu5-estado--pendiente", "Pendiente de confirmar"
+            "span",
+            "hu5-estado hu5-estado--pendiente",
+            "Pendiente de envío al MINED"
         ));
 
         return contenedor;
@@ -223,15 +244,34 @@
         }
 
         // E2: la evaluación no está terminada.
-        const sinEvaluar = seleccion.filter((caso) =>
-            caso.estado_calculo !== "CALCULADO" ||
-            caso.porcentaje_coincidencia === null ||
-            caso.porcentaje_coincidencia === undefined
-        );
+        const sinEvaluar = seleccion.filter((caso) => {
+            if (caso.modalidad === "MANUAL") {
+                const valorPorcentaje = caso.porcentaje_propuesto;
+                const porcentaje = Number(valorPorcentaje);
+                return valorPorcentaje === null ||
+                    valorPorcentaje === undefined ||
+                    valorPorcentaje === "" ||
+                    !Number.isFinite(porcentaje) ||
+                    porcentaje < 0 ||
+                    porcentaje > 100 ||
+                    typeof caso.justificacion_manual !== "string" ||
+                    caso.justificacion_manual.trim() === "";
+            }
+
+            return caso.estado_calculo !== "CALCULADO" ||
+                caso.porcentaje_coincidencia === null ||
+                caso.porcentaje_coincidencia === undefined;
+        });
 
         if (sinEvaluar.length > 0) {
+            const hayManualIncompleta = sinEvaluar.some(
+                (caso) => caso.modalidad === "MANUAL"
+            );
+            const mensaje = hayManualIncompleta
+                ? "Completa el porcentaje propuesto y la justificación de la equivalencia manual"
+                : MENSAJE_EVALUACION_PENDIENTE;
             mostrarMensajeConfirmacion(
-                `${MENSAJE_EVALUACION_PENDIENTE} (${sinEvaluar.map(nombreCaso).join(", ")})`,
+                `${mensaje} (${sinEvaluar.map(nombreCaso).join(", ")})`,
                 "error"
             );
             return;
@@ -245,6 +285,9 @@
 
         for (const caso of seleccion) {
             const baja = caso.estado_checklist !== "APROBADA";
+            const porcentaje = caso.modalidad === "MANUAL"
+                ? caso.porcentaje_propuesto
+                : caso.porcentaje_coincidencia;
             hayBajas = hayBajas || baja;
 
             const item = crearElemento(
@@ -256,7 +299,7 @@
 
             item.appendChild(crearElemento("span", "dialogo-confirmacion__materia", nombreCaso(caso)));
             item.appendChild(crearElemento(
-                "strong", "dialogo-confirmacion__porcentaje", `${caso.porcentaje_coincidencia}%`
+                "strong", "dialogo-confirmacion__porcentaje", `${porcentaje}%`
             ));
 
             if (baja) {
@@ -269,8 +312,8 @@
         }
 
         textoResumen.textContent = seleccion.length === 1
-            ? "Vas a confirmar 1 equivalencia."
-            : `Vas a confirmar ${seleccion.length} equivalencias.`;
+            ? "Enviarás 1 equivalencia al MINED para revisión."
+            : `Enviarás ${seleccion.length} equivalencias al MINED para revisión.`;
 
         // A1: coincidencia menor al 80%, requiere confirmación explícita.
         avisoBajaCoincidencia.hidden = !hayBajas;
@@ -296,7 +339,7 @@
         confirmando = true;
         botonRegistrar.disabled = true;
         botonCancelar.disabled = true;
-        botonRegistrar.textContent = "Registrando...";
+        botonRegistrar.textContent = "Enviando...";
 
         let texto = MENSAJE_ERROR_GUARDADO;
         let tipo = "error";
@@ -325,7 +368,7 @@
             recargar = true;
 
             if (respuesta.ok) {
-                texto = datos.mensaje || "Equivalencias confirmadas y registradas exitosamente";
+                texto = datos.mensaje || "Equivalencias enviadas al MINED para revisión";
                 tipo = "exito";
 
                 for (const caso of casosEnConfirmacion) {
@@ -408,9 +451,9 @@
             "span",
             "",
             confirmada
-                ? "Equivalencia confirmada"
+                ? "Equivalencia enviada al MINED"
                 : revisada
-                    ? "Revisada por el MINED: ya no se puede confirmar"
+                    ? "Revisada por el MINED: ya no se puede enviar"
                     : "Seleccionar equivalencia"
         );
 
@@ -453,6 +496,7 @@
 
     function mostrarChecklist(datos) {
         lista.replaceChildren();
+        datosChecklist = datos;
 
         const casos = Array.isArray(datos.casos)
             ? datos.casos
@@ -466,6 +510,8 @@
 
         // HU-5: la barra de confirmación depende de los casos mostrados.
         ultimosCasos = casos;
+        casosVisibles = filtrarCasos(casos);
+        filtroEnvioContenedor.hidden = casos.length === 0;
         actualizarBarra();
 
         if (casos.length === 0 && incompletos.length === 0) {
@@ -481,8 +527,16 @@
             ? "Todas las materias están aprobadas"
             : `${aprobadas} aprobadas y ${pendientes} pendientes de análisis`;
 
-        for (const caso of casos) {
+        for (const caso of casosVisibles) {
             lista.appendChild(crearFila(caso));
+        }
+
+        if (casos.length > 0 && casosVisibles.length === 0) {
+            lista.appendChild(crearElemento(
+                "p",
+                "checklist-filtro__vacio",
+                "No hay equivalencias en esta categoría."
+            ));
         }
 
         // Los casos sin documentos no pueden seleccionarse.
@@ -594,6 +648,11 @@
     });
     // HU-5: eventos de la confirmación.
     botonConfirmar.addEventListener("click", abrirResumen);
+    filtroEnvio.addEventListener("change", () => {
+        if (datosChecklist) {
+            mostrarChecklist(datosChecklist);
+        }
+    });
     botonCancelar.addEventListener("click", () => dialogo.close());
     casillaAceptoBaja.addEventListener("change", actualizarBotonRegistrar);
     botonRegistrar.addEventListener("click", registrarConfirmacion);

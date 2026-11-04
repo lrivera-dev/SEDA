@@ -5,141 +5,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Universidad</title>
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap">
+    <link rel="stylesheet" href="css/tema.css">
+    <link rel="stylesheet" href="css/universidades.css">
     <script src="/js/proteger-universidad.js"></script>
 </head>
 
 <body>
 
-    <div class="dashboard">
+    <div class="barra-gobierno">Ministerio de Educación, Ciencia y Tecnología · El Salvador</div>
+    <div class="franja-bandera"></div>
 
-        <aside class="sidebar">
-
-            <div class="logo">
-                <div class="logo-icon">↗</div>
-
-                <div>
-                    <strong>SEDA</strong>
-                    <small>Sistema de Equivalencias y Documentación Académica</small>
-                </div>
+    <header class="encabezado-sitio">
+        <div class="encabezado-sitio__seda">
+            <img class="encabezado-sitio__logo-seda" src="img/logo-seda-blanco.svg" alt="" width="64" height="64">
+            <div>
+                <strong class="encabezado-sitio__nombre">SEDA</strong>
+                <small class="encabezado-sitio__descripcion">Sistema de Equivalencias y Documentación Académica</small>
             </div>
+        </div>
 
-            <nav>
-                <a href="#" class="active">Dashboard</a>
-                <a href="carreras.html">Carreras</a>
-                <a href="materias.html">Materias</a>
-                <a href="equivalencias.html">Equivalencias</a>
-                <a href="checklist.html">Checklist de coincidencia</a>
-            </nav>
+        <nav class="navegacion-sitio" aria-label="Navegación principal">
+            <a href="#" class="active" aria-current="page">Dashboard</a>
+            <a href="carreras.html">Carreras</a>
+            <a href="materias.html">Materias</a>
+            <a href="equivalencias.html">Equivalencias</a>
+            <a href="checklist.html">Checklist de coincidencia</a>
+            <button class="logout" type="button">Cerrar sesión</button>
+        </nav>
+    </header>
 
-            <div class="user">
-                <div class="user-icon">U</div>
+    <main class="contenido">
 
-                <div>
-                    <strong>Universidad</strong>
-                    <small>Administrador</small>
+        <p class="antetitulo">Panel de administración</p>
+        <h1>Bienvenido, Universidad</h1>
+        <p class="lead">Universidad · Administrador</p>
+
+        <section class="panel__seccion">
+            <h2>Gestión académica</h2>
+            <p>
+                Selecciona una opción para comenzar a gestionar la información académica.
+            </p>
+        </section>
+
+
+        <section class="opciones">
+
+            <!-- Registrar carrera -->
+            <a href="carreras.html" class="tarjeta tarjeta--destacada opcion">
+
+                <div class="opcion__icono" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 21h18" />
+                        <path d="M5 21V8h14v13" />
+                        <path d="M8 8V5h8v3" />
+                        <path d="M8 12h8" />
+                        <path d="M8 16h8" />
+                    </svg>
                 </div>
-            </div>
 
-        </aside>
+                <h3>Registrar carrera</h3>
 
-
-        <main class="content">
-
-            <header>
-                <div>
-                    <p>Panel de administración</p>
-                    <h1>Bienvenido, Universidad</h1>
-                </div>
-
-                <button class="logout">Cerrar sesión</button>
-            </header>
-
-
-            <section class="welcome">
-                <h2>Gestión académica</h2>
                 <p>
-                    Selecciona una opción para comenzar a gestionar la información académica.
+                    Agrega una nueva carrera universitaria al sistema.
                 </p>
-            </section>
+
+                <span class="opcion__flecha" aria-hidden="true">→</span>
+
+            </a>
 
 
-            <section class="options">
+            <!-- Registrar materia -->
+            <a href="materias.html" class="tarjeta tarjeta--destacada opcion">
 
-                <!-- Registrar carrera -->
-                <a href="carreras.html" class="option">
+                <div class="opcion__icono" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 5h16v14H4z" />
+                        <path d="M8 9h8" />
+                        <path d="M8 13h5" />
+                        <path d="M8 17h3" />
+                    </svg>
+                </div>
 
-                    <div class="option-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M3 21h18" />
-                            <path d="M5 21V8h14v13" />
-                            <path d="M8 8V5h8v3" />
-                            <path d="M8 12h8" />
-                            <path d="M8 16h8" />
-                        </svg>
-                    </div>
+                <h3>Registrar materia</h3>
 
-                    <h3>Registrar carrera</h3>
+                <p>
+                    Registra las materias pertenecientes a tus carreras.
+                </p>
 
-                    <p>
-                        Agrega una nueva carrera universitaria al sistema.
-                    </p>
+                <span class="opcion__flecha" aria-hidden="true">→</span>
 
-                    <span class="arrow">→</span>
-
-                </a>
+            </a>
 
 
-                <!-- Registrar materia -->
-                <a href="materias.html" class="option">
+            <!-- Registrar equivalencia -->
+            <a href="subir-equivalencia.html" class="tarjeta tarjeta--destacada opcion">
 
-                    <div class="option-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M4 5h16v14H4z" />
-                            <path d="M8 9h8" />
-                            <path d="M8 13h5" />
-                            <path d="M8 17h3" />
-                        </svg>
-                    </div>
+                <div class="opcion__icono" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M7 7h10" />
+                        <path d="M14 4l3 3-3 3" />
+                        <path d="M17 17H7" />
+                        <path d="M10 14l-3 3 3 3" />
+                    </svg>
+                </div>
 
-                    <h3>Registrar materia</h3>
+                <h3>Registrar equivalencia</h3>
 
-                    <p>
-                        Registra las materias pertenecientes a tus carreras.
-                    </p>
+                <p>
+                    Establece equivalencias entre materias académicas.
+                </p>
 
-                    <span class="arrow">→</span>
+                <span class="opcion__flecha" aria-hidden="true">→</span>
 
-                </a>
+            </a>
 
+        </section>
 
-                <!-- Registrar equivalencia -->
-                <a href="subir-equivalencia.html" class="option">
+    </main>
 
-                    <div class="option-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M7 7h10" />
-                            <path d="M14 4l3 3-3 3" />
-                            <path d="M17 17H7" />
-                            <path d="M10 14l-3 3 3 3" />
-                        </svg>
-                    </div>
-
-                    <h3>Registrar equivalencia</h3>
-
-                    <p>
-                        Establece equivalencias entre materias académicas.
-                    </p>
-
-                    <span class="arrow">→</span>
-
-                </a>
-
-            </section>
-
-        </main>
-
-    </div>
+    <footer class="pie-sitio">
+        <span>Ministerio de Educación, Ciencia y Tecnología · San Salvador, El Salvador</span>
+        <span>SEDA · Proyecto académico</span>
+    </footer>
 
 </body>
 

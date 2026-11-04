@@ -5,99 +5,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEDA | Materias</title>
-    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap">
+    <link rel="stylesheet" href="/css/tema.css">
     <link rel="stylesheet" href="/css/gestion-academica.css">
     <script src="/js/proteger-universidad.js"></script>
 </head>
 
 <body>
-    <div class="dashboard">
-        <aside class="sidebar">
-            <div class="logo">
-                <div class="logo-icon">↗</div>
+
+    <div class="barra-gobierno">Ministerio de Educación, Ciencia y Tecnología · El Salvador</div>
+    <div class="franja-bandera"></div>
+
+    <header class="encabezado-sitio">
+        <div class="encabezado-sitio__seda">
+            <img class="encabezado-sitio__logo-seda" src="/img/logo-seda-blanco.svg" alt="" width="64" height="64">
+            <div>
+                <strong class="encabezado-sitio__nombre">SEDA</strong>
+                <small class="encabezado-sitio__descripcion">Sistema de Equivalencias y Documentación Académica</small>
+            </div>
+        </div>
+
+        <nav class="navegacion-sitio" aria-label="Navegación principal">
+            <a href="/universidades.html">Dashboard</a>
+            <a href="/carreras.html">Carreras</a>
+            <a href="/materias.html" class="active" aria-current="page">Materias</a>
+            <a href="/equivalencias.html">Equivalencias</a>
+            <a href="/checklist.html">Checklist de coincidencia</a>
+            <button class="logout" type="button">Cerrar sesión</button>
+        </nav>
+    </header>
+
+    <main class="contenido">
+        <p class="antetitulo">Gestión académica</p>
+        <h1>Materias</h1>
+
+        <section class="gestion-seccion">
+            <div class="seccion-encabezado">
                 <div>
-                    <strong>SEDA</strong>
-                    <small>Sistema de Equivalencias y Documentación Académica</small>
+                    <h2>Materias de tu universidad</h2>
+                    <p>Administra las materias y sus programas.</p>
                 </div>
+                <button id="abrir-form-materia" class="btn" type="button">
+                    Agregar materia
+                </button>
             </div>
 
-            <nav>
-                <a href="/universidades.html">Dashboard</a>
-                <a href="/carreras.html">Carreras</a>
-                <a href="/materias.html" class="active" aria-current="page">Materias</a>
-                <a href="/equivalencias.html">Equivalencias</a>
-                <a href="/checklist.html">Checklist de coincidencia</a>
-            </nav>
-        </aside>
-
-        <main class="content">
-            <header>
-                <div>
-                    <p>Gestión académica</p>
-                    <h1>Materias</h1>
-                </div>
-                <button class="logout" type="button">Cerrar sesión</button>
-            </header>
-
-            <section class="gestion-card">
-                <div class="gestion-encabezado">
-                    <div>
-                        <h2>Materias de tu universidad</h2>
-                        <p>Administra las materias y sus programas.</p>
-                    </div>
-                    <button id="abrir-form-materia" type="button">
-                        Agregar materia
-                    </button>
-                </div>
-
-                <form id="form-materia" hidden>
+            <form id="form-materia" class="tarjeta tarjeta--destacada gestion-formulario" hidden>
+                <div class="campo">
                     <label for="carrera-materia">Carrera</label>
                     <select id="carrera-materia" name="id_carrera" required>
                         <option value="">Cargando carreras...</option>
                     </select>
+                </div>
 
+                <div class="campo">
                     <label for="nombre-materia">Nombre de la materia</label>
                     <input id="nombre-materia" name="nombre" type="text" required>
+                </div>
 
-                    <label for="archivo-programa">
+                <div class="zona-carga">
+                    <label class="zona-carga__titulo" for="archivo-programa">
                         Programa de la materia (PDF o DOCX, máximo 20 MB)
                     </label>
                     <input id="archivo-programa" type="file"
                         accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                         required>
-
-                    <div class="gestion-acciones-formulario">
-                        <button type="submit" id="boton-crear-materia">
-                            Registrar materia
-                        </button>
-                        <button type="button" id="cancelar-form-materia">
-                            Cancelar
-                        </button>
-                    </div>
-
-                    <p id="estado-materia" class="estado-formulario" role="status" aria-live="polite"></p>
-                </form>
-
-                <p id="estado-materias" role="status" aria-live="polite">
-                    Cargando materias...
-                </p>
-
-                <div class="tabla-contenedor">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th scope="col">Materia</th>
-                                <th scope="col">Carrera</th>
-                                <th scope="col">Programa</th>
-                                <th scope="col">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-materias"></tbody>
-                    </table>
                 </div>
-            </section>
-        </main>
-    </div>
+
+                <div class="acciones">
+                    <button type="button" id="cancelar-form-materia" class="btn btn--secundario">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="boton-crear-materia" class="btn">
+                        Registrar materia
+                    </button>
+                </div>
+
+                <p id="estado-materia" class="mensaje mensaje--info estado-formulario" role="status"
+                    aria-live="polite"></p>
+            </form>
+
+            <p id="estado-materias" class="gestion-estado" role="status" aria-live="polite">
+                Cargando materias...
+            </p>
+
+            <div class="campo gestion-filtro">
+                <label for="filtro-carrera-materias">Filtrar materias por carrera</label>
+                <select id="filtro-carrera-materias">
+                    <option value="">Todas las carreras</option>
+                </select>
+            </div>
+
+            <div class="tabla-contenedor tabla-contenedor--apilable">
+                <table class="gestion-tabla">
+                    <thead>
+                        <tr>
+                            <th scope="col">Materia</th>
+                            <th scope="col">Carrera</th>
+                            <th scope="col">Programa</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-materias"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="pie-sitio">
+        <span>Ministerio de Educación, Ciencia y Tecnología · San Salvador, El Salvador</span>
+        <span>SEDA · Proyecto académico</span>
+    </footer>
 
     <script src="/js/gestion-materias.js"></script>
 </body>

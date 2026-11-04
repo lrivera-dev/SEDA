@@ -8,6 +8,10 @@ async function obtenerPanel(req, res) {
             descripcion,
             estado,
             porcentaje_coincidencia,
+            porcentaje_propuesto,
+            solicitud:solicitud_equivalencia!fk_caso_solicitud_equivalencia (
+                modalidad
+            ),
             fecha_registro,
             materia_origen:materia!caso_equivalencia_id_materia_origen_fkey (
                 nombre,
@@ -24,7 +28,8 @@ async function obtenerPanel(req, res) {
                 )
             )
         `)
-        .order('fecha_registro', { ascending: false });
+        .order('fecha_registro', { ascending: false })
+        .eq('confirmada_universidad', true);
 
     if (error) {
         return res.status(500).json({ error: error.message });
@@ -32,7 +37,7 @@ async function obtenerPanel(req, res) {
 
     if (!casos || casos.length === 0) {
         return res.status(200).json({
-            mensaje: 'No hay casos disponibles para mostrar',
+            mensaje: 'No hay casos confirmados disponibles para revisión',
             casos: []
         });
     }
