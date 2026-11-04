@@ -79,9 +79,16 @@
           </p>
         </div>
 
-        <button class="btn btn--secundario filter">
-          Todos
-        </button>
+        <div class="campo filtro-casos">
+          <label for="filtro-estado-casos">Filtrar por estado</label>
+          <select id="filtro-estado-casos">
+            <option value="TODOS">Todos los estados</option>
+            <option value="PENDIENTE">Pendientes de revisión</option>
+            <option value="EN_REVISION">En revisión</option>
+            <option value="ACEPTADO">Aceptadas</option>
+            <option value="ADVERTENCIA">Con advertencia</option>
+          </select>
+        </div>
 
       </div>
 
@@ -139,7 +146,7 @@
         }
 
 
-        const casos = data.casos || [];
+        const casos = Array.isArray(data.casos) ? data.casos : [];
 
 
 
@@ -171,7 +178,24 @@
           return;
         }
 
-        const filas = casos.map(caso => {
+        const estadoSeleccionado =
+          document.getElementById('filtro-estado-casos').value;
+        const casosFiltrados = estadoSeleccionado === 'TODOS'
+          ? casos
+          : casos.filter(
+            caso => normalizarEstado(caso) === estadoSeleccionado
+          );
+
+        if (casosFiltrados.length === 0) {
+          container.innerHTML = `
+        <div class="empty">
+            <p>No hay equivalencias con este estado.</p>
+        </div>
+    `;
+          return;
+        }
+
+        const filas = casosFiltrados.map(caso => {
 
           const materiaOrigen = caso.materia_origen;
           const materiaDestino = caso.materia_destino;
@@ -328,6 +352,10 @@
       sessionStorage.removeItem('seda_access_token');
       window.location.replace('/');
     });
+
+    document
+      .getElementById('filtro-estado-casos')
+      .addEventListener('change', cargarCasos);
 
     cargarCasos();
 
