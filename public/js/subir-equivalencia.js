@@ -271,7 +271,7 @@
         const esManual = modalidadInput.value === 'MANUAL';
 
         ayudaModalidad.textContent = esManual
-            ? 'Propón un porcentaje y respáldalo con una justificación académica.'
+            ? 'Propón un porcentaje y respáldalo con una justificación académica. SEDA también generará un análisis de IA para apoyar la revisión del MINED.'
             : 'SEDA calculará el porcentaje y generará el análisis con IA.';
 
         filas().forEach((fila) => {

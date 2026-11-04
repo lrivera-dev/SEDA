@@ -197,13 +197,20 @@
                     </section>
 
                     <section id="analisis-ia" class="tarjeta reporte__seccion" hidden>
-                        <h2 class="reporte__titulo">Análisis automático de IA</h2>
+                        <h2 id="ia-titulo" class="reporte__titulo">Análisis automático de IA</h2>
+                        <p class="reporte__texto reporte__ia-aviso">
+                            Este análisis es una referencia para la revisión; no reemplaza la decisión final del MINED.
+                        </p>
 
                         <p id="ia-pendiente" class="reporte__texto" hidden>
                             El análisis de IA todavía no está disponible.
                         </p>
 
                         <div id="ia-detalle" class="analisis-ia-grid" hidden>
+                            <div id="ia-porcentaje-complementario" class="analisis-ia-item" hidden>
+                                <h3>Coincidencia calculada por IA</h3>
+                                <p id="ia-porcentaje"></p>
+                            </div>
                             <div class="analisis-ia-item">
                                 <h3>Resumen</h3>
                                 <p id="ia-resumen"></p>

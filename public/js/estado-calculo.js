@@ -66,6 +66,90 @@
     return null;
   }
 
+  function agregarReintento(contenedor, caso, estado) {
+    const motivo = caso.motivo || "No se recibió un motivo del error.";
+    const mensaje = String(motivo).startsWith(
+      "No se pudo calcular la coincidencia:"
+    )
+      ? String(motivo)
+      : `No se pudo calcular la coincidencia: ${motivo}`;
+    const error = crearElemento("p", "hu3-error", mensaje);
+    error.setAttribute("role", "alert");
+    let errorMostrado = estado === "ERROR";
+
+    const boton = crearElemento(
+      "button",
+      "hu3-btn-reintentar",
+      "Reintentar"
+    );
+    boton.type = "button";
+
+    boton.addEventListener("click", async () => {
+      boton.disabled = true;
+      boton.textContent = "Reintentando...";
+
+      try {
+        const token = obtenerTokenUniversidad();
+
+        if (!token) {
+          cerrarSesionUniversidad();
+          return;
+        }
+
+        const respuesta = await fetch(
+          `/coincidencia/${encodeURIComponent(caso.id_caso)}/reintentar`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        const datos = await respuesta.json().catch(() => ({}));
+
+        if (respuesta.status === 401) {
+          cerrarSesionUniversidad();
+          return;
+        }
+
+        if (!respuesta.ok) {
+          throw new Error(datos.error || "No se pudo reintentar.");
+        }
+
+        if (respuesta.status !== 202) {
+          throw new Error("El servidor no confirmó el reintento.");
+        }
+
+        renderizar(contenedor, {
+          ...caso,
+          estado_calculo: "EN_CALCULO",
+          motivo: null,
+          porcentaje_coincidencia: null,
+          reporte: null
+        });
+        // Avisar al checklist que debe reanudar las consultas.
+        window.dispatchEvent?.(new Event("seda:reintento-confirmado"));
+      } catch (fallo) {
+        error.textContent = fallo.message;
+
+        if (!errorMostrado) {
+          contenedor.appendChild(error);
+          errorMostrado = true;
+        }
+
+        boton.disabled = false;
+        boton.textContent = "Reintentar";
+      }
+    });
+
+    if (estado === "ERROR") {
+      contenedor.append(error, boton);
+    } else {
+      contenedor.appendChild(boton);
+    }
+  }
+
   function renderizar(contenedor, caso) {
     contenedor.replaceChildren();
 
@@ -117,6 +201,34 @@
 
       justificacion.append(encabezado, contenido);
       contenedor.appendChild(justificacion);
+
+      if (estado === "EN_CALCULO") {
+        const mensaje = crearElemento(
+          "p",
+          "hu3-mensaje",
+          "El análisis complementario de IA está en proceso."
+        );
+        mensaje.setAttribute("role", "status");
+        contenedor.appendChild(mensaje);
+      } else if (estado === "CALCULADO") {
+        const mensaje = crearElemento(
+          "p",
+          "hu3-mensaje",
+          "El análisis complementario de IA está disponible para revisión del MINED."
+        );
+        mensaje.setAttribute("role", "status");
+        contenedor.appendChild(mensaje);
+      } else {
+        const mensaje = crearElemento(
+          "p",
+          "hu3-mensaje",
+          "Aún no se ha generado el análisis complementario de IA."
+        );
+        mensaje.setAttribute("role", "status");
+        contenedor.appendChild(mensaje);
+        agregarReintento(contenedor, caso, estado);
+      }
+
       return;
     }
 
@@ -211,101 +323,7 @@
     }
 
     if (estado === "ERROR" || estado === "SIN_CALCULAR") {
-      const motivo = caso.motivo ||
-        "No se recibió un motivo del error.";
-
-      const mensaje = String(motivo).startsWith(
-        "No se pudo calcular la coincidencia:"
-      )
-        ? String(motivo)
-        : `No se pudo calcular la coincidencia: ${motivo}`;
-
-      const error = crearElemento(
-        "p",
-        "hu3-error",
-        mensaje
-      );
-
-      error.setAttribute("role", "alert");
-      let errorMostrado = estado === "ERROR";
-
-      const boton = crearElemento(
-        "button",
-        "hu3-btn-reintentar",
-        "Reintentar"
-      );
-      boton.type = "button";
-
-      boton.addEventListener("click", async () => {
-        boton.disabled = true;
-        boton.textContent = "Reintentando...";
-
-        try {
-          const token = obtenerTokenUniversidad();
-
-          if (!token) {
-            cerrarSesionUniversidad();
-            return;
-          }
-
-          const respuesta = await fetch(
-            `/coincidencia/${encodeURIComponent(caso.id_caso)}/reintentar`,
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }
-          );
-
-          const datos = await respuesta.json().catch(() => ({}));
-
-          if (respuesta.status === 401) {
-            cerrarSesionUniversidad();
-            return;
-          }
-
-          if (!respuesta.ok) {
-            throw new Error(
-              datos.error || "No se pudo reintentar."
-            );
-          }
-
-          if (respuesta.status !== 202) {
-            throw new Error(
-              "El servidor no confirmó el reintento."
-            );
-          }
-
-          renderizar(contenedor, {
-            ...caso,
-            estado_calculo: "EN_CALCULO",
-            motivo: null,
-            porcentaje_coincidencia: null,
-            reporte: null
-          });
-          // Avisar al checklist que debe reanudar las consultas.
-          window.dispatchEvent?.(
-            new Event("seda:reintento-confirmado")
-          );
-        } catch (fallo) {
-          error.textContent = fallo.message;
-
-          if (!errorMostrado) {
-            contenedor.appendChild(error);
-            errorMostrado = true;
-          }
-
-          boton.disabled = false;
-          boton.textContent = "Reintentar";
-        }
-      });
-
-      if (estado === "ERROR") {
-        contenedor.append(error, boton);
-      } else {
-        contenedor.appendChild(boton);
-      }
+      agregarReintento(contenedor, caso, estado);
     }
   }
 

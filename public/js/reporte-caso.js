@@ -113,18 +113,35 @@ function mostrarAnalisis(caso) {
     const seccionIA = obtenerElemento('analisis-ia');
 
     seccionManual.hidden = !esManual;
-    seccionIA.hidden = esManual;
+    seccionIA.hidden = false;
+    obtenerElemento('ia-titulo').textContent = esManual
+        ? 'Análisis complementario de IA'
+        : 'Análisis automático de IA';
 
     if (esManual) {
         obtenerElemento('justificacion-manual').textContent =
             caso.justificacion_manual || TEXTO_SIN_INFORMACION;
-        return;
     }
 
     const analisis = caso.justificacion_ia;
     const hayAnalisis = analisis && typeof analisis === 'object';
+    const mensajePendiente = caso.estado_calculo === 'EN_CALCULO'
+        ? 'El análisis complementario de IA está en curso.'
+        : caso.estado_calculo === 'ERROR'
+            ? esManual
+                ? 'No se pudo generar el análisis de IA. La propuesta manual y su justificación siguen disponibles para revisión.'
+                : 'No se pudo generar el análisis de IA. La universidad puede reintentar la evaluación.'
+            : 'El análisis de IA aún no se ha ejecutado.';
+    const elementoPorcentajeIA = obtenerElemento('ia-porcentaje-complementario');
+    const porcentajeIA = obtenerPorcentajeNumerico(caso.porcentaje_coincidencia);
+
+    elementoPorcentajeIA.hidden = !esManual;
+    obtenerElemento('ia-porcentaje').textContent = porcentajeIA === null
+        ? mensajePendiente
+        : `${porcentajeIA}%`;
 
     obtenerElemento('ia-pendiente').hidden = Boolean(hayAnalisis);
+    obtenerElemento('ia-pendiente').textContent = mensajePendiente;
     obtenerElemento('ia-detalle').hidden = !hayAnalisis;
 
     if (!hayAnalisis) return;
