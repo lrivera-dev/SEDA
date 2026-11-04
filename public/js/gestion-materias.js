@@ -14,6 +14,7 @@ const botonCancelar = document.getElementById("cancelar-form-materia");
 const estadoFormulario = document.getElementById("estado-materia");
 const estadoTabla = document.getElementById("estado-materias");
 const tabla = document.getElementById("tabla-materias");
+const filtroCarreraMaterias = document.getElementById("filtro-carrera-materias");
 
 let carrerasPorId = new Map();
 let materiaPendientePrograma = null;
@@ -120,9 +121,28 @@ function crearBotonAccion(texto, clase, accion) {
 }
 
 function mostrarCarreras(carreras) {
+    const filtroActual = filtroCarreraMaterias.value;
     carrerasPorId = new Map(
         carreras.map((carrera) => [carrera.id_carrera, carrera.nombre])
     );
+
+    filtroCarreraMaterias.replaceChildren();
+    const opcionTodas = document.createElement("option");
+    opcionTodas.value = "";
+    opcionTodas.textContent = "Todas las carreras";
+    filtroCarreraMaterias.appendChild(opcionTodas);
+
+    for (const carrera of carreras) {
+        const opcion = document.createElement("option");
+        opcion.value = carrera.id_carrera;
+        opcion.textContent = carrera.nombre;
+        filtroCarreraMaterias.appendChild(opcion);
+    }
+
+    filtroCarreraMaterias.disabled = carreras.length === 0;
+    if (carreras.some((carrera) => carrera.id_carrera === filtroActual)) {
+        filtroCarreraMaterias.value = filtroActual;
+    }
 
     selectorCarrera.replaceChildren();
 
@@ -149,7 +169,10 @@ function mostrarMaterias(materias) {
 
     if (materias.length === 0) {
         const fila = document.createElement("tr");
-        const celda = crearCelda("Aún no hay materias registradas.");
+        const mensaje = filtroCarreraMaterias.value
+            ? "No hay materias registradas en esta carrera."
+            : "Aún no hay materias registradas.";
+        const celda = crearCelda(mensaje);
         celda.colSpan = 4;
         fila.appendChild(celda);
         tabla.appendChild(fila);
@@ -201,9 +224,13 @@ function mostrarMaterias(materias) {
 async function cargarDatos() {
     estadoTabla.textContent = "Cargando materias...";
 
+    const consultaMaterias = filtroCarreraMaterias.value
+        ? `/materias?id_carrera=${encodeURIComponent(filtroCarreraMaterias.value)}`
+        : "/materias";
+
     const [datosCarreras, datosMaterias] = await Promise.all([
         solicitar("/carreras"),
-        solicitar("/materias")
+        solicitar(consultaMaterias)
     ]);
 
     const carreras = Array.isArray(datosCarreras.carreras)
@@ -215,6 +242,22 @@ async function cargarDatos() {
 
     mostrarCarreras(carreras);
     mostrarMaterias(materias);
+}
+
+async function filtrarMateriasPorCarrera() {
+    estadoTabla.textContent = "Cargando materias...";
+
+    const consulta = filtroCarreraMaterias.value
+        ? `/materias?id_carrera=${encodeURIComponent(filtroCarreraMaterias.value)}`
+        : "/materias";
+
+    try {
+        const datos = await solicitar(consulta);
+        const materias = Array.isArray(datos.materias) ? datos.materias : [];
+        mostrarMaterias(materias);
+    } catch (error) {
+        estadoTabla.textContent = error.message;
+    }
 }
 
 function prepararFormularioAlta() {
@@ -312,6 +355,8 @@ botonCancelar.addEventListener("click", () => {
     formulario.hidden = true;
     estadoFormulario.textContent = "";
 });
+
+filtroCarreraMaterias.addEventListener("change", filtrarMateriasPorCarrera);
 
 formulario.addEventListener("submit", async (evento) => {
     evento.preventDefault();
