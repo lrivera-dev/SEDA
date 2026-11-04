@@ -128,7 +128,7 @@ function describirMotivo(caso, clasificacion) {
 
     if (caso.modalidad === 'MANUAL') {
         if (clasificacion.nivel === 'BAJA') {
-            return 'Propuesta manual baja: revisa los documentos antes de confirmar';
+            return 'Propuesta manual baja: revisa los documentos antes de enviar al MINED';
         }
 
         return `La propuesta manual es menor al ${UMBRAL_APROBACION}% requerido para aprobar`;
@@ -261,16 +261,17 @@ const REGEX_UUID =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_CASOS_POR_CONFIRMACION = 100;
 
-const MENSAJE_SIN_SELECCION = 'Selecciona al menos una equivalencia para confirmar';
-const MENSAJE_ERROR_GUARDADO = 'No se pudieron registrar las equivalencias. Intenta de nuevo';
+const MENSAJE_SIN_SELECCION = 'Selecciona al menos una equivalencia para enviar al MINED';
+const MENSAJE_ERROR_GUARDADO = 'No se pudieron enviar las equivalencias. Intenta de nuevo';
 
 // Errores que lanza la función confirmar_equivalencias, con su código HTTP.
 const ERRORES_CONFIRMACION = {
     CASO_NO_EXISTE: { estado: 404, mensaje: 'Uno o más casos seleccionados no existen.' },
-    CASO_AJENO: { estado: 403, mensaje: 'No tienes permiso para confirmar uno o más de los casos seleccionados.' },
-    CASO_YA_REVISADO: { estado: 409, mensaje: 'Uno o más casos ya fueron revisados por el MINED y no se pueden confirmar.' },
-    CASO_YA_CONFIRMADO: { estado: 409, mensaje: 'Una o más equivalencias ya fueron confirmadas.' },
-    CALCULO_INCOMPLETO: { estado: 409, mensaje: 'Debes completar la evaluación antes de confirmar esta equivalencia' },
+    CASO_AJENO: { estado: 403, mensaje: 'No tienes permiso para enviar al MINED uno o más de los casos seleccionados.' },
+    CASO_YA_REVISADO: { estado: 409, mensaje: 'Uno o más casos ya fueron revisados por el MINED y no se pueden volver a enviar.' },
+    CASO_YA_CONFIRMADO: { estado: 409, mensaje: 'Una o más equivalencias ya fueron enviadas al MINED.' },
+    CALCULO_INCOMPLETO: { estado: 409, mensaje: 'Debes completar la evaluación antes de enviar esta equivalencia' },
+    PROPUESTA_MANUAL_INCOMPLETA: { estado: 409, mensaje: 'Completa el porcentaje propuesto y la justificación de la equivalencia manual.' },
     DOCUMENTOS_INCOMPLETOS: { estado: 409, mensaje: 'Uno o más casos no tienen sus 4 documentos cargados.' }
 };
 
@@ -286,7 +287,7 @@ async function confirmarEquivalencias(req, res) {
 
     if (idsUnicos.length > MAX_CASOS_POR_CONFIRMACION) {
         return res.status(400).json({
-            error: `Solo se pueden confirmar ${MAX_CASOS_POR_CONFIRMACION} equivalencias a la vez.`
+            error: `Solo se pueden enviar ${MAX_CASOS_POR_CONFIRMACION} equivalencias a la vez.`
         });
     }
 
@@ -316,12 +317,12 @@ async function confirmarEquivalencias(req, res) {
         }
 
         // E6: cualquier otro error; la función ya revirtió todo.
-        console.error('No se pudieron confirmar las equivalencias:', error.message);
+        console.error('No se pudieron enviar las equivalencias al MINED. Intenta de nuevo', error.message);
         return res.status(500).json({ error: MENSAJE_ERROR_GUARDADO });
     }
 
     return res.status(200).json({
-        mensaje: 'Equivalencias confirmadas y registradas exitosamente',
+        mensaje: 'Equivalencias enviadas al MINED para revisión',
         confirmadas: idsUnicos.length,
         fecha_confirmacion: fechaConfirmacion,
         ids_caso: idsUnicos

@@ -45,6 +45,29 @@
     cursor: not-allowed;
 }
 
+.checklist-filtro {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    gap: 10px;
+    margin: 20px 0 12px;
+}
+
+.checklist-filtro select {
+    width: auto;
+    min-width: 240px;
+}
+
+.checklist-filtro__vacio {
+    margin: 16px 0;
+    padding: 16px;
+    color: var(--texto-suave);
+    background: var(--neutro-fondo);
+    border-radius: var(--radio);
+}
+
 /* Barra de confirmación (queda visible al desplazarse) */
 
 .barra-confirmacion {
@@ -204,6 +227,15 @@
 /* Celular */
 
 @media (max-width: 640px) {
+    .checklist-filtro {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .checklist-filtro select {
+        width: 100%;
+    }
+
     .barra-confirmacion {
         padding: 14px;
     }

@@ -111,7 +111,7 @@ test("HU5-01 CA1: confirma dos equivalencias y registra la operación", async ()
         .expect(200);
 
     assert.deepEqual(respuesta.body, {
-        mensaje: "Equivalencias confirmadas y registradas exitosamente",
+        mensaje: "Equivalencias enviadas al MINED para revisión",
         confirmadas: 2,
         fecha_confirmacion: fecha,
         ids_caso: [CASO_1, CASO_2]
@@ -146,7 +146,7 @@ test("HU5-01 CA1: confirma dos equivalencias y registra la operación", async ()
 
      // Verificamos el mensaje de error establecido en HU-05.
      assert.deepEqual(respuesta.body, {
-         error: "Selecciona al menos una equivalencia para confirmar"
+         error: "Selecciona al menos una equivalencia para enviar al MINED"
      });
 
      // No debe ejecutarse ninguna operación de confirmación.
@@ -216,7 +216,7 @@ test("HU5-01 CA1: confirma dos equivalencias y registra la operación", async ()
 
      // El servidor debe rechazar la operación.
      assert.deepEqual(respuesta.body, {
-         error: "No tienes permiso para confirmar uno o más de los casos seleccionados.",
+         error: "No tienes permiso para enviar al MINED uno o más de los casos seleccionados.",
          ids_afectados: [CASO_1]
      });
 
@@ -284,7 +284,7 @@ test("HU5-01 CA1: confirma dos equivalencias y registra la operación", async ()
 
      // El sistema debe informar que ya fue confirmada.
      assert.deepEqual(respuesta.body, {
-         error: "Una o más equivalencias ya fueron confirmadas.",
+         error: "Una o más equivalencias ya fueron enviadas al MINED.",
          ids_afectados: [CASO_1]
      });
 
@@ -352,7 +352,7 @@ test("HU5-05 CA3: fallo al registrar varias equivalencias devuelve 500", async (
 
     // E6: debe mostrar el mensaje de error establecido.
     assert.deepEqual(respuesta.body, {
-        error: "No se pudieron registrar las equivalencias. Intenta de nuevo"
+        error: "No se pudieron enviar las equivalencias. Intenta de nuevo"
     });
 
     // No debe informar ninguna confirmación exitosa.
