@@ -7,349 +7,309 @@
 
     <title>MINED - Reporte del caso</title>
 
-    <link rel="stylesheet" href="css/mined.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap">
+    <link rel="stylesheet" href="css/tema.css">
+    <link rel="stylesheet" href="css/casos-mined.css">
     <link rel="stylesheet" href="css/reporte-caso.css">
 </head>
 
 <body>
 
-    <div class="dashboard">
+    <div class="barra-gobierno">Ministerio de Educación, Ciencia y Tecnología · El Salvador</div>
+    <div class="franja-bandera"></div>
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-
-            <div class="logo">
-
-                <div class="logo-icon">
-                    ↗
-                </div>
-
-                <div>
-                    <strong>SEDA</strong>
-                    <small>Sistema de Equivalencias y Documentación Académica</small>
-                </div>
-
+    <header class="encabezado-sitio">
+        <div class="encabezado-sitio__seda">
+            <img class="encabezado-sitio__logo-seda" src="img/logo-seda-blanco.svg" alt="" width="64" height="64">
+            <div>
+                <strong class="encabezado-sitio__nombre">SEDA</strong>
+                <small class="encabezado-sitio__descripcion">Sistema de Equivalencias y Documentación Académica</small>
             </div>
+        </div>
+
+        <nav class="navegacion-sitio" aria-label="Navegación principal">
+            <a href="/mined.html">Dashboard</a>
+            <a href="/mined.html#equivalencias" class="active" aria-current="true">Equivalencias</a>
+            <a href="/mined-universidades.html">Universidades</a>
+            <button class="logout" id="boton-cerrar-sesion" type="button">Cerrar sesión</button>
+        </nav>
+    </header>
 
 
-            <nav>
+    <!-- CONTENIDO -->
+    <main class="contenido">
 
-                <a href="/mined.html">
-                    Dashboard
-                </a>
-
-                <a href="#" class="active">
-                    Equivalencias
-                </a>
-
-                <a href="#">
-                    Universidades
-                </a>
-
-                <a href="#">
-                    Carreras
-                </a>
-
-            </nav>
+        <p class="antetitulo">Panel de administración</p>
+        <h1>Reporte del caso</h1>
+        <p class="lead">MINED · Administrador</p>
 
 
-            <div class="user">
-
-                <div class="user-icon">
-                    M
-                </div>
-
-                <div>
-                    <strong>MINED</strong>
-                    <small>Administrador</small>
-                </div>
-
-            </div>
-
-        </aside>
+        <!-- ESTADO: CARGANDO -->
+        <div id="reporte-cargando" class="loading" aria-live="polite">
+            Cargando reporte del caso...
+        </div>
 
 
-        <!-- CONTENIDO -->
-        <main class="content">
+        <!-- ESTADO: ERROR (caso no encontrado u otro fallo) -->
+        <div id="reporte-error" class="error" role="alert" hidden>
 
-            <header>
+            <h3 id="reporte-error-titulo">
+                No se pudo cargar el reporte
+            </h3>
+
+            <p id="reporte-error-mensaje"></p>
+
+            <a class="btn btn--secundario ver-caso reporte__volver-error" href="/mined.html">
+                Volver al panel
+            </a>
+
+        </div>
+
+
+        <!-- REPORTE DEL CASO -->
+        <article id="reporte-contenido" class="reporte" hidden>
+
+            <div class="tarjeta reporte__cabecera">
 
                 <div>
 
-                    <p>Panel de administración</p>
+                    <span class="caso-id">
+                        Caso #<span id="caso-id"></span>
+                    </span>
 
-                    <h1>
-                        Reporte del caso
-                    </h1>
+                    <span class="estado" id="caso-estado"></span>
 
                 </div>
 
-                <button class="logout" id="boton-cerrar-sesion" type="button">
-                    Cerrar sesión
-                </button>
-
-            </header>
-
-
-            <!-- ESTADO: CARGANDO -->
-            <div id="reporte-cargando" class="loading" aria-live="polite">
-                Cargando reporte del caso...
-            </div>
-
-
-            <!-- ESTADO: ERROR (caso no encontrado u otro fallo) -->
-            <div id="reporte-error" class="error" role="alert" hidden>
-
-                <h3 id="reporte-error-titulo">
-                    No se pudo cargar el reporte
-                </h3>
-
-                <p id="reporte-error-mensaje"></p>
-
-                <a class="ver-caso" href="/mined.html">
-                    Volver al panel
-                </a>
+                <span class="fecha" id="caso-fecha"></span>
 
             </div>
 
 
-            <!-- REPORTE DEL CASO -->
-            <article id="reporte-contenido" class="caso" hidden>
-
-                <div class="caso-header">
-
-                    <div>
-
-                        <span class="caso-id">
-                            Caso #<span id="caso-id"></span>
-                        </span>
-
-                        <span class="estado" id="caso-estado"></span>
-
-                    </div>
-
-                    <span class="fecha" id="caso-fecha"></span>
-
-                </div>
+            <!-- Aviso: solo aparece si falta algún documento -->
+            <div id="aviso-documentos-faltantes" class="aviso aviso--advertencia" role="alert" hidden>
+                <p id="aviso-documentos-faltantes-texto"></p>
+            </div>
 
 
-                <section id="solicitud-estudiante" class="reporte__seccion" hidden>
-                    <h2 class="reporte__titulo">Datos del estudiante</h2>
-                    <p class="reporte__texto">
-                        <strong>Nombre:</strong> <span id="estudiante-nombre"></span>
-                    </p>
-                    <p class="reporte__texto">
-                        <strong>Código institucional:</strong>
-                        <span id="estudiante-codigo"></span>
-                    </p>
-                    <p class="reporte__texto">
-                        <strong>Nota obtenida:</strong>
-                        <span id="estudiante-nota"></span>
-                    </p>
-                    <p class="reporte__texto">
-                        <strong>Modalidad:</strong> <span id="solicitud-modalidad"></span>
-                    </p>
-                </section>
+            <div class="reporte__columnas">
 
-                <section id="descripcion-legada" class="reporte__seccion" hidden>
-                    <h2 class="reporte__titulo">Descripción registrada</h2>
-                    <p class="reporte__texto" id="caso-descripcion"></p>
-                </section>
+                <div class="reporte__principal">
 
-                <section id="analisis-manual" class="reporte__seccion" hidden>
-                    <h2 class="reporte__titulo">Propuesta manual de la universidad</h2>
-                    <h3 class="reporte__titulo">Justificación académica</h3>
-                    <p class="reporte__texto" id="justificacion-manual"></p>
-                </section>
+                    <section class="tarjeta materias">
 
-                <section id="analisis-ia" class="reporte__seccion" hidden>
-                    <h2 class="reporte__titulo">Análisis automático de IA</h2>
+                        <!-- Origen -->
+                        <div class="materia" id="bloque-origen">
 
-                    <p id="ia-pendiente" class="reporte__texto" hidden>
-                        El análisis de IA todavía no está disponible.
-                    </p>
+                            <span class="materia-label">
+                                MATERIA ORIGEN
+                            </span>
 
-                    <div id="ia-detalle" class="analisis-ia-grid" hidden>
-                        <div class="analisis-ia-item">
-                            <h3>Resumen</h3>
-                            <p id="ia-resumen"></p>
-                        </div>
-                        <div class="analisis-ia-item">
-                            <h3>Contenidos coincidentes</h3>
-                            <p id="ia-contenidos"></p>
-                        </div>
-                        <div class="analisis-ia-item">
-                            <h3>Metodología</h3>
-                            <p id="ia-metodologia"></p>
-                        </div>
-                        <div class="analisis-ia-item">
-                            <h3>Diferencias</h3>
-                            <p id="ia-diferencias"></p>
-                        </div>
-                        <div class="analisis-ia-item">
-                            <h3>Contexto de los pénsums</h3>
-                            <p id="ia-contexto-pensum"></p>
-                        </div>
-                        <div class="analisis-ia-item">
-                            <h3>Conclusión</h3>
-                            <p id="ia-conclusion"></p>
-                        </div>
-                    </div>
-                </section>
+                            <h3 id="origen-materia"></h3>
 
-                <!-- Aviso: solo aparece si falta algún documento -->
-                <div id="aviso-documentos-faltantes" class="aviso aviso--advertencia" role="alert" hidden>
-                    <p id="aviso-documentos-faltantes-texto"></p>
-                </div>
+                            <p id="origen-carrera"></p>
 
+                            <small id="origen-universidad"></small>
 
-                <div class="materias">
+                            <ul class="documentos">
 
-                    <!-- Origen -->
-                    <div class="materia" id="bloque-origen">
+                                <li class="documento" data-documento="pensum_origen">
+                                    <span class="documento__nombre">Pensum de la carrera</span>
+                                    <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
+                                        documento</a>
+                                    <span class="documento__faltante" hidden>No disponible</span>
+                                </li>
 
-                        <span class="materia-label">
-                            MATERIA ORIGEN
-                        </span>
+                                <li class="documento" data-documento="programa_origen">
+                                    <span class="documento__nombre">Programa de la materia</span>
+                                    <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
+                                        documento</a>
+                                    <span class="documento__faltante" hidden>No disponible</span>
+                                </li>
 
-                        <h3 id="origen-materia"></h3>
+                            </ul>
 
-                        <p id="origen-carrera"></p>
-
-                        <small id="origen-universidad"></small>
-
-                        <ul class="documentos">
-
-                            <li class="documento" data-documento="pensum_origen">
-                                <span class="documento__nombre">Pensum de la carrera</span>
-                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
-                                    documento</a>
-                                <span class="documento__faltante" hidden>No disponible</span>
-                            </li>
-
-                            <li class="documento" data-documento="programa_origen">
-                                <span class="documento__nombre">Programa de la materia</span>
-                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
-                                    documento</a>
-                                <span class="documento__faltante" hidden>No disponible</span>
-                            </li>
-
-                        </ul>
-
-                    </div>
-
-                    <div class="flecha">
-                        →
-                    </div>
-
-
-                    <!-- Destino -->
-                    <div class="materia" id="bloque-destino">
-
-                        <span class="materia-label">
-                            MATERIA DESTINO
-                        </span>
-
-                        <h3 id="destino-materia"></h3>
-
-                        <p id="destino-carrera"></p>
-
-                        <small id="destino-universidad"></small>
-
-                        <ul class="documentos">
-
-                            <li class="documento" data-documento="pensum_destino">
-                                <span class="documento__nombre">Pensum de la carrera</span>
-                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
-                                    documento</a>
-                                <span class="documento__faltante" hidden>No disponible</span>
-                            </li>
-
-                            <li class="documento" data-documento="programa_destino">
-                                <span class="documento__nombre">Programa de la materia</span>
-                                <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
-                                    documento</a>
-                                <span class="documento__faltante" hidden>No disponible</span>
-                            </li>
-
-                        </ul>
-
-                    </div>
-
-                </div>
-
-                <!-- REVISIÓN DEL CASO (HU-09): solo aparece si el caso está PENDIENTE -->
-                <section id="revision" class="revision" hidden>
-
-                    <h2 class="reporte__titulo">
-                        Revisión de la equivalencia
-                    </h2>
-
-                    <form id="form-revision" novalidate>
-
-                        <fieldset class="revision__grupo">
-                            <legend class="revision__leyenda">Decisión</legend>
-
-                            <div class="revision__opciones">
-                                <label class="revision__opcion">
-                                    <input type="radio" name="decision" value="ACEPTAR">
-                                    Aceptar
-                                </label>
-
-                                <label class="revision__opcion">
-                                    <input type="radio" name="decision" value="ADVERTENCIA">
-                                    Emitir advertencia
-                                </label>
-                            </div>
-                        </fieldset>
-
-                        <div id="campo-observacion" class="revision__observacion" hidden>
-                            <label for="observacion">Observación (mínimo 10 caracteres)</label>
-                            <textarea id="observacion" name="observacion" rows="3" maxlength="500"></textarea>
                         </div>
 
-                        <p id="revision-error" class="revision__error" role="alert" hidden></p>
+                        <div class="flecha" aria-hidden="true">
+                            →
+                        </div>
 
-                        <button type="submit" id="boton-confirmar-revision" class="ver-caso">
-                            Confirmar revisión
-                        </button>
 
-                    </form>
+                        <!-- Destino -->
+                        <div class="materia" id="bloque-destino">
 
-                </section>
+                            <span class="materia-label">
+                                MATERIA DESTINO
+                            </span>
 
-                <!-- Resultado de la revisión (o aviso de caso ya revisado) -->
-                <div id="revision-resultado" class="aviso" role="status" aria-live="polite" hidden>
-                    <p id="revision-resultado-texto"></p>
-                </div>
+                            <h3 id="destino-materia"></h3>
 
-                <div class="caso-footer">
+                            <p id="destino-carrera"></p>
 
-                    <div>
+                            <small id="destino-universidad"></small>
+
+                            <ul class="documentos">
+
+                                <li class="documento" data-documento="pensum_destino">
+                                    <span class="documento__nombre">Pensum de la carrera</span>
+                                    <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
+                                        documento</a>
+                                    <span class="documento__faltante" hidden>No disponible</span>
+                                </li>
+
+                                <li class="documento" data-documento="programa_destino">
+                                    <span class="documento__nombre">Programa de la materia</span>
+                                    <a class="documento__enlace" target="_blank" rel="noopener noreferrer" hidden>Abrir
+                                        documento</a>
+                                    <span class="documento__faltante" hidden>No disponible</span>
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="tarjeta caso-footer">
 
                         <span id="caso-porcentaje-etiqueta">Coincidencia calculada por IA</span>
 
                         <strong id="caso-porcentaje"></strong>
 
+                        <div class="progress">
+
+                            <div class="progress-bar" id="caso-porcentaje-barra"></div>
+
+                        </div>
+
+                    </section>
+
+
+                    <section id="analisis-manual" class="tarjeta reporte__seccion" hidden>
+                        <h2 class="reporte__titulo">Propuesta manual de la universidad</h2>
+                        <h3 class="reporte__titulo">Justificación académica</h3>
+                        <p class="reporte__texto" id="justificacion-manual"></p>
+                    </section>
+
+                    <section id="analisis-ia" class="tarjeta reporte__seccion" hidden>
+                        <h2 class="reporte__titulo">Análisis automático de IA</h2>
+
+                        <p id="ia-pendiente" class="reporte__texto" hidden>
+                            El análisis de IA todavía no está disponible.
+                        </p>
+
+                        <div id="ia-detalle" class="analisis-ia-grid" hidden>
+                            <div class="analisis-ia-item">
+                                <h3>Resumen</h3>
+                                <p id="ia-resumen"></p>
+                            </div>
+                            <div class="analisis-ia-item">
+                                <h3>Contenidos coincidentes</h3>
+                                <p id="ia-contenidos"></p>
+                            </div>
+                            <div class="analisis-ia-item">
+                                <h3>Metodología</h3>
+                                <p id="ia-metodologia"></p>
+                            </div>
+                            <div class="analisis-ia-item">
+                                <h3>Diferencias</h3>
+                                <p id="ia-diferencias"></p>
+                            </div>
+                            <div class="analisis-ia-item">
+                                <h3>Contexto de los pénsums</h3>
+                                <p id="ia-contexto-pensum"></p>
+                            </div>
+                            <div class="analisis-ia-item">
+                                <h3>Conclusión</h3>
+                                <p id="ia-conclusion"></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="descripcion-legada" class="tarjeta reporte__seccion" hidden>
+                        <h2 class="reporte__titulo">Descripción registrada</h2>
+                        <p class="reporte__texto" id="caso-descripcion"></p>
+                    </section>
+
+                </div>
+
+
+                <div class="reporte__lateral">
+
+                    <section id="solicitud-estudiante" class="tarjeta reporte__seccion" hidden>
+                        <h2 class="reporte__titulo">Datos del estudiante</h2>
+                        <p class="reporte__texto"><strong>Nombre:</strong> <span id="estudiante-nombre"></span></p>
+                        <p class="reporte__texto"><strong>Código institucional:</strong> <span id="estudiante-codigo"></span></p>
+                        <p class="reporte__texto"><strong>Nota obtenida:</strong> <span id="estudiante-nota"></span></p>
+                        <p class="reporte__texto"><strong>Modalidad:</strong> <span id="solicitud-modalidad"></span></p>
+                    </section>
+
+                    <!-- REVISIÓN DEL CASO (HU-09): solo aparece si el caso está PENDIENTE -->
+                    <section id="revision" class="tarjeta tarjeta--destacada revision" hidden>
+
+                        <h2 class="reporte__titulo">
+                            Revisión de la equivalencia
+                        </h2>
+
+                        <form id="form-revision" novalidate>
+
+                            <fieldset class="revision__grupo">
+                                <legend class="revision__leyenda">Decisión</legend>
+
+                                <div class="revision__opciones">
+                                    <label class="revision__opcion">
+                                        <input type="radio" name="decision" value="ACEPTAR">
+                                        Aceptar
+                                    </label>
+
+                                    <label class="revision__opcion">
+                                        <input type="radio" name="decision" value="ADVERTENCIA">
+                                        Emitir advertencia
+                                    </label>
+                                </div>
+                            </fieldset>
+
+                            <div id="campo-observacion" class="campo revision__observacion" hidden>
+                                <label for="observacion">Observación (mínimo 10 caracteres)</label>
+                                <textarea id="observacion" name="observacion" rows="3" maxlength="500"></textarea>
+                            </div>
+
+                            <p id="revision-error" class="mensaje mensaje--error revision__error" role="alert" hidden></p>
+
+                            <button type="submit" id="boton-confirmar-revision" class="btn btn--bloque ver-caso">
+                                Confirmar revisión
+                            </button>
+
+                        </form>
+
+                    </section>
+
+                    <!-- Resultado de la revisión (o aviso de caso ya revisado) -->
+                    <div id="revision-resultado" class="aviso" role="status" aria-live="polite" hidden>
+                        <p id="revision-resultado-texto"></p>
                     </div>
 
-                    <div class="progress">
-
-                        <div class="progress-bar" id="caso-porcentaje-barra"></div>
-
-                    </div>
-
-                    <a class="ver-caso" href="/mined.html">
+                    <a class="btn btn--secundario btn--bloque ver-caso" href="/mined.html">
                         Volver al panel
                     </a>
 
                 </div>
 
-            </article>
+            </div>
 
-        </main>
+        </article>
 
-    </div>
+    </main>
+
+    <footer class="pie-sitio">
+        <span>Ministerio de Educación, Ciencia y Tecnología · San Salvador, El Salvador</span>
+        <span>SEDA · Proyecto académico</span>
+    </footer>
 
 
     <script src="js/reporte-caso.js"></script>
