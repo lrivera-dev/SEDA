@@ -285,6 +285,9 @@
 
         for (const caso of seleccion) {
             const baja = caso.estado_checklist !== "APROBADA";
+            const porcentaje = caso.modalidad === "MANUAL"
+                ? caso.porcentaje_propuesto
+                : caso.porcentaje_coincidencia;
             hayBajas = hayBajas || baja;
 
             const item = crearElemento(
@@ -296,7 +299,7 @@
 
             item.appendChild(crearElemento("span", "dialogo-confirmacion__materia", nombreCaso(caso)));
             item.appendChild(crearElemento(
-                "strong", "dialogo-confirmacion__porcentaje", `${caso.porcentaje_coincidencia}%`
+                "strong", "dialogo-confirmacion__porcentaje", `${porcentaje}%`
             ));
 
             if (baja) {
